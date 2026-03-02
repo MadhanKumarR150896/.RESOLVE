@@ -1,7 +1,7 @@
 export const LoginDetails = () => {
   return (
     <div className="flex gap-8 text-sm">
-      <div className="border p-2 rounded bg-neutral-100">
+      <div className="border border-neutral-500 p-2 rounded bg-neutral-100">
         <p className="bg-neutral-900 text-neutral-50 text-center rounded p-1 mb-2">
           User Account
         </p>
@@ -14,7 +14,7 @@ export const LoginDetails = () => {
           </p>
         </div>
       </div>
-      <div className="border p-2 rounded bg-neutral-100">
+      <div className="border border-neutral-500 p-2 rounded bg-neutral-100">
         <p className="bg-neutral-900 text-neutral-50 rounded p-1 mb-2 text-center">
           Agent Account
         </p>
