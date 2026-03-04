@@ -3,7 +3,7 @@ import { LoginPage } from "./pages/Login/LoginPage";
 import { AgentPage } from "./pages/Agent/AgentPage";
 import { UserPage } from "./pages/User/UserPage";
 
-function App() {
+const App = () => {
   return (
     <Routes>
       <Route index element={<LoginPage />} />
@@ -11,6 +11,6 @@ function App() {
       <Route path="agent" element={<AgentPage />}></Route>
     </Routes>
   );
-}
+};
 
 export default App;

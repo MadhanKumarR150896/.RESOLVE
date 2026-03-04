@@ -1,3 +1,3 @@
-export function AgentPage() {
+export const AgentPage = () => {
   return <div>Agent Page</div>;
-}
+};

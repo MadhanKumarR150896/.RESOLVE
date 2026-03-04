@@ -1,28 +1,29 @@
 import { Eye, EyeOff } from "lucide-react";
-import { useState, type SyntheticEvent } from "react";
+import { useEffect, useState, type SyntheticEvent } from "react";
 import { ErrorMessage } from "./ErrorMessage";
-import { supabaseSignIn } from "../../supabase/supabaseSignIn";
+import { useSupabaseAuth } from "../../supabase/supabaseSignIn";
 
 export const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const { supabaseSignIn, authStatus } = useSupabaseAuth();
 
-  async function handleSubmit(e: SyntheticEvent<HTMLFormElement>) {
+  useEffect(() => {
+    console.log(authStatus);
+  }, [authStatus]);
+
+  const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitted(true);
     if (!email || !password || !emailValidation()) return;
-    await supabaseSignIn(email, password);
-    clearForm();
-  }
+    const result = await supabaseSignIn(email, password);
+    if (result.success) clearForm();
+  };
 
   function emailValidation() {
-    return email.includes("@resolve.com");
-  }
-
-  function handlePasswordVisibility() {
-    setShowPassword((prev) => !prev);
+    return email.endsWith("@resolve.com");
   }
 
   function clearForm() {
@@ -31,20 +32,23 @@ export const LoginForm = () => {
     setIsSubmitted(false);
   }
 
+  function handlePasswordVisibility() {
+    setShowPassword((prev) => !prev);
+  }
+
   const Icon = showPassword ? EyeOff : Eye;
 
   return (
     <form
-      noValidate={
-        !email || !password || email.includes("@resolve.com") ? true : false
-      }
+      noValidate
       onSubmit={handleSubmit}
-      className="h-min w-94 border rounded-sm shadow shadow-neutral-500 p-8 flex flex-col gap-4 justify-center items-center"
+      className="h-min w-94 border rounded-sm shadow shadow-neutral-500 p-8 flex flex-col gap-6 justify-center items-center"
     >
       <fieldset className="w-full flex flex-col" name="email">
-        <label htmlFor="email" className="mb-2">
-          Email
-        </label>
+        <div className="flex mb-2 items-baseline justify-between">
+          <label htmlFor="email">Email</label>
+          <ErrorMessage email={email} isSubmitted={isSubmitted} />
+        </div>
         <input
           id="email"
           name="email"
@@ -55,12 +59,14 @@ export const LoginForm = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <ErrorMessage email={email} isSubmitted={isSubmitted} />
       </fieldset>
       <fieldset className="w-full flex flex-col" name="password">
-        <label htmlFor="password" className="mb-2">
-          Password
-        </label>
+        <div className="flex mb-2 items-baseline justify-between">
+          <label htmlFor="password">Password</label>
+          {!password && isSubmitted && (
+            <p className="text-xs text-red-600">Password is required</p>
+          )}
+        </div>
         <div className="flex border rounded px-2 py-1 text-sm border-neutral-500 bg-neutral-200/50">
           <input
             id="password"
@@ -73,12 +79,9 @@ export const LoginForm = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
           <button type="button" onClick={handlePasswordVisibility}>
-            {<Icon strokeWidth="1px" size={20} />}
+            <Icon strokeWidth={1} size={20} />
           </button>
         </div>
-        {!password && isSubmitted === true ? (
-          <p className="text-xs mt-2 text-red-600">Password is required</p>
-        ) : null}
       </fieldset>
       <button
         type="submit"
