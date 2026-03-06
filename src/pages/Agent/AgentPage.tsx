@@ -1,3 +1,3 @@
 export const AgentPage = () => {
-  return <div>Agent Page</div>;
+  return <div>Agent Dashboard</div>;
 };

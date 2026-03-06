@@ -2,35 +2,33 @@ import { Eye, EyeOff } from "lucide-react";
 import { useEffect, useState, type SyntheticEvent } from "react";
 import { ErrorMessage } from "./ErrorMessage";
 import { useSupabaseAuth } from "../../supabase/supabaseSignIn";
+import { useAuthContext } from "../../context/AuthContext";
+import { useNavigate } from "react-router";
 
 export const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const { supabaseSignIn, authStatus } = useSupabaseAuth();
+  const { supabaseSignIn } = useSupabaseAuth();
+  const { profile } = useAuthContext();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    console.log(authStatus);
-  }, [authStatus]);
+    if (profile?.role === "user") {
+      navigate("/dashboard/user");
+    } else if (profile?.role === "agent") {
+      navigate("/dashboard/agent");
+    }
+  }, [profile, navigate]);
 
   const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitted(true);
-    if (!email || !password || !emailValidation()) return;
+    if (!email || !password || !email.endsWith("@resolve.com")) return;
     const result = await supabaseSignIn(email, password);
-    if (result.success) clearForm();
+    if (result.success) setIsSubmitted(false);
   };
-
-  function emailValidation() {
-    return email.endsWith("@resolve.com");
-  }
-
-  function clearForm() {
-    setEmail("");
-    setPassword("");
-    setIsSubmitted(false);
-  }
 
   function handlePasswordVisibility() {
     setShowPassword((prev) => !prev);
