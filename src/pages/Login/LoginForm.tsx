@@ -1,9 +1,8 @@
 import { Eye, EyeOff } from "lucide-react";
-import { useEffect, useState, type SyntheticEvent } from "react";
+import { useState, type SyntheticEvent } from "react";
 import { ErrorMessage } from "./ErrorMessage";
 import { useSupabaseAuth } from "../../supabase/supabaseSignIn";
 import { useAuthContext } from "../../context/AuthContext";
-import { useNavigate } from "react-router";
 
 export const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -11,23 +10,17 @@ export const LoginForm = () => {
   const [password, setPassword] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { supabaseSignIn } = useSupabaseAuth();
-  const { profile } = useAuthContext();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (profile?.role === "user") {
-      navigate("/dashboard/user");
-    } else if (profile?.role === "agent") {
-      navigate("/dashboard/agent");
-    }
-  }, [profile, navigate]);
+  const { showStatus } = useAuthContext();
 
   const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitted(true);
     if (!email || !password || !email.endsWith("@resolve.com")) return;
     const result = await supabaseSignIn(email, password);
-    if (result.success) setIsSubmitted(false);
+    if (result.success) {
+      setIsSubmitted(false);
+      showStatus({ type: "signedin", message: "Successfully signed in" });
+    }
   };
 
   function handlePasswordVisibility() {

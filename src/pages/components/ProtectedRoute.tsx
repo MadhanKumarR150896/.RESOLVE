@@ -13,7 +13,7 @@ export const ProtectedRoute = ({ allowedRoles }: RouterProps) => {
 
   if (!session) return <Navigate to="/" replace />;
 
-  if (!profile) return null;
+  if (!profile) return <Spinner />;
 
   if (!allowedRoles.includes(profile.role)) return <Navigate to="/" replace />;
 

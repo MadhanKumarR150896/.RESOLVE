@@ -1,4 +1,11 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { AuthContext } from "./AuthContext";
 import { supabase } from "../supabase/supabaseClient";
 import type { Session } from "@supabase/supabase-js";
@@ -35,7 +42,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const timeoutTracker = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const showStatus = (status: AuthStatus) => {
+  const showStatus = useCallback((status: AuthStatus) => {
     setAuthStatus(status);
 
     if (timeoutTracker.current) {
@@ -47,17 +54,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         type: "initial",
         message: "",
       });
-    }, 3000);
-  };
+    }, 5000);
+  }, []);
 
   const fetchProfile = async (profileId: string) => {
     const { data, error } = await supabase
       .from("profiles")
       .select(`id,name:full_name,email,role,image:avatar_url`)
       .eq("id", profileId)
-      .single();
+      .single<Profile>();
     if (!error && data) {
-      setProfile(data);
+      setProfile({
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        role: data.role,
+        image: data.image,
+      });
     }
   };
 
@@ -68,7 +81,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       if (data.session) {
         await fetchProfile(data.session.user.id);
+      } else {
+        setProfile(null);
       }
+
       setAuthLoading(false);
     };
 
@@ -76,7 +92,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
 
       if (session) {
@@ -84,38 +100,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       } else {
         setProfile(null);
       }
-
-      switch (event) {
-        case "SIGNED_IN":
-          showStatus({
-            type: "signedin",
-            message: "Signed in successfully",
-          });
-          break;
-        case "SIGNED_OUT":
-          showStatus({
-            type: "signedout",
-            message: "Successfully logged out",
-          });
-          break;
-        default:
-          break;
-      }
     });
     return () => {
       subscription.unsubscribe();
-
-      if (timeoutTracker.current) {
-        clearTimeout(timeoutTracker.current);
-      }
     };
   }, []);
 
-  return (
-    <AuthContext.Provider
-      value={{ authStatus, setAuthStatus, session, profile, authLoading }}
-    >
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({
+      authStatus,
+      setAuthStatus,
+      session,
+      profile,
+      authLoading,
+      showStatus,
+    }),
+    [authStatus, setAuthStatus, session, profile, authLoading, showStatus],
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

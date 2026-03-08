@@ -2,7 +2,7 @@ import { supabase } from "./supabaseClient";
 import { useAuthContext } from "../context/AuthContext";
 
 export const useSupabaseAuth = () => {
-  const { setAuthStatus } = useAuthContext();
+  const { setAuthStatus, showStatus } = useAuthContext();
 
   const supabaseSignIn = async (
     email: string,
@@ -19,7 +19,7 @@ export const useSupabaseAuth = () => {
     });
 
     if (error) {
-      setAuthStatus({
+      showStatus({
         type: "error",
         message: "Invalid login credentials",
       });

@@ -8,6 +8,7 @@ type AuthContextType = {
   session: Session | null;
   profile: Profile | null;
   authLoading: boolean;
+  showStatus: (authStatus: AuthStatus) => void;
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(
