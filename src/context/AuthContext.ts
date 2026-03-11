@@ -2,7 +2,7 @@ import { createContext, useContext } from "react";
 import type { AuthStatus, Profile } from "./AuthProvider";
 import type { Session } from "@supabase/supabase-js";
 
-type AuthContextType = {
+export type AuthContextType = {
   authStatus: AuthStatus;
   setAuthStatus: React.Dispatch<React.SetStateAction<AuthStatus>>;
   session: Session | null;
