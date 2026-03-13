@@ -38,9 +38,9 @@ describe("Auth Provider", () => {
       },
     });
 
-    supabase.auth.getSession = vi.fn().mockResolvedValue({
-      data: { session: null },
-    });
+    supabase.auth.getSession = vi
+      .fn()
+      .mockImplementation(() => new Promise(() => {}));
 
     render(
       <AuthProvider>

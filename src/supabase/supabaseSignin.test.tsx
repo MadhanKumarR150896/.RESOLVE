@@ -52,7 +52,7 @@ describe("Supabase Signin", () => {
       message: "Signing in ...",
     });
 
-    expect(response).toMatchObject({ success: true });
+    expect(response).toEqual({ success: true });
   });
 
   test("Shows error for unauthenticated profile", async () => {

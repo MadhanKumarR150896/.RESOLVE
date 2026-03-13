@@ -1,25 +1,36 @@
 import { AuthMessage } from "./pages/components/AuthMessage";
 import { Routes, Route } from "react-router";
-import { PublicRoute } from "./pages/components/PublicRoute";
-import { LoginPage } from "./pages/Login/LoginPage";
-import { ProtectedRoute } from "./pages/components/ProtectedRoute";
-import { AgentPage } from "./pages/Agent/AgentPage";
-import { UserPage } from "./pages/User/UserPage";
+import { PublicRoute } from "./GuardRoutes/PublicRoute";
+import { SigninPage } from "./pages/Signin/SigninPage";
+import { ProtectedRoute } from "./GuardRoutes/ProtectedRoute";
+import { PageLayout } from "./pages/components/PageLayout";
+import { AgentDashboard } from "./pages/Agent/AgentDashboard";
+import { UserDashboard } from "./pages/User/UserDashboard";
+import { TicketForm } from "./pages/components/TicketForm";
+import { Navigate } from "react-router";
 
 const App = () => {
   return (
     <>
       <AuthMessage />
       <Routes>
+        <Route path="/" element={<Navigate to="/signin" replace />} />
         <Route element={<PublicRoute />}>
-          <Route path="/" element={<LoginPage />} />
+          <Route path="/signin" element={<SigninPage />} />
         </Route>
         <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
-          <Route path="/dashboard/user" element={<UserPage />} />
+          <Route path="/dashboard/user" element={<PageLayout />}>
+            <Route index element={<UserDashboard />} />
+            <Route path="ticket" element={<TicketForm />} />
+          </Route>
         </Route>
         <Route element={<ProtectedRoute allowedRoles={["agent"]} />}>
-          <Route path="/dashboard/agent" element={<AgentPage />} />
+          <Route path="/dashboard/agent" element={<PageLayout />}>
+            <Route index element={<AgentDashboard />} />
+            <Route path="ticket" element={<TicketForm />} />
+          </Route>
         </Route>
+        <Route path="*" element={<Navigate to="/signin" replace />} />
       </Routes>
     </>
   );

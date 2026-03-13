@@ -1,11 +1,11 @@
-import { LoginForm } from "./LoginForm";
+import { SigninForm } from "./SigninForm";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { render, screen } from "@testing-library/react";
 import { AuthContext } from "../../context/AuthContext";
 import type { AuthContextType } from "../../context/AuthContext";
 
-describe("Login Form", () => {
+describe("Signin Form", () => {
   const user = userEvent.setup();
 
   const mockValue: Partial<AuthContextType> = {
@@ -19,12 +19,12 @@ describe("Login Form", () => {
   test("Checks if the fields exist", () => {
     render(
       <AuthContext.Provider value={mockValue as AuthContextType}>
-        <LoginForm />
+        <SigninForm />
       </AuthContext.Provider>,
     );
 
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(screen.getByLabelText("Email")).toBeInTheDocument();
+    expect(screen.getByLabelText("Password")).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /sign in/i }),
     ).toBeInTheDocument();
@@ -33,28 +33,31 @@ describe("Login Form", () => {
   test("To check password visibility", async () => {
     render(
       <AuthContext.Provider value={mockValue as AuthContextType}>
-        <LoginForm />
+        <SigninForm />
       </AuthContext.Provider>,
     );
 
     const password = screen.getByLabelText("Password");
-    const toggleButton = screen.getAllByRole("button")[0];
+    const toggleButton = screen.getByRole("button", { name: /show password/i });
 
     expect(password).toHaveAttribute("type", "password");
     await user.click(toggleButton);
     expect(password).toHaveAttribute("type", "text");
+    expect(toggleButton).toHaveAttribute("aria-label", "Hide password");
   });
 
   test("Shows error check while submitting with empty fields", async () => {
     render(
       <AuthContext.Provider value={mockValue as AuthContextType}>
-        <LoginForm />
+        <SigninForm />
       </AuthContext.Provider>,
     );
 
     await user.click(screen.getByRole("button", { name: /sign in/i }));
 
-    expect(screen.getByText(/password is required/i)).toBeInTheDocument();
-    expect(screen.getByText(/email is required/i)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/password is required/i),
+    ).toBeInTheDocument();
+    expect(await screen.findByText(/email is required/i)).toBeInTheDocument();
   });
 });

@@ -4,7 +4,7 @@ import { ErrorMessage } from "./ErrorMessage";
 import { useSupabaseAuth } from "../../supabase/supabaseSignIn";
 import { useAuthContext } from "../../context/AuthContext";
 
-export const LoginForm = () => {
+export const SigninForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -33,7 +33,7 @@ export const LoginForm = () => {
     <form
       noValidate
       onSubmit={handleSubmit}
-      className="h-min w-94 border rounded-sm shadow shadow-neutral-500 p-8 flex flex-col gap-6 justify-center items-center"
+      className="h-min w-94 border rounded shadow shadow-neutral-500 p-8 flex flex-col gap-6 justify-center items-center"
     >
       <fieldset className="w-full flex flex-col" name="email">
         <div className="flex mb-2 items-baseline justify-between">
@@ -69,7 +69,11 @@ export const LoginForm = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <button type="button" onClick={handlePasswordVisibility}>
+          <button
+            type="button"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            onClick={handlePasswordVisibility}
+          >
             <Icon strokeWidth={1} size={20} />
           </button>
         </div>

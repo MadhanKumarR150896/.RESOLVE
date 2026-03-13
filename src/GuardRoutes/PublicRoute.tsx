@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router";
-import { useAuthContext } from "../../context/AuthContext";
-import { Spinner } from "./Spinner";
+import { useAuthContext } from "../context/AuthContext";
+import { Spinner } from "../pages/components/Spinner";
 
 export const PublicRoute = () => {
   const { session, profile, authLoading } = useAuthContext();

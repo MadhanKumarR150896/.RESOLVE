@@ -17,7 +17,7 @@ export const AuthMessage = () => {
 
   return (
     <div
-      className="w-70 flex items-center gap-4 border-none shadow shadow-neutral-900 bg-neutral-200 z-50 text-sm py-2 px-4 rounded absolute right-16 top-20
+      className="w-70 flex items-center gap-4 border-none shadow shadow-neutral-900 bg-neutral-200 z-50 text-sm py-2 px-4 rounded absolute right-16 top-24
         "
     >
       <MessageIcon
