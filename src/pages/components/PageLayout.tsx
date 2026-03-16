@@ -3,9 +3,9 @@ import { Header } from "./Header";
 
 export const PageLayout = () => {
   return (
-    <div className="base p-2 flex flex-col gap-2">
+    <div className="base gap-2 p-2">
       <Header />
-      <main className="bg-neutral-100 rounded flex-1 border shadow shadow-neutral-500">
+      <main className="flex-1 bg-neutral-100 rounded border shadow shadow-neutral-500">
         <Outlet />
       </main>
     </div>

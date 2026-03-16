@@ -19,7 +19,7 @@ export const SigninForm = () => {
     const result = await supabaseSignIn(email, password);
     if (result.success) {
       setIsSubmitted(false);
-      showStatus({ type: "signedin", message: "Successfully signed in" });
+      showStatus({ type: "success", message: "Successfully signed in" });
     }
   };
 

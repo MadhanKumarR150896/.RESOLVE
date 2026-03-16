@@ -14,7 +14,7 @@ type AuthProviderProps = {
   children: ReactNode;
 };
 
-type StatusType = "initial" | "loading" | "error" | "signedin" | "signedout";
+type StatusType = "initial" | "loading" | "error" | "success";
 
 export type AuthStatus = {
   type: StatusType;
@@ -28,7 +28,6 @@ export type Profile = {
   name: string;
   email: string;
   role: RoleType;
-  image: string;
 };
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
@@ -60,7 +59,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const fetchProfile = async (profileId: string) => {
     const { data, error } = await supabase
       .from("profiles")
-      .select(`id,name:full_name,email,role,image:avatar_url`)
+      .select(`id,name:full_name,email,role`)
       .eq("id", profileId)
       .single<Profile>();
     if (!error && data) {
@@ -69,7 +68,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         name: data.name,
         email: data.email,
         role: data.role,
-        image: data.image,
       });
     }
   };

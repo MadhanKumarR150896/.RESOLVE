@@ -17,6 +17,6 @@
 
 @layer components {
   .base {
-    @apply h-dvh w-dvw overflow-hidden bg-neutral-50 text-neutral-900;
+    @apply flex flex-col min-h-dvh bg-neutral-50 text-neutral-900 text-base;
   }
 }

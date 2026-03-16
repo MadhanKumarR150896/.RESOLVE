@@ -4,8 +4,7 @@ import { useAuthContext } from "../../context/AuthContext";
 const icons = {
   loading: Loader,
   error: CircleAlert,
-  signedin: CircleCheck,
-  signedout: CircleCheck,
+  success: CircleCheck,
 };
 
 export const AuthMessage = () => {
