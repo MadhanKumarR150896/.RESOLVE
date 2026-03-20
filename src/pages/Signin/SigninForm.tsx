@@ -1,8 +1,9 @@
 import { Eye, EyeOff } from "lucide-react";
 import { useState, type SyntheticEvent } from "react";
 import { ErrorMessage } from "./ErrorMessage";
-import { useSupabaseAuth } from "../../supabase/supabaseSignIn";
+import { useSupabaseAuth } from "../../supabase/supabaseAuth";
 import { useAuthContext } from "../../context/AuthContext";
+import { Button } from "../components/FormElements";
 
 export const SigninForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -43,7 +44,7 @@ export const SigninForm = () => {
         <input
           id="email"
           name="email"
-          className="border-neutral-500 text-sm border bg-neutral-200/50 rounded px-2 py-1 outline-0"
+          className="input text-sm bg-neutral-200/50"
           type="email"
           placeholder="usedemoaccount@resolve.com"
           required
@@ -78,12 +79,9 @@ export const SigninForm = () => {
           </button>
         </div>
       </fieldset>
-      <button
-        type="submit"
-        className="bg-neutral-900 text-neutral-100 w-full py-2 mt-4 rounded-md hover:cursor-pointer hover:bg-neutral-800"
-      >
+      <Button type="submit" className="w-full mt-4">
         Sign in
-      </button>
+      </Button>
     </form>
   );
 };

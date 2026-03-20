@@ -19,6 +19,14 @@ export const useSupabaseAuth = () => {
     });
 
     if (error) {
+      if (error.status === 500) {
+        showStatus({
+          type: "error",
+          message: "Unauthorized: Account is deactivated",
+        });
+        return { success: false };
+      }
+
       showStatus({
         type: "error",
         message: "Invalid login credentials",
@@ -31,5 +39,22 @@ export const useSupabaseAuth = () => {
     return { success: false };
   };
 
-  return { supabaseSignIn };
+  const supabaseSignout = async () => {
+    const { error } = await supabase.auth.signOut({ scope: "local" });
+
+    if (error) {
+      showStatus({
+        type: "error",
+        message: "Sign out failed",
+      });
+      return;
+    }
+
+    showStatus({
+      type: "success",
+      message: "Successfully signed out",
+    });
+  };
+
+  return { supabaseSignIn, supabaseSignout };
 };

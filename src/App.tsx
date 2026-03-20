@@ -6,7 +6,8 @@ import { ProtectedRoute } from "./GuardRoutes/ProtectedRoute";
 import { PageLayout } from "./pages/components/PageLayout";
 import { AgentDashboard } from "./pages/Agent/AgentDashboard";
 import { UserDashboard } from "./pages/User/UserDashboard";
-import { TicketForm } from "./pages/components/TicketForm";
+import { UserTicketForm } from "./pages/User/UserTicketForm";
+import { AgentTicketForm } from "./pages/Agent/AgentTicketForm";
 import { Navigate } from "react-router";
 
 const App = () => {
@@ -21,13 +22,13 @@ const App = () => {
         <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
           <Route path="/dashboard/user" element={<PageLayout />}>
             <Route index element={<UserDashboard />} />
-            <Route path="ticket" element={<TicketForm />} />
+            <Route path="ticket" element={<UserTicketForm />} />
           </Route>
         </Route>
         <Route element={<ProtectedRoute allowedRoles={["agent"]} />}>
           <Route path="/dashboard/agent" element={<PageLayout />}>
             <Route index element={<AgentDashboard />} />
-            <Route path="ticket" element={<TicketForm />} />
+            <Route path="ticket" element={<AgentTicketForm />} />
           </Route>
         </Route>
         <Route path="*" element={<Navigate to="/signin" replace />} />

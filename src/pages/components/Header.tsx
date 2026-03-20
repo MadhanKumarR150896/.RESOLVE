@@ -11,27 +11,11 @@ import {
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { UserRound } from "lucide-react";
-import { supabase } from "../../supabase/supabaseClient";
+import { useSupabaseAuth } from "../../supabase/supabaseAuth";
 
 export const Header = () => {
-  const { profile, showStatus } = useAuthContext();
-
-  const supabaseSignout = async () => {
-    const { error } = await supabase.auth.signOut({ scope: "local" });
-
-    if (error) {
-      showStatus({
-        type: "error",
-        message: "Sign out failed",
-      });
-      return;
-    }
-
-    showStatus({
-      type: "success",
-      message: "Successfully signed out",
-    });
-  };
+  const { profile } = useAuthContext();
+  const { supabaseSignout } = useSupabaseAuth();
 
   return (
     <>
