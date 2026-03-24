@@ -1,6 +1,6 @@
 import { Search } from "lucide-react";
 import { useNavigate } from "react-router";
-import { Button } from "../components/FormElements";
+import { Button } from "../components/ReusableElements";
 
 export const UserDashboard = () => {
   const navigate = useNavigate();

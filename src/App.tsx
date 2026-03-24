@@ -23,6 +23,7 @@ const App = () => {
           <Route path="/dashboard/user" element={<PageLayout />}>
             <Route index element={<UserDashboard />} />
             <Route path="ticket" element={<UserTicketForm />} />
+            <Route path="ticket/:ticketId" element={<UserTicketForm />} />
           </Route>
         </Route>
         <Route element={<ProtectedRoute allowedRoles={["agent"]} />}>
