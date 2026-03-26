@@ -56,7 +56,7 @@ export const SigninForm = () => {
         <div className="flex mb-2 items-baseline justify-between">
           <label htmlFor="password">Password</label>
           {!password && isSubmitted && (
-            <p className="text-xs text-red-600">Password is required</p>
+            <p className="error">Password is required</p>
           )}
         </div>
         <div className="flex border rounded px-2 py-1 text-sm border-neutral-500 bg-neutral-200/50">

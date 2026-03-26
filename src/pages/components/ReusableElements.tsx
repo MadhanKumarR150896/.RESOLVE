@@ -6,19 +6,23 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-type ButtonVariant = "black";
+type ButtonVariant = "black" | "faker";
 
 type ButtonProps = {
-  children: ReactNode;
+  label?: string;
+  children?: ReactNode;
   variant?: ButtonVariant;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 const variants: Record<ButtonVariant, string> = {
   black:
     "bg-neutral-900 text-neutral-100 rounded py-2 hover:cursor-pointer hover:bg-neutral-800 font-semibold",
+  faker:
+    "bg-green-800 text-neutral-50 rounded py-2 hover:cursor-pointer hover:bg-green-700 font-semibold",
 };
 
 export const Button = ({
+  label,
   children,
   variant = "black",
   className,
@@ -26,7 +30,7 @@ export const Button = ({
 }: ButtonProps) => {
   return (
     <button className={cn(variants[variant], className)} {...props}>
-      {children}
+      {label ? label : children}
     </button>
   );
 };
@@ -66,19 +70,27 @@ export const DisplayBox = ({
 
 type Inputprops = {
   label?: string;
+  error?: string | null;
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
 export const Input = forwardRef<HTMLInputElement, Inputprops>(
-  ({ label, disabled, className, id, ...props }, ref) => {
+  ({ label, error, disabled, className, id, ...props }, ref) => {
     const customId = useId();
     const inputId = id || customId;
     return (
       <div className="flex flex-col gap-2">
-        {label && (
-          <label className="font-bold" htmlFor={inputId}>
-            {label}
-          </label>
-        )}
+        <div className="flex items-baseline justify-between">
+          {label && (
+            <label className="font-bold" htmlFor={inputId}>
+              {label}
+            </label>
+          )}
+          {error && (
+            <p className="error text-sm" role="alert">
+              {error}
+            </p>
+          )}
+        </div>
         <input
           id={inputId}
           ref={ref}
@@ -99,19 +111,27 @@ Input.displayName = "Input";
 
 type TextAreaProps = {
   label?: string;
+  error?: string | null;
 } & React.TextareaHTMLAttributes<HTMLTextAreaElement>;
 
 export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
-  ({ label, className, id, ...props }, ref) => {
+  ({ label, error, className, id, ...props }, ref) => {
     const customId = useId();
     const textareaId = id || customId;
     return (
       <div className="flex flex-col gap-2">
-        {label && (
-          <label className="font-bold" htmlFor={textareaId}>
-            {label}
-          </label>
-        )}
+        <div className="flex items-baseline justify-between">
+          {label && (
+            <label className="font-bold" htmlFor={textareaId}>
+              {label}
+            </label>
+          )}
+          {error && (
+            <p className="error text-sm" role="alert">
+              {error}
+            </p>
+          )}
+        </div>
         <textarea
           id={textareaId}
           ref={ref}
@@ -127,20 +147,28 @@ TextArea.displayName = "TextArea";
 
 type SelectGroupProps = {
   label?: string;
+  error?: string | null;
   children?: ReactNode;
 } & React.SelectHTMLAttributes<HTMLSelectElement>;
 
 export const SelectGroup = forwardRef<HTMLSelectElement, SelectGroupProps>(
-  ({ label, children, className, id, ...props }, ref) => {
+  ({ label, error, children, className, id, ...props }, ref) => {
     const customId = useId();
     const selectId = id || customId;
     return (
       <div className="flex flex-col gap-2">
-        {label && (
-          <label className="font-bold" htmlFor={selectId}>
-            {label}
-          </label>
-        )}
+        <div className="flex items-baseline justify-between">
+          {label && (
+            <label className="font-bold" htmlFor={selectId}>
+              {label}
+            </label>
+          )}
+          {error && (
+            <p className="error text-sm" role="alert">
+              {error}
+            </p>
+          )}
+        </div>
         <select
           ref={ref}
           id={selectId}
