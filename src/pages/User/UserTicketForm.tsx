@@ -10,40 +10,65 @@ import {
 import { supabase } from "../../supabase/supabaseClient";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { generateTicketInfo } from "../../utils/ticketSamples";
-
-type Mode = "insert" | "update";
-type App = { id: string; name: string };
+import type { AppType } from "../../supabase/requiredTypes";
+import { useAuthContext } from "../../context/AuthContext";
 
 type SevEnum = "sev 5" | "sev 4" | "sev 3" | "sev 2" | "sev 1";
 
 export type TicketFormValues = {
-  application?: string;
-  severity?: SevEnum;
-  description?: string;
-  comments?: string;
+  application: string;
+  severity: SevEnum;
+  description: string;
+  comments: string;
 };
 
 export const UserTicketForm = () => {
   const {
     register,
+    reset,
     formState: { errors },
     setValue,
     handleSubmit,
-  } = useForm<TicketFormValues>();
+  } = useForm<TicketFormValues>({});
+
+  const { profile } = useAuthContext();
 
   const params = useParams();
-  const [mode, setMode] = useState<Mode>("insert");
-  const [apps, setApps] = useState<App[] | null>(null);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [apps, setApps] = useState<AppType[] | null>(null);
 
-  const output: SubmitHandler<TicketFormValues> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<TicketFormValues> = async (data) => {
+    try {
+      const { data: response, error: ticketError } = await supabase
+        .from("tickets")
+        .insert({
+          app_id: data.application,
+          severity: data.severity,
+          description: data.description,
+        })
+        .select();
+      if (ticketError) throw ticketError;
+
+      if (response && data.comments) {
+        const { error: commentError } = await supabase
+          .from("comments")
+          .insert({ content: data.comments, ticket_id: response[0].id });
+
+        if (commentError) throw commentError;
+      }
+
+      reset();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     const loadApps = async () => {
       const { data, error } = await supabase
         .from("apps")
         .select(`id,name`)
-        .order("name", { ascending: true })
-        .overrideTypes<App[], { merge: false }>();
+        .order("name", { ascending: true });
 
       if (error) return;
       setApps(data);
@@ -54,14 +79,14 @@ export const UserTicketForm = () => {
 
   useEffect(() => {
     const checkMode = () => {
-      if (params?.ticketId) setMode("update");
+      if (params?.ticketId) setIsDisabled(true);
     };
     checkMode();
   }, [params.ticketId]);
 
   return (
     <form
-      onSubmit={handleSubmit(output)}
+      onSubmit={handleSubmit(onSubmit)}
       className="px-24 py-20 flex flex-col relative"
     >
       <div className="grid grid-cols-3 gap-12">
@@ -75,21 +100,18 @@ export const UserTicketForm = () => {
           placeHolderText="----/--/-- --:--:--"
         ></DisplayBox>
 
-        <DisplayBox
-          title="Created by"
-          placeHolderText="Madhan Kumar"
-        ></DisplayBox>
+        <DisplayBox title="Created by">{profile?.name}</DisplayBox>
 
         <DisplayBox title="Status" placeHolderText="Open"></DisplayBox>
 
         <div className="flex flex-col gap-1">
           <SelectGroup
             error={errors.application ? errors.application.message : null}
-            disabled={mode === "update"}
             label="Application"
             id="application"
             {...register("application", {
               required: "Select an application",
+              disabled: isDisabled,
             })}
           >
             <option value="">Select Application</option>
@@ -126,11 +148,11 @@ export const UserTicketForm = () => {
           <Input
             error={errors.description ? errors.description.message : null}
             label="Description"
-            disabled={mode === "update"}
             id="description"
             type="text"
             {...register("description", {
               required: "Update a brief description about the issue",
+              disabled: isDisabled,
             })}
           />
         </div>
@@ -159,9 +181,14 @@ export const UserTicketForm = () => {
         onClick={() => {
           const result = generateTicketInfo();
 
-          setValue("description", result.description, { shouldValidate: true });
-          setValue("comments", result.comments, { shouldValidate: true });
-          setValue("severity", result.severity, { shouldValidate: true });
+          if (result.description)
+            setValue("description", result.description, {
+              shouldValidate: true,
+            });
+          if (result.comments)
+            setValue("comments", result.comments, { shouldValidate: true });
+          if (result.severity)
+            setValue("severity", result.severity, { shouldValidate: true });
         }}
       />
     </form>
