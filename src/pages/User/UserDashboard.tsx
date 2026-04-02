@@ -10,17 +10,16 @@ export const UserDashboard = () => {
         <div className="flex justify-between border rounded py-1 px-2 gap-2 border-neutral-500">
           <input className="outline-none" type="text" />
           <button type="button">
-            <Search strokeWidth={1} />
+            <Search strokeWidth={1} size={18} />
           </button>
         </div>
         <Button
+          label="Create Ticket"
           type="button"
           onClick={() => {
             navigate("/dashboard/user/ticket");
           }}
-        >
-          Create Ticket
-        </Button>
+        />
       </div>
     </>
   );

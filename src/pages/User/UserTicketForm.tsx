@@ -13,7 +13,7 @@ import { generateTicketInfo } from "../../utils/ticketSamples";
 import type { AppType } from "../../supabase/requiredTypes";
 import { useAuthContext } from "../../context/AuthContext";
 
-type SevEnum = "sev 5" | "sev 4" | "sev 3" | "sev 2" | "sev 1";
+export type SevEnum = "sev 5" | "sev 4" | "sev 3" | "sev 2" | "sev 1";
 
 export type TicketFormValues = {
   application: string;
@@ -26,10 +26,17 @@ export const UserTicketForm = () => {
   const {
     register,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     setValue,
     handleSubmit,
-  } = useForm<TicketFormValues>({});
+  } = useForm<TicketFormValues>({
+    defaultValues: {
+      application: "",
+      severity: "sev 5",
+      description: "",
+      comments: "",
+    },
+  });
 
   const { profile } = useAuthContext();
 
@@ -37,25 +44,18 @@ export const UserTicketForm = () => {
   const [isDisabled, setIsDisabled] = useState(false);
   const [apps, setApps] = useState<AppType[] | null>(null);
 
-  const onSubmit: SubmitHandler<TicketFormValues> = async (data) => {
+  const onSubmit: SubmitHandler<TicketFormValues> = async (formData) => {
     try {
-      const { data: response, error: ticketError } = await supabase
-        .from("tickets")
-        .insert({
-          app_id: data.application,
-          severity: data.severity,
-          description: data.description,
-        })
-        .select();
-      if (ticketError) throw ticketError;
+      const { data, error } = await supabase.rpc("create_ticket_for_user", {
+        p_application: formData.application,
+        p_severity: formData.severity,
+        p_description: formData.description,
+        p_comments: formData.comments,
+      });
 
-      if (response && data.comments) {
-        const { error: commentError } = await supabase
-          .from("comments")
-          .insert({ content: data.comments, ticket_id: response[0].id });
+      if (error || !data.success) throw error;
 
-        if (commentError) throw commentError;
-      }
+      console.log(data);
 
       reset();
     } catch (error) {
@@ -169,26 +169,25 @@ export const UserTicketForm = () => {
         </div>
       </div>
       <Button
-        label="Submit"
+        label={isSubmitting ? "Submitting..." : "Submit"}
         type="submit"
         className="w-60 py-3 text-xl mt-16 place-self-center"
+        disabled={isSubmitting}
       />
       <Button
         type="button"
         label="Use me"
         variant="faker"
         className="px-4 py-3 absolute right-24 bottom-20"
+        disabled={isSubmitting}
         onClick={() => {
           const result = generateTicketInfo();
 
-          if (result.description)
-            setValue("description", result.description, {
-              shouldValidate: true,
-            });
-          if (result.comments)
-            setValue("comments", result.comments, { shouldValidate: true });
-          if (result.severity)
-            setValue("severity", result.severity, { shouldValidate: true });
+          setValue("description", result.description, {
+            shouldValidate: true,
+          });
+          setValue("comments", result.comments, { shouldValidate: true });
+          setValue("severity", result.severity, { shouldValidate: true });
         }}
       />
     </form>

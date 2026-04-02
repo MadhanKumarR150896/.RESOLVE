@@ -13,30 +13,46 @@ export const useSupabaseAuth = () => {
       message: "Signing in ...",
     });
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
 
-    if (error) {
-      if (error.status === 500) {
-        showStatus({
-          type: "error",
-          message: "Unauthorized: Account is deactivated",
-        });
+      if (error) {
+        if (
+          error.status === 500 &&
+          error.message.includes("error granting user")
+        ) {
+          showStatus({
+            type: "error",
+            message: "Unauthorized: Account is deactivated",
+          });
+        } else if (error.status) {
+          showStatus({
+            type: "error",
+            message: error.message,
+          });
+        } else {
+          showStatus({
+            type: "error",
+            message: "Connection error occurred: Please check your network",
+          });
+        }
+
         return { success: false };
       }
+      if (data.session) return { success: true };
 
+      return { success: false };
+    } catch (err) {
       showStatus({
         type: "error",
-        message: "Invalid login credentials",
+        message:
+          err instanceof Error ? err.message : "An unexpected error occurred",
       });
       return { success: false };
     }
-
-    if (data.session) return { success: true };
-
-    return { success: false };
   };
 
   const supabaseSignout = async () => {

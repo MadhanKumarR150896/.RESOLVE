@@ -10,6 +10,7 @@ export const SigninForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { supabaseSignIn } = useSupabaseAuth();
   const { showStatus } = useAuthContext();
 
@@ -17,10 +18,13 @@ export const SigninForm = () => {
     e.preventDefault();
     setIsSubmitted(true);
     if (!email || !password || !email.endsWith("@resolve.com")) return;
+    setIsLoading(true);
     const result = await supabaseSignIn(email, password);
     if (result.success) {
       setIsSubmitted(false);
       showStatus({ type: "success", message: "Successfully signed in" });
+    } else {
+      setIsLoading(false);
     }
   };
 
@@ -79,7 +83,7 @@ export const SigninForm = () => {
           </button>
         </div>
       </fieldset>
-      <Button type="submit" className="w-full mt-4">
+      <Button type="submit" className="w-full mt-4" disabled={isLoading}>
         Sign in
       </Button>
     </form>
