@@ -30,6 +30,7 @@ const App = () => {
           <Route path="/dashboard/agent" element={<PageLayout />}>
             <Route index element={<AgentDashboard />} />
             <Route path="ticket" element={<AgentTicketForm />} />
+            <Route path="ticket/:ticketId" element={<AgentTicketForm />} />
           </Route>
         </Route>
         <Route path="*" element={<Navigate to="/signin" replace />} />
