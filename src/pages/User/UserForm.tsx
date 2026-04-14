@@ -13,11 +13,9 @@ import { generateTicketInfo } from "../../utils/ticketSamples";
 import type { AppType } from "../../supabase/requiredTypes";
 import { useAuthContext } from "../../context/AuthContext";
 
-export type SevEnum = "sev 5" | "sev 4" | "sev 3" | "sev 2" | "sev 1";
-
 export type TicketFormValues = {
   application: string;
-  severity: SevEnum;
+  severity: "sev 5" | "sev 4" | "sev 3" | "sev 2" | "sev 1";
   description: string;
   comments: string;
 };
@@ -56,7 +54,6 @@ export const UserForm = () => {
       if (error || !data.success) throw error;
 
       console.log(data);
-
       reset();
     } catch (error) {
       console.log(error);

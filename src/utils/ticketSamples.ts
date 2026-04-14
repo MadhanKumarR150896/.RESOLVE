@@ -1,9 +1,8 @@
-import { type TicketFormValues } from "../pages/User/UserTicketForm";
-
-const ticketSamples: Pick<
-  TicketFormValues,
-  "description" | "comments" | "severity"
->[] = [
+const ticketSamples: {
+  description: string;
+  comments: string;
+  severity: "sev 5" | "sev 4" | "sev 3" | "sev 2" | "sev 1";
+}[] = [
   {
     description: "500 Internal Server Error: /api/v1/login",
     comments:
@@ -69,11 +68,5 @@ const ticketSamples: Pick<
 export function generateTicketInfo() {
   const selected =
     ticketSamples[Math.floor(Math.random() * ticketSamples.length)];
-  return (
-    selected ?? {
-      description: "Description",
-      comments: "Comments",
-      severity: "sev 5",
-    }
-  );
+  return selected;
 }
