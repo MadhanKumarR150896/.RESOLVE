@@ -6,7 +6,7 @@ import type {
   SelectGroupProps,
   SpanProps,
   TextAreaProps,
-} from "./ReusableElements";
+} from "../../utils/ReusableElements";
 
 export type FieldProps = {
   name: "Span" | "Button" | "Input" | "SelectGroup" | "TextArea" | "Div";

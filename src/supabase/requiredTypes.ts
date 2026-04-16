@@ -9,16 +9,38 @@ export type ProfileType = Omit<Profiles, "created_at" | "is_active">;
 
 export type AppType = Omit<Apps, "created_at" | "is_active">;
 
-interface commentsProps {
+type comments = {
   comments: string;
   intComments: string;
-}
+};
 
-export interface FormValues extends commentsProps {
+export type FormValues = {
+  application: Tickets["app_id"];
+  severity: Tickets["severity"];
+  description: Tickets["description"];
+  status: Tickets["status"];
+  assignedTo: Tickets["assigned_to"];
+  isLocked: Tickets["is_locked"];
+  lockedBy: Tickets["locked_by"];
+} & comments;
+
+type history = {
+  content: Comments["content"];
+  createdAt: Comments["created_at"];
+  createdBy: { name: Profiles["name"] };
+  isInternal: Comments["is_internal"];
+};
+
+export type TicketDetails = {
+  ticketNumber: Tickets["ticket_number"];
+  createdAt: Tickets["created_at"];
+  createdBy: { name: Profiles["name"] };
   severity: Tickets["severity"];
   status: Tickets["status"];
-  application: string;
-  description: string;
-  assignedTo: string;
-  isLocked: boolean;
-}
+  application: { name: Tickets["app_id"] };
+  description: Tickets["description"];
+  assignedTo: { name: Profiles["name"] } | null;
+  isLocked: Tickets["is_locked"];
+  lockedBy: { name: Profiles["name"] } | null;
+  allHistory: history[];
+};

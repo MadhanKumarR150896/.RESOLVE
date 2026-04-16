@@ -3,7 +3,7 @@ import { useState, type SyntheticEvent } from "react";
 import { ErrorMessage } from "./ErrorMessage";
 import { useSupabaseAuth } from "../../supabase/supabaseAuth";
 import { useAuthContext } from "../../context/AuthContext";
-import { Button } from "../components/ReusableElements";
+import { Button } from "../../utils/ReusableElements";
 
 export const SigninForm = () => {
   const [showPassword, setShowPassword] = useState(false);

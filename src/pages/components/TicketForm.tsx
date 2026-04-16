@@ -17,7 +17,7 @@ import {
   type TextAreaProps,
   type SelectGroupProps,
   type DivProps,
-} from "./ReusableElements";
+} from "../../utils/ReusableElements";
 import { formConfig, type FieldProps } from "./formField";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -49,7 +49,11 @@ export const TicketForm = ({
     formState: { errors, isSubmitting },
     setValue,
     handleSubmit,
-  } = useForm<FormValues>();
+  } = useForm<FormValues>({
+    resetOptions: {
+      keepDirtyValues: true,
+    },
+  });
   const [intComView, setIntComView] = useState(false);
   const [intHisView, setHisComView] = useState(false);
   const config = profile?.role ? formConfig[profile.role] : null;
@@ -258,7 +262,7 @@ export const TicketForm = ({
                       field.grid,
                       profile?.role === "agent" && field.name === "TextArea"
                         ? display(field)
-                        : "",
+                        : ""
                     )}
                   >
                     <TextArea
@@ -279,7 +283,7 @@ export const TicketForm = ({
                       field.grid,
                       profile?.role === "agent" && field.name === "Div"
                         ? display(field)
-                        : "",
+                        : ""
                     )}
                   >
                     <Div {...(field.props as DivProps)}></Div>

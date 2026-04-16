@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import { Button, SearchBox } from "../components/ReusableElements";
+import { Button, SearchBox } from "../../utils/ReusableElements";
 
 export const AgentDashboard = () => {
   const navigate = useNavigate();

@@ -23,14 +23,14 @@ const App = () => {
           <Route path="/dashboard/user" element={<PageLayout />}>
             <Route index element={<UserDashboard />} />
             <Route path="ticket" element={<UserTicketForm />} />
-            <Route path="ticket/:ticketId" element={<UserTicketForm />} />
+            <Route path="ticket/:ticketNumber" element={<UserTicketForm />} />
           </Route>
         </Route>
         <Route element={<ProtectedRoute allowedRoles={["agent"]} />}>
           <Route path="/dashboard/agent" element={<PageLayout />}>
             <Route index element={<AgentDashboard />} />
             <Route path="ticket" element={<AgentTicketForm />} />
-            <Route path="ticket/:ticketId" element={<AgentTicketForm />} />
+            <Route path="ticket/:ticketNumber" element={<AgentTicketForm />} />
           </Route>
         </Route>
         <Route path="*" element={<Navigate to="/signin" replace />} />

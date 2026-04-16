@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const fetchProfile = async (profileId: string) => {
     const { data, error } = await supabase
       .from("profiles")
-      .select("id,name,email,role")
+      .select(`id,name,email,role`)
       .eq("id", profileId)
       .single();
     if (!error && data) {

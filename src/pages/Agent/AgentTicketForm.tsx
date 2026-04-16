@@ -3,12 +3,12 @@ import { useAuthContext } from "../../context/AuthContext";
 import { useGetApps } from "../../supabase/getApps";
 import { TicketForm } from "../components/TicketForm";
 import type { SubmitHandler } from "react-hook-form";
-import type { FormValues } from "../../supabase/requiredTypes";
+import type { FormValues, TicketDetails } from "../../supabase/requiredTypes";
 import { supabase } from "../../supabase/supabaseClient";
 
 export const AgentTicketForm = () => {
   const { profile } = useAuthContext();
-  const ticketId = useOutletContext<string | null>();
+  const ticketDetails = useOutletContext<TicketDetails | null>();
   const { Apps } = useGetApps();
 
   const createAgentTicket: SubmitHandler<FormValues> = async (formData) => {
@@ -32,16 +32,16 @@ export const AgentTicketForm = () => {
   };
 
   const updateUserTicket = () => {
-    console.log("agent update");
+    console.log(ticketDetails);
   };
 
   return (
     <TicketForm
-      onSubmit={ticketId ? updateUserTicket : createAgentTicket}
+      onSubmit={ticketDetails ? updateUserTicket : createAgentTicket}
       className="px-24 py-20 flex flex-col gap-14"
       profile={profile}
       apps={Apps}
-      mode={ticketId ? "update" : "create"}
+      mode={ticketDetails ? "update" : "create"}
     />
   );
 };
