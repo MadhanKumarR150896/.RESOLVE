@@ -1,15 +1,15 @@
-import { useOutletContext } from "react-router";
 import { useAuthContext } from "../../context/AuthContext";
 import { useGetApps } from "../../supabase/getApps";
 import { TicketForm } from "../components/TicketForm";
 import type { SubmitHandler } from "react-hook-form";
-import type { FormValues, TicketDetails } from "../../supabase/requiredTypes";
+import type { FormValues } from "../../supabase/requiredTypes";
 import { supabase } from "../../supabase/supabaseClient";
+import { useFetchTicket } from "../../supabase/fetchTicket";
 
 export const AgentTicketForm = () => {
   const { profile } = useAuthContext();
-  const ticketDetails = useOutletContext<TicketDetails | null>();
-  const { Apps } = useGetApps();
+  const { ticketDetails } = useFetchTicket();
+  const { apps } = useGetApps();
 
   const createAgentTicket: SubmitHandler<FormValues> = async (formData) => {
     try {
@@ -22,8 +22,6 @@ export const AgentTicketForm = () => {
       });
 
       if (error || !data.success) throw error;
-
-      console.log(data);
       return data.success;
     } catch (error) {
       console.log(error);
@@ -32,7 +30,7 @@ export const AgentTicketForm = () => {
   };
 
   const updateUserTicket = () => {
-    console.log(ticketDetails);
+    console.log("ticketDetails");
   };
 
   return (
@@ -40,7 +38,8 @@ export const AgentTicketForm = () => {
       onSubmit={ticketDetails ? updateUserTicket : createAgentTicket}
       className="px-24 py-20 flex flex-col gap-14"
       profile={profile}
-      apps={Apps}
+      values={ticketDetails}
+      apps={apps}
       mode={ticketDetails ? "update" : "create"}
     />
   );

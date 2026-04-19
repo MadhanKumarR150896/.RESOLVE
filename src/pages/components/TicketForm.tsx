@@ -3,6 +3,7 @@ import type {
   AppType,
   FormValues,
   ProfileType,
+  TicketDetails,
 } from "../../supabase/requiredTypes";
 import {
   Button,
@@ -30,15 +31,17 @@ function cn(...inputs: ClassValue[]) {
 
 type FormProps = {
   onSubmit: SubmitHandler<FormValues>;
-  profile?: ProfileType | null;
-  apps?: AppType[] | null;
-  mode?: "create" | "update";
+  profile: ProfileType | null;
+  values: TicketDetails | null;
+  apps: AppType[] | null;
+  mode: "create" | "update";
 } & Omit<React.FormHTMLAttributes<HTMLFormElement>, "onSubmit">;
 
 export const TicketForm = ({
   onSubmit,
   className,
   profile,
+  values,
   apps,
   mode,
   ...props
@@ -81,11 +84,26 @@ export const TicketForm = ({
     }
   };
 
-  const children = (field: FieldProps) => {
-    if (field.name === "Span") {
-      if (field.props.id === "createdBy" && mode === "create")
-        return profile?.name;
-      return "";
+  const fieldValues = (field: FieldProps, values: TicketDetails | null) => {
+    if (field.props.id === "createdBy" && mode === "create")
+      return profile?.name;
+    if (values) {
+      const value = values[field.props.id as keyof TicketDetails];
+      if (typeof value === "string") {
+        return value;
+      }
+
+      if (Array.isArray(value) && value.length > 0) {
+        return value.map((val, i) => (
+          <div key={`${val.isInternal}-${i}`} className="text-sm my-1">
+            <span>{val.content}</span>
+            <div className="text-xs text-neutral-500 mt-0.5">
+              <span>{new Date(val.createdAt).toLocaleString()} </span>
+              <span>/ {val.createdBy ? val.createdBy.name : ""}</span>
+            </div>
+          </div>
+        ));
+      }
     }
   };
 
@@ -126,10 +144,14 @@ export const TicketForm = ({
                   if (field.props.id === "assignedTo" && mode === "update")
                     return null;
                 }
+                if (field.props.id === "application" && mode === "create")
+                  return null;
+                if (field.props.id === "description" && mode === "create")
+                  return null;
                 return (
                   <div key={`${field.name}-${i}`} className={field.grid}>
                     <Span {...(field.props as SpanProps)}>
-                      {field.name === "Span" ? children(field) : ""}
+                      {fieldValues(field, values)}
                     </Span>
                   </div>
                 );
@@ -141,6 +163,8 @@ export const TicketForm = ({
                   field.props.id === "status" &&
                   mode === "create"
                 )
+                  return null;
+                if (field.props.id === "application" && mode === "update")
                   return null;
                 return (
                   <div key={`${field.name}-${i}`} className={field.grid}>
@@ -198,6 +222,8 @@ export const TicketForm = ({
                   field.props.id === "assignedTo" &&
                   mode === "create"
                 )
+                  return null;
+                if (field.props.id === "description" && mode === "update")
                   return null;
                 return (
                   <div key={`${field.name}-${i}`} className={field.grid}>
@@ -286,7 +312,9 @@ export const TicketForm = ({
                         : ""
                     )}
                   >
-                    <Div {...(field.props as DivProps)}></Div>
+                    <Div {...(field.props as DivProps)}>
+                      {fieldValues(field, values)}
+                    </Div>
                   </div>
                 );
               }
@@ -301,7 +329,7 @@ export const TicketForm = ({
                 return (
                   <div key={`${field.name}-${i}`} className={field.grid}>
                     <Span {...(field.props as SpanProps)}>
-                      {field.name === "Span" ? children(field) : ""}
+                      {fieldValues(field, values)}
                     </Span>
                   </div>
                 );

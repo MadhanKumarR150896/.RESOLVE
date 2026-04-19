@@ -1,15 +1,15 @@
-import { useOutletContext } from "react-router";
 import { useAuthContext } from "../../context/AuthContext";
 import { useGetApps } from "../../supabase/getApps";
 import { TicketForm } from "../components/TicketForm";
 import { type SubmitHandler } from "react-hook-form";
-import type { FormValues, TicketDetails } from "../../supabase/requiredTypes";
+import type { FormValues } from "../../supabase/requiredTypes";
 import { supabase } from "../../supabase/supabaseClient";
+import { useFetchTicket } from "../../supabase/fetchTicket";
 
 export const UserTicketForm = () => {
   const { profile } = useAuthContext();
-  const ticketDetails = useOutletContext<TicketDetails | null>();
-  const { Apps } = useGetApps();
+  const { ticketDetails } = useFetchTicket();
+  const { apps } = useGetApps();
 
   const createUserTicket: SubmitHandler<FormValues> = async (formData) => {
     try {
@@ -30,7 +30,7 @@ export const UserTicketForm = () => {
   };
 
   const updateUserTicket = () => {
-    console.log(ticketDetails);
+    console.log("ticketDetails");
   };
 
   return (
@@ -38,7 +38,8 @@ export const UserTicketForm = () => {
       onSubmit={ticketDetails ? updateUserTicket : createUserTicket}
       className="px-24 py-20 flex flex-col gap-12"
       profile={profile}
-      apps={Apps}
+      values={ticketDetails}
+      apps={apps}
       mode={ticketDetails ? "update" : "create"}
     />
   );

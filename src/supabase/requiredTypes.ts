@@ -34,13 +34,14 @@ type history = {
 export type TicketDetails = {
   ticketNumber: Tickets["ticket_number"];
   createdAt: Tickets["created_at"];
-  createdBy: { name: Profiles["name"] };
+  createdBy: Profiles["name"];
   severity: Tickets["severity"];
   status: Tickets["status"];
-  application: { name: Tickets["app_id"] };
+  application: Tickets["app_id"];
   description: Tickets["description"];
-  assignedTo: { name: Profiles["name"] } | null;
+  assignedTo: Profiles["name"] | null;
   isLocked: Tickets["is_locked"];
-  lockedBy: { name: Profiles["name"] } | null;
-  allHistory: history[];
+  lockedBy: Profiles["name"] | null;
+  history: history[];
+  intHistory: history[];
 };

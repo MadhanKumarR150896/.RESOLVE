@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }, 5000);
   }, []);
 
-  const fetchProfile = async (profileId: string) => {
+  const fetchProfile = useCallback(async (profileId: string) => {
     const { data, error } = await supabase
       .from("profiles")
       .select(`id,name,email,role`)
@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         role: data.role,
       });
     }
-  };
+  }, []);
 
   useEffect(() => {
     const loadSession = async () => {
@@ -105,7 +105,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       authLoading,
       showStatus,
     }),
-    [authStatus, setAuthStatus, session, profile, authLoading, showStatus],
+    [authStatus, setAuthStatus, session, profile, authLoading, showStatus]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

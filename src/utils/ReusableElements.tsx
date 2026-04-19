@@ -28,7 +28,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {label ? label : children}
       </button>
     );
-  },
+  }
 );
 
 export type SpanProps = {
@@ -52,7 +52,7 @@ export const Span = ({
         className={cn(
           "input h-12 flex items-center px-4",
           className,
-          !children ? "text-neutral-500" : "bg-neutral-200/50",
+          !children ? "text-neutral-500" : "bg-neutral-200/50"
         )}
       >
         <span className="w-full py-1 overflow-x-clip" {...props}>
@@ -80,7 +80,13 @@ export const Div = ({
   return (
     <div className="flex flex-col gap-2 w-full h-full">
       {label && <span className={cn("font-bold", labelClass)}>{label}</span>}
-      <div className={cn("input h-32 px-4 pbs-2 pbe-3", className)}>
+      <div
+        className={cn(
+          "input h-32 px-4 pbs-2 pbe-3",
+          className,
+          !children ? "text-neutral-500" : "bg-neutral-200/50"
+        )}
+      >
         <div
           className="h-full overflow-y-auto overflow-x-auto"
           style={{ scrollbarWidth: "none" }}
@@ -103,7 +109,7 @@ export type Inputprops = {
 export const Input = forwardRef<HTMLInputElement, Inputprops>(
   (
     { label, labelClass, error, errorClass, disabled, className, id, ...props },
-    ref,
+    ref
   ) => {
     const customId = useId();
     const inputId = id || customId;
@@ -130,13 +136,13 @@ export const Input = forwardRef<HTMLInputElement, Inputprops>(
           className={cn(
             "input h-12 px-4",
             disabled ? "bg-neutral-200/50" : "",
-            className,
+            className
           )}
           {...props}
         />
       </div>
     );
-  },
+  }
 );
 
 Input.displayName = "Input";
@@ -160,7 +166,7 @@ export const SearchBox = ({
     <div
       className={cn(
         "flex justify-between border rounded py-1 px-2 gap-2 border-neutral-500",
-        className,
+        className
       )}
     >
       <input
@@ -215,7 +221,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
         </div>
       </div>
     );
-  },
+  }
 );
 
 TextArea.displayName = "TextArea";
@@ -231,7 +237,7 @@ export type SelectGroupProps = {
 export const SelectGroup = forwardRef<HTMLSelectElement, SelectGroupProps>(
   (
     { label, labelClass, error, errorClass, children, className, id, ...props },
-    ref,
+    ref
   ) => {
     const customId = useId();
     const selectId = id || customId;
@@ -262,7 +268,7 @@ export const SelectGroup = forwardRef<HTMLSelectElement, SelectGroupProps>(
         </select>
       </div>
     );
-  },
+  }
 );
 
 SelectGroup.displayName = "SelectGroup";

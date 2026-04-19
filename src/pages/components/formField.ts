@@ -31,7 +31,6 @@ const commonFields: FieldProps[] = [
     props: {
       label: "Ticket Number",
       id: "ticketNumber",
-      placeHolderText: "#######",
     },
   },
   {
@@ -40,8 +39,7 @@ const commonFields: FieldProps[] = [
     grid: "row-1 col-2",
     props: {
       label: "Date and Time",
-      id: "dateAndTime",
-      placeHolderText: "----/--/-- --:--:--",
+      id: "createdAt",
     },
   },
   {
@@ -55,6 +53,12 @@ const commonFields: FieldProps[] = [
     group: "grid1",
     grid: "row-2 col-1",
     props: { label: "Status", id: "status", placeHolderText: "Open" },
+  },
+  {
+    name: "Span",
+    group: "grid1",
+    grid: "row-2 col-2",
+    props: { label: "Application", id: "application" },
   },
   {
     name: "SelectGroup",
@@ -120,11 +124,19 @@ const commonFields: FieldProps[] = [
   {
     name: "Span",
     group: "grid1",
+    grid: "row-3 col-span-2",
+    props: {
+      label: "Description",
+      id: "description",
+    },
+  },
+  {
+    name: "Span",
+    group: "grid1",
     grid: "row-3 col-3",
     props: {
       label: "Assigned to",
       id: "assignedTo",
-      placeHolderText: "Agent#",
     },
   },
   {
@@ -203,7 +215,6 @@ export const formConfig: Record<string, FieldProps[]> = {
         label: "Assigned to",
         id: "assignedTo",
         type: "text",
-        placeholder: "Agent#",
       },
     },
     {

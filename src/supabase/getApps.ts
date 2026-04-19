@@ -2,22 +2,30 @@ import { useEffect, useState } from "react";
 import type { AppType } from "./requiredTypes";
 import { supabase } from "./supabaseClient";
 
+const getApps = async () => {
+  const { data, error } = await supabase
+    .from("apps")
+    .select("id,name")
+    .order("name", { ascending: true });
+
+  if (error) throw error;
+  return data;
+};
+
 export const useGetApps = () => {
-  const [Apps, setApps] = useState<AppType[] | null>(null);
+  const [apps, setApps] = useState<AppType[] | null>(null);
 
   useEffect(() => {
-    const getApps = async () => {
-      const { data, error } = await supabase
-        .from("apps")
-        .select("id,name")
-        .order("name", { ascending: true });
-
-      if (error) return;
-      setApps(data);
-    };
-
-    getApps();
+    getApps()
+      .then((data) => {
+        if (!data || data.length === 0) {
+          setApps(null);
+        } else {
+          setApps(data);
+        }
+      })
+      .catch(() => setApps(null));
   }, []);
 
-  return { Apps };
+  return { apps };
 };
