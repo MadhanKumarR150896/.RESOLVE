@@ -317,15 +317,23 @@ export const formConfig: Record<string, FieldProps[]> = {
       },
     },
     {
+      name: "Input",
+      group: "grid2",
+      grid: "row-3 col-2 hidden",
+      props: {
+        id: "lockedBy",
+        type: "hidden",
+      },
+    },
+    {
       name: "Span",
       group: "grid2",
       grid: "row-3 col-2 justify-self-end mbs-auto mbe-2.5 me-10",
       props: {
-        id: "lockedBy",
+        id: "lockedName",
         className: "h-6 w-40 px-2 border-none text-sm",
       },
     },
-
     {
       name: "Input",
       group: "grid2",

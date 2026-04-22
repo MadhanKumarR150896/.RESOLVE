@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type {
   AppType,
   FormValues,
@@ -67,6 +67,21 @@ export const TicketForm = ({
   const config = profile?.role ? formConfig[profile.role] : null;
   const gridOne = config?.filter((field) => field.group === "grid1");
   const gridTwo = config?.filter((field) => field.group === "grid2");
+  const assigneeRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleAssigneeDrop = (e: MouseEvent) => {
+      if (
+        assigneeRef.current &&
+        !assigneeRef.current.contains(e.target as Node)
+      )
+        setAssignees([]);
+    };
+
+    document.addEventListener("mousedown", handleAssigneeDrop);
+
+    return () => document.removeEventListener("mousedown", handleAssigneeDrop);
+  }, []);
 
   useEffect(() => {
     if (isAssigned) return;
@@ -173,6 +188,7 @@ export const TicketForm = ({
       setValue("status", values.status);
       setValue("assignedTo", values.assignedTo);
       setValue("isLocked", values.isLocked);
+      setValue("lockedBy", values.lockedBy);
     }
   }, [values, mode, setValue]);
 
@@ -180,6 +196,13 @@ export const TicketForm = ({
     <form
       onSubmit={handleSubmit(handleonSubmit)}
       className={className}
+      onFocus={(e) => {
+        const tagName = e.target.tagName;
+        if (profile && ["INPUT", "SELECT", "TEXTAREA"].includes(tagName)) {
+          setValue("isLocked", true);
+          setValue("lockedBy", profile.id);
+        }
+      }}
       {...props}
     >
       {gridOne && gridOne.length > 0 && (
@@ -187,12 +210,19 @@ export const TicketForm = ({
           {gridOne?.map((field, i) => {
             switch (field.name) {
               case "Span": {
-                if (profile?.role === "agent") {
-                  if (field.props.id === "status" && mode === "update")
-                    return null;
-                  if (field.props.id === "assignedTo" && mode === "update")
-                    return null;
-                }
+                if (
+                  profile?.role === "agent" &&
+                  field.props.id === "status" &&
+                  mode === "update"
+                )
+                  return null;
+                if (
+                  profile?.role === "agent" &&
+                  field.props.id === "assignedTo" &&
+                  mode === "update"
+                )
+                  return null;
+
                 if (field.props.id === "application" && mode === "create")
                   return null;
                 if (field.props.id === "description" && mode === "create")
@@ -218,7 +248,6 @@ export const TicketForm = ({
                 return (
                   <div key={`${field.name}-${i}`} className={field.grid}>
                     <SelectGroup
-                      {...(field.props as SelectGroupProps)}
                       {...(field.props.id
                         ? register(field.props.id as keyof FormValues, {
                             required:
@@ -234,6 +263,7 @@ export const TicketForm = ({
                           ? errors[field.props.id as keyof FormValues]?.message
                           : null
                       }
+                      {...(field.props as SelectGroupProps)}
                     >
                       {field.options ? (
                         field.options?.map((option) => {
@@ -276,9 +306,12 @@ export const TicketForm = ({
                 if (field.props.id === "description" && mode === "update")
                   return null;
                 return (
-                  <div key={`${field.name}-${i}`} className={field.grid}>
+                  <div
+                    key={`${field.name}-${i}`}
+                    className={field.grid}
+                    ref={field.props.id === "assignedName" ? assigneeRef : null}
+                  >
                     <Input
-                      {...(field.props as Inputprops)}
                       {...(field.props.id !== "assignedName"
                         ? register(field.props.id as keyof FormValues, {
                             required:
@@ -293,30 +326,22 @@ export const TicketForm = ({
                           ? errors[field.props.id as keyof FormValues]?.message
                           : null
                       }
-                      value={
-                        field.props.id === "assignedName"
-                          ? values?.assignedName
-                            ? values.assignedName
-                            : assignee
-                          : undefined
-                      }
-                      onChange={
-                        field.props.id === "assignedName"
-                          ? (e) => {
+                      {...(field.props.id === "assignedName"
+                        ? {
+                            value: values?.assignedName
+                              ? values.assignedName
+                              : assignee,
+                            onChange: (e) => {
                               setAssignee(e.target.value);
                               setIsAssigned(false);
-                            }
-                          : undefined
-                      }
-                      disabled={
-                        field.props.id === "assignedName" &&
-                        values?.assignedName
-                          ? true
-                          : false
-                      }
+                            },
+                            disabled: values?.assignedName ? true : false,
+                          }
+                        : {})}
+                      {...(field.props as Inputprops)}
                     />
                     {assignees && assignees.length > 0 && (
-                      <div className="absolute border rounded w-full p-1 grid gap-1 z-10 bg-neutral-300">
+                      <div className="absolute border rounded max-h-30 overflow-y-auto w-full p-1 grid gap-1 z-10 bg-neutral-200">
                         {assignees.map((val, i) => (
                           <div
                             className="cursor-pointer border rounded px-1 py-0.5 bg-neutral-50"
@@ -352,7 +377,6 @@ export const TicketForm = ({
                 return (
                   <div key={`${field.name}-${i}`} className={field.grid}>
                     <Button
-                      {...(field.props as ButtonProps)}
                       label={
                         field.props.id === "Submit" && isSubmitting
                           ? "Submitting..."
@@ -366,6 +390,7 @@ export const TicketForm = ({
                             : undefined
                       }
                       disabled={isSubmitting}
+                      {...(field.props as ButtonProps)}
                     ></Button>
                   </div>
                 );
@@ -383,10 +408,10 @@ export const TicketForm = ({
                     )}
                   >
                     <TextArea
-                      {...(field.props as TextAreaProps)}
                       {...(field.props.id
                         ? register(field.props.id as keyof FormValues)
                         : {})}
+                      {...(field.props as TextAreaProps)}
                     />
                   </div>
                 );
@@ -436,10 +461,23 @@ export const TicketForm = ({
                 return (
                   <div key={`${field.name}-${i}`} className={field.grid}>
                     <Input
-                      {...(field.props as Inputprops)}
                       {...(field.props.id
-                        ? register(field.props.id as keyof FormValues)
+                        ? register(field.props.id as keyof FormValues, {
+                            disabled:
+                              field.props.id === "isLocked" && values?.isLocked,
+                            onChange:
+                              field.props.id === "isLocked"
+                                ? (event) => {
+                                    if (profile && event.target.checked) {
+                                      setValue("lockedBy", profile.id);
+                                    } else {
+                                      setValue("lockedBy", "");
+                                    }
+                                  }
+                                : undefined,
+                          })
                         : {})}
+                      {...(field.props as Inputprops)}
                     />
                   </div>
                 );

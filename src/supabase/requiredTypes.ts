@@ -42,7 +42,8 @@ export type TicketDetails = {
   assignedTo: Profiles["id"] | null;
   assignedName: Profiles["name"] | null;
   isLocked: Tickets["is_locked"];
-  lockedBy: Profiles["name"] | null;
+  lockedBy: Profiles["id"] | null;
+  lockedName: Profiles["name"] | null;
   history: history[];
   intHistory: history[];
 };

@@ -19,7 +19,8 @@ const fetchTicket = async (ticketNumber: string) => {
         assigned_to:profiles!assigned_to(id),
         assigned_name:profiles!assigned_to(name),
         is_locked,
-        locked_by:profiles!locked_by(name),
+        locked_by:profiles!locked_by(id),
+        locked_name:profiles!locked_by(name),
         allHistory:comments (
           content,
           createdAt:created_at,
@@ -43,7 +44,8 @@ const fetchTicket = async (ticketNumber: string) => {
       assignedTo: data.assigned_to ? data.assigned_to.id : "",
       assignedName: data.assigned_name ? data.assigned_name.name : "",
       isLocked: data.is_locked,
-      lockedBy: data.locked_by ? data.locked_by.name : "",
+      lockedBy: data.locked_by ? data.locked_by.id : "",
+      lockedName: data.locked_name ? data.locked_name.name : "",
       history: data.allHistory.filter((history) => !history.isInternal),
       intHistory: data.allHistory.filter((history) => history.isInternal),
     };
