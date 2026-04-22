@@ -89,7 +89,7 @@ export const Div = ({
       >
         <div
           className="h-full overflow-y-auto overflow-x-auto"
-          style={{ scrollbarWidth: "none" }}
+          style={{ scrollbarWidth: "thin" }}
           {...props}
         >
           {children ? children : placeHolderText}

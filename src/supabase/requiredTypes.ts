@@ -39,7 +39,8 @@ export type TicketDetails = {
   status: Tickets["status"];
   application: Tickets["app_id"];
   description: Tickets["description"];
-  assignedTo: Profiles["name"] | null;
+  assignedTo: Profiles["id"] | null;
+  assignedName: Profiles["name"] | null;
   isLocked: Tickets["is_locked"];
   lockedBy: Profiles["name"] | null;
   history: history[];

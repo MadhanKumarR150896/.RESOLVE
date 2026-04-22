@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type {
   AppType,
   FormValues,
@@ -24,10 +24,16 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { generateTicketInfo } from "../../utils/ticketSamples";
+import { supabase } from "../../supabase/supabaseClient";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+type Assignees = {
+  id: string;
+  name: string | null;
+};
 
 type FormProps = {
   onSubmit: SubmitHandler<FormValues>;
@@ -52,16 +58,41 @@ export const TicketForm = ({
     formState: { errors, isSubmitting },
     setValue,
     handleSubmit,
-  } = useForm<FormValues>({
-    resetOptions: {
-      keepDirtyValues: true,
-    },
-  });
+  } = useForm<FormValues>();
   const [intComView, setIntComView] = useState(false);
   const [intHisView, setHisComView] = useState(false);
+  const [assignee, setAssignee] = useState("");
+  const [isAssigned, setIsAssigned] = useState(false);
+  const [assignees, setAssignees] = useState<Assignees[]>([]);
   const config = profile?.role ? formConfig[profile.role] : null;
   const gridOne = config?.filter((field) => field.group === "grid1");
   const gridTwo = config?.filter((field) => field.group === "grid2");
+
+  useEffect(() => {
+    if (isAssigned) return;
+
+    let isStale = false;
+
+    const timeout = setTimeout(async () => {
+      if (assignee.length < 3) {
+        setAssignees([]);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id,name")
+        .eq("is_active", true)
+        .ilike("name", `%${assignee}%`);
+
+      if (!isStale && !error && data) setAssignees(data);
+    }, 400);
+
+    return () => {
+      clearTimeout(timeout);
+      isStale = true;
+    };
+  }, [assignee, isAssigned]);
 
   const toggleInternal = (field: FieldProps) => {
     if (field.target === "comments") {
@@ -87,6 +118,13 @@ export const TicketForm = ({
   const fieldValues = (field: FieldProps, values: TicketDetails | null) => {
     if (field.props.id === "createdBy" && mode === "create")
       return profile?.name;
+    if (
+      field.props.id === "assignedTo" &&
+      mode === "update" &&
+      !values?.assignedTo
+    )
+      return "NA";
+
     if (values) {
       const value = values[field.props.id as keyof TicketDetails];
       if (typeof value === "string") {
@@ -113,7 +151,9 @@ export const TicketForm = ({
     setValue("description", result.description, {
       shouldValidate: true,
     });
-    setValue("severity", result.severity);
+    setValue("severity", result.severity, {
+      shouldValidate: true,
+    });
     setValue("comments", result.comments);
     setValue("intComments", "Internal Comments");
   };
@@ -126,6 +166,15 @@ export const TicketForm = ({
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    if (values && mode === "update") {
+      setValue("severity", values.severity);
+      setValue("status", values.status);
+      setValue("assignedTo", values.assignedTo);
+      setValue("isLocked", values.isLocked);
+    }
+  }, [values, mode, setValue]);
 
   return (
     <form
@@ -169,10 +218,12 @@ export const TicketForm = ({
                 return (
                   <div key={`${field.name}-${i}`} className={field.grid}>
                     <SelectGroup
+                      {...(field.props as SelectGroupProps)}
                       {...(field.props.id
                         ? register(field.props.id as keyof FormValues, {
                             required:
-                              field.props.id === "application"
+                              field.props.id === "application" ||
+                              field.props.id === "severity"
                                 ? "*required"
                                 : false,
                           })
@@ -183,7 +234,6 @@ export const TicketForm = ({
                           ? errors[field.props.id as keyof FormValues]?.message
                           : null
                       }
-                      {...(field.props as SelectGroupProps)}
                     >
                       {field.options ? (
                         field.options?.map((option) => {
@@ -228,7 +278,8 @@ export const TicketForm = ({
                 return (
                   <div key={`${field.name}-${i}`} className={field.grid}>
                     <Input
-                      {...(field.props.id
+                      {...(field.props as Inputprops)}
+                      {...(field.props.id !== "assignedName"
                         ? register(field.props.id as keyof FormValues, {
                             required:
                               field.props.id === "description"
@@ -242,8 +293,48 @@ export const TicketForm = ({
                           ? errors[field.props.id as keyof FormValues]?.message
                           : null
                       }
-                      {...(field.props as Inputprops)}
+                      value={
+                        field.props.id === "assignedName"
+                          ? values?.assignedName
+                            ? values.assignedName
+                            : assignee
+                          : undefined
+                      }
+                      onChange={
+                        field.props.id === "assignedName"
+                          ? (e) => {
+                              setAssignee(e.target.value);
+                              setIsAssigned(false);
+                            }
+                          : undefined
+                      }
+                      disabled={
+                        field.props.id === "assignedName" &&
+                        values?.assignedName
+                          ? true
+                          : false
+                      }
                     />
+                    {assignees && assignees.length > 0 && (
+                      <div className="absolute border rounded w-full p-1 grid gap-1 z-10 bg-neutral-300">
+                        {assignees.map((val, i) => (
+                          <div
+                            className="cursor-pointer border rounded px-1 py-0.5 bg-neutral-50"
+                            key={`${val.id}-${i}`}
+                            onClick={() => {
+                              if (val.name) {
+                                setValue("assignedTo", val.id);
+                                setAssignee(val.name);
+                                setIsAssigned(true);
+                                setAssignees([]);
+                              }
+                            }}
+                          >
+                            {val.name}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 );
               }
@@ -261,6 +352,7 @@ export const TicketForm = ({
                 return (
                   <div key={`${field.name}-${i}`} className={field.grid}>
                     <Button
+                      {...(field.props as ButtonProps)}
                       label={
                         field.props.id === "Submit" && isSubmitting
                           ? "Submitting..."
@@ -274,7 +366,6 @@ export const TicketForm = ({
                             : undefined
                       }
                       disabled={isSubmitting}
-                      {...(field.props as ButtonProps)}
                     ></Button>
                   </div>
                 );
@@ -292,10 +383,10 @@ export const TicketForm = ({
                     )}
                   >
                     <TextArea
+                      {...(field.props as TextAreaProps)}
                       {...(field.props.id
                         ? register(field.props.id as keyof FormValues)
                         : {})}
-                      {...(field.props as TextAreaProps)}
                     />
                   </div>
                 );
@@ -345,10 +436,10 @@ export const TicketForm = ({
                 return (
                   <div key={`${field.name}-${i}`} className={field.grid}>
                     <Input
+                      {...(field.props as Inputprops)}
                       {...(field.props.id
                         ? register(field.props.id as keyof FormValues)
                         : {})}
-                      {...(field.props as Inputprops)}
                     />
                   </div>
                 );

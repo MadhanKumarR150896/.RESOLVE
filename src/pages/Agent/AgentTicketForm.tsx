@@ -29,13 +29,13 @@ export const AgentTicketForm = () => {
     }
   };
 
-  const updateUserTicket = () => {
-    console.log("ticketDetails");
+  const updateAgentTicket: SubmitHandler<FormValues> = (formData) => {
+    console.log(formData);
   };
 
   return (
     <TicketForm
-      onSubmit={ticketDetails ? updateUserTicket : createAgentTicket}
+      onSubmit={ticketDetails ? updateAgentTicket : createAgentTicket}
       className="px-24 py-20 flex flex-col gap-14"
       profile={profile}
       values={ticketDetails}

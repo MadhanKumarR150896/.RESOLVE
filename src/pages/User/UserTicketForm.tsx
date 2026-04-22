@@ -29,8 +29,8 @@ export const UserTicketForm = () => {
     }
   };
 
-  const updateUserTicket = () => {
-    console.log("ticketDetails");
+  const updateUserTicket: SubmitHandler<FormValues> = (formData) => {
+    console.log(formData);
   };
 
   return (

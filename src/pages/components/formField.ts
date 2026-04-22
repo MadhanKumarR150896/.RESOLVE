@@ -75,6 +75,12 @@ const commonFields: FieldProps[] = [
     grid: "row-2 col-3",
     options: [
       {
+        drop: "Select Severity",
+        props: {
+          value: "",
+        },
+      },
+      {
         drop: "Sev 5 (Minor)",
         props: {
           value: "sev 5",
@@ -210,10 +216,19 @@ export const formConfig: Record<string, FieldProps[]> = {
     {
       name: "Input",
       group: "grid1",
-      grid: "row-3 col-3",
+      grid: "row-3 col-3 hidden",
+      props: {
+        id: "assignedTo",
+        type: "hidden",
+      },
+    },
+    {
+      name: "Input",
+      group: "grid1",
+      grid: "row-3 col-3 relative",
       props: {
         label: "Assigned to",
-        id: "assignedTo",
+        id: "assignedName",
         type: "text",
       },
     },
