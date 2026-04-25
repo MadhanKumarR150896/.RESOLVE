@@ -34,6 +34,15 @@ const commonFields: FieldProps[] = [
     },
   },
   {
+    name: "Input",
+    group: "grid1",
+    grid: "row-1 col-1 hidden",
+    props: {
+      id: "ticketId",
+      type: "hidden",
+    },
+  },
+  {
     name: "Span",
     group: "grid1",
     grid: "row-1 col-2",
@@ -142,7 +151,16 @@ const commonFields: FieldProps[] = [
     grid: "row-3 col-3",
     props: {
       label: "Assigned to",
-      id: "assignedTo",
+      id: "assignedName",
+    },
+  },
+  {
+    name: "Span",
+    group: "grid2",
+    grid: "row-3 col-1 w-45 mbs-auto mbe-2.5",
+    props: {
+      id: "lockedName",
+      className: "h-6 border-none text-sm rounded",
     },
   },
   {
@@ -323,15 +341,6 @@ export const formConfig: Record<string, FieldProps[]> = {
       props: {
         id: "lockedBy",
         type: "hidden",
-      },
-    },
-    {
-      name: "Span",
-      group: "grid2",
-      grid: "row-3 col-2 justify-self-end mbs-auto mbe-2.5 me-10",
-      props: {
-        id: "lockedName",
-        className: "h-6 w-40 px-2 border-none text-sm",
       },
     },
     {

@@ -9,6 +9,7 @@ import { UserDashboard } from "./pages/User/UserDashboard";
 import { UserTicketForm } from "./pages/User/UserTicketForm";
 import { AgentTicketForm } from "./pages/Agent/AgentTicketForm";
 import { Navigate } from "react-router";
+import { TicketRoute } from "./GuardRoutes/TicketRoute";
 
 const App = () => {
   return (
@@ -23,14 +24,21 @@ const App = () => {
           <Route path="/dashboard/user" element={<PageLayout />}>
             <Route index element={<UserDashboard />} />
             <Route path="ticket" element={<UserTicketForm />} />
-            <Route path="ticket/:ticketNumber" element={<UserTicketForm />} />
+            <Route element={<TicketRoute />}>
+              <Route path="ticket/:ticketNumber" element={<UserTicketForm />} />
+            </Route>
           </Route>
         </Route>
         <Route element={<ProtectedRoute allowedRoles={["agent"]} />}>
           <Route path="/dashboard/agent" element={<PageLayout />}>
             <Route index element={<AgentDashboard />} />
             <Route path="ticket" element={<AgentTicketForm />} />
-            <Route path="ticket/:ticketNumber" element={<AgentTicketForm />} />
+            <Route element={<TicketRoute />}>
+              <Route
+                path="ticket/:ticketNumber"
+                element={<AgentTicketForm />}
+              />
+            </Route>
           </Route>
         </Route>
         <Route path="*" element={<Navigate to="/signin" replace />} />

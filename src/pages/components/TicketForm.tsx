@@ -22,7 +22,7 @@ import {
 import { formConfig, type FieldProps } from "./formField";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { useForm, type SubmitHandler } from "react-hook-form";
+import { useForm, useWatch, type SubmitHandler } from "react-hook-form";
 import { generateTicketInfo } from "../../utils/ticketSamples";
 import { supabase } from "../../supabase/supabaseClient";
 
@@ -57,6 +57,7 @@ export const TicketForm = ({
     reset,
     formState: { errors, isSubmitting },
     setValue,
+    control,
     handleSubmit,
   } = useForm<FormValues>();
   const [intComView, setIntComView] = useState(false);
@@ -68,6 +69,17 @@ export const TicketForm = ({
   const gridOne = config?.filter((field) => field.group === "grid1");
   const gridTwo = config?.filter((field) => field.group === "grid2");
   const assigneeRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (values && mode === "update") {
+      setValue("ticketId", values.ticketId);
+      setValue("severity", values.severity);
+      setValue("status", values.status);
+      setValue("assignedTo", values.assignedTo);
+      setValue("isLocked", values.isLocked);
+      setValue("lockedBy", values.lockedBy);
+    }
+  }, [values, mode, setValue]);
 
   useEffect(() => {
     const handleAssigneeDrop = (e: MouseEvent) => {
@@ -133,16 +145,25 @@ export const TicketForm = ({
   const fieldValues = (field: FieldProps, values: TicketDetails | null) => {
     if (field.props.id === "createdBy" && mode === "create")
       return profile?.name;
+
     if (
-      field.props.id === "assignedTo" &&
+      field.props.id === "assignedName" &&
       mode === "update" &&
       !values?.assignedTo
     )
       return "NA";
 
+    if (
+      field.props.id === "lockedName" &&
+      mode === "update" &&
+      !values?.lockedName
+    )
+      return `Locked by: ${profile?.name}`;
+
     if (values) {
       const value = values[field.props.id as keyof TicketDetails];
       if (typeof value === "string") {
+        if (field.props.id === "lockedName") return `Locked by: ${value}`;
         return value;
       }
 
@@ -173,32 +194,39 @@ export const TicketForm = ({
     setValue("intComments", "Internal Comments");
   };
 
+  const ticketLocked = values?.isLocked && values?.lockedBy !== profile?.id;
+  const assigneeLocked = values?.assignedTo !== null;
+  const lockedSpan = useWatch({
+    control,
+    name: "isLocked",
+    defaultValue: false,
+  });
+
   const handleonSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
       const response = await onSubmit(data);
-      if (response) reset();
+      if (response) {
+        if (mode === "create") reset();
+        if (mode === "update") console.log(response);
+      }
     } catch (error) {
       console.log(error);
     }
   };
-
-  useEffect(() => {
-    if (values && mode === "update") {
-      setValue("severity", values.severity);
-      setValue("status", values.status);
-      setValue("assignedTo", values.assignedTo);
-      setValue("isLocked", values.isLocked);
-      setValue("lockedBy", values.lockedBy);
-    }
-  }, [values, mode, setValue]);
 
   return (
     <form
       onSubmit={handleSubmit(handleonSubmit)}
       className={className}
       onFocus={(e) => {
-        const tagName = e.target.tagName;
+        const tag = e.target as HTMLElement;
+        const tagName = tag.tagName;
         if (profile && ["INPUT", "SELECT", "TEXTAREA"].includes(tagName)) {
+          if (
+            tagName === "INPUT" &&
+            (tag as HTMLInputElement).type === "checkbox"
+          )
+            return;
           setValue("isLocked", true);
           setValue("lockedBy", profile.id);
         }
@@ -218,7 +246,7 @@ export const TicketForm = ({
                   return null;
                 if (
                   profile?.role === "agent" &&
-                  field.props.id === "assignedTo" &&
+                  field.props.id === "assignedName" &&
                   mode === "update"
                 )
                   return null;
@@ -255,6 +283,7 @@ export const TicketForm = ({
                               field.props.id === "severity"
                                 ? "*required"
                                 : false,
+                            disabled: ticketLocked,
                           })
                         : {})}
                       error={
@@ -299,7 +328,7 @@ export const TicketForm = ({
               case "Input": {
                 if (
                   profile?.role === "agent" &&
-                  field.props.id === "assignedTo" &&
+                  field.props.id === "assignedName" &&
                   mode === "create"
                 )
                   return null;
@@ -318,6 +347,7 @@ export const TicketForm = ({
                               field.props.id === "description"
                                 ? "*required"
                                 : false,
+                            disabled: ticketLocked,
                           })
                         : {})}
                       error={
@@ -335,7 +365,7 @@ export const TicketForm = ({
                               setAssignee(e.target.value);
                               setIsAssigned(false);
                             },
-                            disabled: values?.assignedName ? true : false,
+                            disabled: ticketLocked || assigneeLocked,
                           }
                         : {})}
                       {...(field.props as Inputprops)}
@@ -377,11 +407,6 @@ export const TicketForm = ({
                 return (
                   <div key={`${field.name}-${i}`} className={field.grid}>
                     <Button
-                      label={
-                        field.props.id === "Submit" && isSubmitting
-                          ? "Submitting..."
-                          : "Submit"
-                      }
                       onClick={
                         profile?.role === "agent" && field.target
                           ? () => toggleInternal(field)
@@ -389,7 +414,10 @@ export const TicketForm = ({
                             ? fakerValues
                             : undefined
                       }
-                      disabled={isSubmitting}
+                      disabled={
+                        isSubmitting ||
+                        (field.props.id === "submit" && ticketLocked)
+                      }
                       {...(field.props as ButtonProps)}
                     ></Button>
                   </div>
@@ -409,7 +437,9 @@ export const TicketForm = ({
                   >
                     <TextArea
                       {...(field.props.id
-                        ? register(field.props.id as keyof FormValues)
+                        ? register(field.props.id as keyof FormValues, {
+                            disabled: ticketLocked,
+                          })
                         : {})}
                       {...(field.props as TextAreaProps)}
                     />
@@ -436,17 +466,15 @@ export const TicketForm = ({
               }
 
               case "Span": {
-                if (
-                  profile?.role === "agent" &&
-                  field.props.id === "lockedBy" &&
-                  mode === "create"
-                )
+                if (field.props.id === "lockedName" && mode === "create")
                   return null;
                 return (
                   <div key={`${field.name}-${i}`} className={field.grid}>
-                    <Span {...(field.props as SpanProps)}>
-                      {fieldValues(field, values)}
-                    </Span>
+                    {lockedSpan && (
+                      <Span {...(field.props as SpanProps)}>
+                        {fieldValues(field, values)}
+                      </Span>
+                    )}
                   </div>
                 );
               }
@@ -463,15 +491,14 @@ export const TicketForm = ({
                     <Input
                       {...(field.props.id
                         ? register(field.props.id as keyof FormValues, {
-                            disabled:
-                              field.props.id === "isLocked" && values?.isLocked,
+                            disabled: ticketLocked,
                             onChange:
                               field.props.id === "isLocked"
                                 ? (event) => {
                                     if (profile && event.target.checked) {
                                       setValue("lockedBy", profile.id);
                                     } else {
-                                      setValue("lockedBy", "");
+                                      setValue("lockedBy", null);
                                     }
                                   }
                                 : undefined,

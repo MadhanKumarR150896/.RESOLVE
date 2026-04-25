@@ -15,6 +15,7 @@ type comments = {
 };
 
 export type FormValues = {
+  ticketId: Tickets["id"];
   application: Tickets["app_id"];
   severity: Tickets["severity"];
   description: Tickets["description"];
@@ -32,6 +33,7 @@ type history = {
 };
 
 export type TicketDetails = {
+  ticketId: Tickets["id"];
   ticketNumber: Tickets["ticket_number"];
   createdAt: Tickets["created_at"];
   createdBy: Profiles["name"];

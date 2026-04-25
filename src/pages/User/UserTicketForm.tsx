@@ -5,11 +5,14 @@ import { type SubmitHandler } from "react-hook-form";
 import type { FormValues } from "../../supabase/requiredTypes";
 import { supabase } from "../../supabase/supabaseClient";
 import { useFetchTicket } from "../../supabase/fetchTicket";
+import { useParams } from "react-router";
+import { Spinner } from "../../utils/Spinner";
 
 export const UserTicketForm = () => {
   const { profile } = useAuthContext();
-  const { ticketDetails } = useFetchTicket();
+  const { ticketDetails, isLoading } = useFetchTicket();
   const { apps } = useGetApps();
+  const { ticketNumber } = useParams();
 
   const createUserTicket: SubmitHandler<FormValues> = async (formData) => {
     try {
@@ -21,7 +24,6 @@ export const UserTicketForm = () => {
       });
 
       if (error || !data.success) throw error;
-      console.log(data);
       return data.success;
     } catch (error) {
       console.log(error);
@@ -33,14 +35,16 @@ export const UserTicketForm = () => {
     console.log(formData);
   };
 
+  if (ticketNumber && isLoading) return <Spinner />;
+
   return (
     <TicketForm
-      onSubmit={ticketDetails ? updateUserTicket : createUserTicket}
+      onSubmit={ticketNumber ? updateUserTicket : createUserTicket}
       className="px-24 py-20 flex flex-col gap-12"
       profile={profile}
       values={ticketDetails}
       apps={apps}
-      mode={ticketDetails ? "update" : "create"}
+      mode={ticketNumber ? "update" : "create"}
     />
   );
 };

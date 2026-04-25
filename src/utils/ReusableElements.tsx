@@ -22,9 +22,17 @@ const variants: Record<ButtonVariant, string> = {
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ label, children, variant = "black", className, ...props }, ref) => {
+  (
+    { label, children, variant = "black", className, disabled, ...props },
+    ref
+  ) => {
     return (
-      <button ref={ref} className={cn(variants[variant], className)} {...props}>
+      <button
+        disabled={disabled}
+        ref={ref}
+        className={cn(variants[variant], className)}
+        {...props}
+      >
         {label ? label : children}
       </button>
     );
@@ -52,7 +60,7 @@ export const Span = ({
         className={cn(
           "input h-12 flex items-center px-4",
           className,
-          !children ? "text-neutral-500" : "bg-neutral-200/50"
+          children ? "bg-neutral-200/50" : ""
         )}
       >
         <span className="w-full py-1 overflow-x-clip" {...props}>
@@ -84,7 +92,7 @@ export const Div = ({
         className={cn(
           "input h-32 px-4 pbs-2 pbe-3",
           className,
-          !children ? "text-neutral-500" : "bg-neutral-200/50"
+          children ? "bg-neutral-200/50" : ""
         )}
       >
         <div
@@ -188,7 +196,10 @@ export type TextAreaProps = {
 } & React.TextareaHTMLAttributes<HTMLTextAreaElement>;
 
 export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
-  ({ label, labelClass, error, errorClass, className, id, ...props }, ref) => {
+  (
+    { label, labelClass, error, errorClass, className, id, disabled, ...props },
+    ref
+  ) => {
     const customId = useId();
     const textareaId = id || customId;
     return (
@@ -210,12 +221,19 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
             )}
           </div>
         )}
-        <div className={cn("input h-32 px-4 pbs-2 pbe-3", className)}>
+        <div
+          className={cn(
+            "input h-32 px-4 pbs-2 pbe-3",
+            className,
+            disabled ? "bg-neutral-200/50" : ""
+          )}
+        >
           <textarea
             className="h-full w-full outline-none resize-none"
             style={{ scrollbarWidth: "none" }}
             id={textareaId}
             ref={ref}
+            disabled={disabled}
             {...props}
           ></textarea>
         </div>
@@ -236,7 +254,17 @@ export type SelectGroupProps = {
 
 export const SelectGroup = forwardRef<HTMLSelectElement, SelectGroupProps>(
   (
-    { label, labelClass, error, errorClass, children, className, id, ...props },
+    {
+      label,
+      labelClass,
+      error,
+      errorClass,
+      children,
+      className,
+      id,
+      disabled,
+      ...props
+    },
     ref
   ) => {
     const customId = useId();
@@ -260,8 +288,13 @@ export const SelectGroup = forwardRef<HTMLSelectElement, SelectGroupProps>(
 
         <select
           ref={ref}
+          disabled={disabled}
           id={selectId}
-          className={cn("input h-12", className)}
+          className={cn(
+            "input h-12",
+            className,
+            disabled ? "bg-neutral-200/50" : ""
+          )}
           {...props}
         >
           {children}

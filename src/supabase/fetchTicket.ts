@@ -7,7 +7,8 @@ const fetchTicket = async (ticketNumber: string) => {
   const { data, error } = await supabase
     .from("tickets")
     .select(
-      `ticket_number,
+      `id,
+        ticket_number,
         created_at,
         created_by:profiles!created_by(name),
         status,
@@ -34,6 +35,7 @@ const fetchTicket = async (ticketNumber: string) => {
 
   if (!error && data)
     return {
+      ticketId: data.id,
       ticketNumber: data.ticket_number,
       createdAt: new Date(data.created_at).toDateString(),
       createdBy: data.created_by.name,
@@ -41,11 +43,11 @@ const fetchTicket = async (ticketNumber: string) => {
       application: data.app.name,
       severity: data.severity,
       description: data.description,
-      assignedTo: data.assigned_to ? data.assigned_to.id : "",
-      assignedName: data.assigned_name ? data.assigned_name.name : "",
+      assignedTo: data.assigned_to ? data.assigned_to.id : null,
+      assignedName: data.assigned_name ? data.assigned_name.name : null,
       isLocked: data.is_locked,
-      lockedBy: data.locked_by ? data.locked_by.id : "",
-      lockedName: data.locked_name ? data.locked_name.name : "",
+      lockedBy: data.locked_by ? data.locked_by.id : null,
+      lockedName: data.locked_name ? data.locked_name.name : null,
       history: data.allHistory.filter((history) => !history.isInternal),
       intHistory: data.allHistory.filter((history) => history.isInternal),
     };
@@ -55,6 +57,7 @@ export const useFetchTicket = () => {
   const [ticketDetails, setTicketDetails] = useState<TicketDetails | null>(
     null
   );
+  const [isLoading, setIsLoading] = useState(true);
 
   const { ticketNumber } = useParams();
 
@@ -69,14 +72,17 @@ export const useFetchTicket = () => {
         } else {
           setTicketDetails(null);
         }
+
+        setIsLoading(false);
       } catch (error) {
         console.log(error);
         setTicketDetails(null);
+        setIsLoading(false);
       }
     };
 
     fetchTicketDetails();
   }, [ticketNumber]);
 
-  return { ticketDetails };
+  return { ticketDetails, isLoading };
 };
