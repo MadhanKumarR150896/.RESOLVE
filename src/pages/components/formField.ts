@@ -90,31 +90,31 @@ const commonFields: FieldProps[] = [
         },
       },
       {
-        drop: "Sev 5 (Minor)",
+        drop: "sev 5 (Minor)",
         props: {
           value: "sev 5",
         },
       },
       {
-        drop: "Sev 4 (Low)",
+        drop: "sev 4 (Low)",
         props: {
           value: "sev 4",
         },
       },
       {
-        drop: "Sev 3 (Medium)",
+        drop: "sev 3 (Medium)",
         props: {
           value: "sev 3",
         },
       },
       {
-        drop: "Sev 2 (High)",
+        drop: "sev 2 (High)",
         props: {
           value: "sev 2",
         },
       },
       {
-        drop: "Sev 1 (Critical)",
+        drop: "sev 1 (Critical)",
         props: {
           value: "sev 1",
         },
@@ -216,15 +216,15 @@ export const formConfig: Record<string, FieldProps[]> = {
       grid: "row-2 col-1",
       options: [
         {
-          drop: "Open",
+          drop: "open",
           props: {
             value: "open",
           },
         },
-        { drop: "Active", props: { value: "active" } },
-        { drop: "Deferred", props: { value: "deferred" } },
-        { drop: "Resolved", props: { value: "resolved" } },
-        { drop: "Closed", props: { value: "closed" } },
+        { drop: "active", props: { value: "active" } },
+        { drop: "deferred", props: { value: "deferred" } },
+        { drop: "resolved", props: { value: "resolved" } },
+        { drop: "closed", props: { value: "closed" } },
       ],
       props: {
         label: "Status",

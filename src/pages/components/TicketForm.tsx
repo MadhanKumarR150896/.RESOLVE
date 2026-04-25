@@ -221,7 +221,11 @@ export const TicketForm = ({
       onFocus={(e) => {
         const tag = e.target as HTMLElement;
         const tagName = tag.tagName;
-        if (profile && ["INPUT", "SELECT", "TEXTAREA"].includes(tagName)) {
+        if (
+          profile &&
+          profile.role === "agent" &&
+          ["INPUT", "SELECT", "TEXTAREA"].includes(tagName)
+        ) {
           if (
             tagName === "INPUT" &&
             (tag as HTMLInputElement).type === "checkbox"
@@ -333,6 +337,8 @@ export const TicketForm = ({
                 )
                   return null;
                 if (field.props.id === "description" && mode === "update")
+                  return null;
+                if (field.props.id === "ticketId" && mode === "create")
                   return null;
                 return (
                   <div
@@ -486,6 +492,7 @@ export const TicketForm = ({
                   mode === "create"
                 )
                   return null;
+
                 return (
                   <div key={`${field.name}-${i}`} className={field.grid}>
                     <Input

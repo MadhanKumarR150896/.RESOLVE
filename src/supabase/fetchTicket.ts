@@ -31,6 +31,7 @@ const fetchTicket = async (ticketNumber: string) => {
         `
     )
     .eq("ticket_number", ticketNumber)
+    .order("created_at", { referencedTable: "comments", ascending: false })
     .single();
 
   if (!error && data)

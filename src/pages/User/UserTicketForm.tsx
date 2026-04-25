@@ -31,8 +31,21 @@ export const UserTicketForm = () => {
     }
   };
 
-  const updateUserTicket: SubmitHandler<FormValues> = (formData) => {
-    console.log(formData);
+  const updateUserTicket: SubmitHandler<FormValues> = async (formData) => {
+    try {
+      const { data, error } = await supabase.rpc("update_ticket_for_user", {
+        p_ticketid: formData.ticketId,
+        p_severity: formData.severity,
+        p_comments: formData.comments,
+      });
+
+      console.log(data);
+      if (error || !data.success) throw error;
+      return data.success;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   };
 
   if (ticketNumber && isLoading) return <Spinner />;
