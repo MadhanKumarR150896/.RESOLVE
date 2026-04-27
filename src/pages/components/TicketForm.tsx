@@ -39,6 +39,7 @@ type FormProps = {
   onSubmit: SubmitHandler<FormValues>;
   profile: ProfileType | null;
   values: TicketDetails | null;
+  reFetchTicket: () => Promise<void>;
   apps: AppType[] | null;
   mode: "create" | "update";
 } & Omit<React.FormHTMLAttributes<HTMLFormElement>, "onSubmit">;
@@ -48,6 +49,7 @@ export const TicketForm = ({
   className,
   profile,
   values,
+  reFetchTicket,
   apps,
   mode,
   ...props
@@ -57,6 +59,7 @@ export const TicketForm = ({
     reset,
     formState: { errors, isSubmitting },
     setValue,
+    resetField,
     control,
     handleSubmit,
   } = useForm<FormValues>();
@@ -71,14 +74,21 @@ export const TicketForm = ({
   const assigneeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (values && mode === "update") {
-      setValue("ticketId", values.ticketId);
-      setValue("severity", values.severity);
-      setValue("status", values.status);
-      setValue("assignedTo", values.assignedTo);
-      setValue("isLocked", values.isLocked);
-      setValue("lockedBy", values.lockedBy);
-    }
+    const setValues = () => {
+      if (values && mode === "update") {
+        setValue("ticketId", values.ticketId);
+        setValue("severity", values.severity);
+        setValue("status", values.status);
+        setValue("assignedTo", values.assignedTo);
+        setValue("isLocked", values.isLocked);
+        setValue("lockedBy", values.lockedBy);
+        if (values.assignedName) {
+          setAssignee(values.assignedName);
+          setIsAssigned(true);
+        }
+      }
+    };
+    setValues();
   }, [values, mode, setValue]);
 
   useEffect(() => {
@@ -169,11 +179,11 @@ export const TicketForm = ({
 
       if (Array.isArray(value) && value.length > 0) {
         return value.map((val, i) => (
-          <div key={`${val.isInternal}-${i}`} className="text-sm my-1">
+          <div key={`${val.is_internal}-${i}`} className="text-sm my-1">
             <span>{val.content}</span>
             <div className="text-xs text-neutral-500 mt-0.5">
               <span>{new Date(val.createdAt).toLocaleString()} </span>
-              <span>/ {val.createdBy ? val.createdBy.name : ""}</span>
+              <span>/ {val.createdBy?.name ?? null}</span>
             </div>
           </div>
         ));
@@ -195,19 +205,45 @@ export const TicketForm = ({
   };
 
   const ticketLocked = values?.isLocked && values?.lockedBy !== profile?.id;
-  const assigneeLocked = values?.assignedTo !== null;
+  const assigneeLocked =
+    values?.assignedTo !== null && values?.assignedTo !== profile?.id;
+  const ticketClosed = values?.status === "closed";
   const lockedSpan = useWatch({
     control,
     name: "isLocked",
     defaultValue: false,
   });
 
+  const handleIsLocked = async (checked: boolean) => {
+    if (values && profile) {
+      const { data, error } = await supabase
+        .from("tickets")
+        .update({
+          is_locked: checked,
+          locked_by: checked ? profile?.id : null,
+        })
+        .eq("id", values.ticketId)
+        .select("is_locked,locked_by")
+        .single();
+
+      if (!error && data) {
+        console.log(data);
+        setValue("isLocked", data.is_locked);
+        setValue("lockedBy", data.locked_by);
+      }
+    }
+  };
+
   const handleonSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
       const response = await onSubmit(data);
       if (response) {
         if (mode === "create") reset();
-        if (mode === "update") console.log(response);
+        if (mode === "update") {
+          await reFetchTicket();
+          resetField("comments");
+          resetField("intComments");
+        }
       }
     } catch (error) {
       console.log(error);
@@ -231,8 +267,7 @@ export const TicketForm = ({
             (tag as HTMLInputElement).type === "checkbox"
           )
             return;
-          setValue("isLocked", true);
-          setValue("lockedBy", profile.id);
+          if (!lockedSpan) handleIsLocked(true);
         }
       }}
       {...props}
@@ -287,7 +322,7 @@ export const TicketForm = ({
                               field.props.id === "severity"
                                 ? "*required"
                                 : false,
-                            disabled: ticketLocked,
+                            disabled: ticketLocked || ticketClosed,
                           })
                         : {})}
                       error={
@@ -353,7 +388,7 @@ export const TicketForm = ({
                               field.props.id === "description"
                                 ? "*required"
                                 : false,
-                            disabled: ticketLocked,
+                            disabled: ticketLocked || ticketClosed,
                           })
                         : {})}
                       error={
@@ -364,14 +399,15 @@ export const TicketForm = ({
                       }
                       {...(field.props.id === "assignedName"
                         ? {
-                            value: values?.assignedName
-                              ? values.assignedName
-                              : assignee,
+                            value: assignee,
                             onChange: (e) => {
                               setAssignee(e.target.value);
+                              if (e.target.value === "")
+                                setValue("assignedTo", null);
                               setIsAssigned(false);
                             },
-                            disabled: ticketLocked || assigneeLocked,
+                            disabled:
+                              ticketLocked || assigneeLocked || ticketClosed,
                           }
                         : {})}
                       {...(field.props as Inputprops)}
@@ -422,7 +458,8 @@ export const TicketForm = ({
                       }
                       disabled={
                         isSubmitting ||
-                        (field.props.id === "submit" && ticketLocked)
+                        (field.props.id === "submit" && ticketLocked) ||
+                        (field.props.id === "submit" && ticketClosed)
                       }
                       {...(field.props as ButtonProps)}
                     ></Button>
@@ -444,7 +481,7 @@ export const TicketForm = ({
                     <TextArea
                       {...(field.props.id
                         ? register(field.props.id as keyof FormValues, {
-                            disabled: ticketLocked,
+                            disabled: ticketLocked || ticketClosed,
                           })
                         : {})}
                       {...(field.props as TextAreaProps)}
@@ -498,16 +535,10 @@ export const TicketForm = ({
                     <Input
                       {...(field.props.id
                         ? register(field.props.id as keyof FormValues, {
-                            disabled: ticketLocked,
+                            disabled: ticketLocked || ticketClosed,
                             onChange:
                               field.props.id === "isLocked"
-                                ? (event) => {
-                                    if (profile && event.target.checked) {
-                                      setValue("lockedBy", profile.id);
-                                    } else {
-                                      setValue("lockedBy", null);
-                                    }
-                                  }
+                                ? (e) => handleIsLocked(e.target.checked)
                                 : undefined,
                           })
                         : {})}

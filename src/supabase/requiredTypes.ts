@@ -29,7 +29,7 @@ type history = {
   content: Comments["content"];
   createdAt: Comments["created_at"];
   createdBy: { name: Profiles["name"] };
-  isInternal: Comments["is_internal"];
+  is_internal: Comments["is_internal"];
 };
 
 export type TicketDetails = {
