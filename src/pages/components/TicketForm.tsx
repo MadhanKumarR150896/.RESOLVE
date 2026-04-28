@@ -22,7 +22,7 @@ import {
 import { formConfig, type FieldProps } from "./formField";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { useForm, useWatch, type SubmitHandler } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import { generateTicketInfo } from "../../utils/ticketSamples";
 import { supabase } from "../../supabase/supabaseClient";
 
@@ -39,7 +39,6 @@ type FormProps = {
   onSubmit: SubmitHandler<FormValues>;
   profile: ProfileType | null;
   values: TicketDetails | null;
-  reFetchTicket: () => Promise<void>;
   apps: AppType[] | null;
   mode: "create" | "update";
 } & Omit<React.FormHTMLAttributes<HTMLFormElement>, "onSubmit">;
@@ -49,7 +48,6 @@ export const TicketForm = ({
   className,
   profile,
   values,
-  reFetchTicket,
   apps,
   mode,
   ...props
@@ -60,7 +58,6 @@ export const TicketForm = ({
     formState: { errors, isSubmitting },
     setValue,
     resetField,
-    control,
     handleSubmit,
   } = useForm<FormValues>();
   const [intComView, setIntComView] = useState(false);
@@ -168,7 +165,7 @@ export const TicketForm = ({
       mode === "update" &&
       !values?.lockedName
     )
-      return `Locked by: ${profile?.name}`;
+      return null;
 
     if (values) {
       const value = values[field.props.id as keyof TicketDetails];
@@ -208,28 +205,20 @@ export const TicketForm = ({
   const assigneeLocked =
     values?.assignedTo !== null && values?.assignedTo !== profile?.id;
   const ticketClosed = values?.status === "closed";
-  const lockedSpan = useWatch({
-    control,
-    name: "isLocked",
-    defaultValue: false,
-  });
 
   const handleIsLocked = async (checked: boolean) => {
     if (values && profile) {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("tickets")
         .update({
           is_locked: checked,
           locked_by: checked ? profile?.id : null,
         })
-        .eq("id", values.ticketId)
-        .select("is_locked,locked_by")
-        .single();
+        .eq("id", values.ticketId);
 
-      if (!error && data) {
-        console.log(data);
-        setValue("isLocked", data.is_locked);
-        setValue("lockedBy", data.locked_by);
+      if (error) {
+        setValue("isLocked", !checked);
+        setValue("lockedBy", values.lockedBy);
       }
     }
   };
@@ -240,7 +229,6 @@ export const TicketForm = ({
       if (response) {
         if (mode === "create") reset();
         if (mode === "update") {
-          await reFetchTicket();
           resetField("comments");
           resetField("intComments");
         }
@@ -254,22 +242,6 @@ export const TicketForm = ({
     <form
       onSubmit={handleSubmit(handleonSubmit)}
       className={className}
-      onFocus={(e) => {
-        const tag = e.target as HTMLElement;
-        const tagName = tag.tagName;
-        if (
-          profile &&
-          profile.role === "agent" &&
-          ["INPUT", "SELECT", "TEXTAREA"].includes(tagName)
-        ) {
-          if (
-            tagName === "INPUT" &&
-            (tag as HTMLInputElement).type === "checkbox"
-          )
-            return;
-          if (!lockedSpan) handleIsLocked(true);
-        }
-      }}
       {...props}
     >
       {gridOne && gridOne.length > 0 && (
@@ -513,11 +485,9 @@ export const TicketForm = ({
                   return null;
                 return (
                   <div key={`${field.name}-${i}`} className={field.grid}>
-                    {lockedSpan && (
-                      <Span {...(field.props as SpanProps)}>
-                        {fieldValues(field, values)}
-                      </Span>
-                    )}
+                    <Span {...(field.props as SpanProps)}>
+                      {fieldValues(field, values)}
+                    </Span>
                   </div>
                 );
               }

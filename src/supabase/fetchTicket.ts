@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router";
 import { supabase } from "./supabaseClient";
-import type { TicketDetails } from "./requiredTypes";
+import type { history, TicketDetails } from "./requiredTypes";
+import { useGetProfiles } from "./getProfiles";
 
 const fetchTicket = async (ticketNumber: string) => {
   const { data, error } = await supabase
@@ -56,8 +57,14 @@ export const useFetchTicket = () => {
     null
   );
   const [isLoading, setIsLoading] = useState(true);
-
   const { ticketNumber } = useParams();
+  const { profiles } = useGetProfiles();
+
+  const profileRef = useRef(profiles);
+
+  useEffect(() => {
+    profileRef.current = profiles;
+  }, [profiles]);
 
   const fetchTicketDetails = useCallback(async () => {
     if (!ticketNumber) {
@@ -84,5 +91,73 @@ export const useFetchTicket = () => {
     fetchTicketDetails();
   }, [fetchTicketDetails]);
 
-  return { ticketDetails, isLoading, fetchTicketDetails };
+  useEffect(() => {
+    const ticketId = ticketDetails?.ticketId;
+
+    const ticketChannel = supabase
+      .channel(`ticket-update`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "tickets",
+          filter: `id=eq.${ticketId}`,
+        },
+        (payload) => {
+          setTicketDetails((prev) => {
+            if (!prev) return prev;
+
+            return {
+              ...prev,
+              status: payload.new.status,
+              severity: payload.new.severity,
+              isLocked: payload.new.is_locked,
+              lockedBy: payload.new.locked_by,
+              lockedName: profileRef.current[payload.new.locked_by],
+              assignedTo: payload.new.assigned_to,
+              assignedName: profileRef.current[payload.new.assigned_to],
+            };
+          });
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "comments",
+          filter: `ticket_id=eq.${ticketId}`,
+        },
+        (payload) => {
+          const formatted: history = {
+            content: payload.new.content,
+            createdAt: payload.new.created_at,
+            createdBy: { name: profileRef.current[payload.new.created_by] },
+            is_internal: payload.new.is_internal,
+          };
+
+          setTicketDetails((prev) => {
+            if (!prev) return prev;
+
+            return formatted.is_internal
+              ? {
+                  ...prev,
+                  intHistory: [formatted, ...prev.intHistory],
+                }
+              : {
+                  ...prev,
+                  history: [formatted, ...prev.history],
+                };
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(ticketChannel);
+    };
+  }, [ticketDetails?.ticketId]);
+
+  return { ticketDetails, isLoading };
 };

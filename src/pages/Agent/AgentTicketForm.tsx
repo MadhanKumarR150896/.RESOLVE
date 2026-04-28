@@ -10,7 +10,7 @@ import { Spinner } from "../../utils/Spinner";
 
 export const AgentTicketForm = () => {
   const { profile } = useAuthContext();
-  const { ticketDetails, isLoading, fetchTicketDetails } = useFetchTicket();
+  const { ticketDetails, isLoading } = useFetchTicket();
   const { apps } = useGetApps();
   const { ticketNumber } = useParams();
 
@@ -24,7 +24,6 @@ export const AgentTicketForm = () => {
         p_intcomments: formData.intComments,
       });
 
-      console.log(data);
       if (error || !data.success) throw error;
       return data.success;
     } catch (error) {
@@ -46,7 +45,6 @@ export const AgentTicketForm = () => {
         p_lockedby: formData.lockedBy ?? undefined,
       });
 
-      console.log(data);
       if (error || !data.success) throw error;
       return data.success;
     } catch (error) {
@@ -63,7 +61,6 @@ export const AgentTicketForm = () => {
       className="px-24 py-20 flex flex-col gap-14"
       profile={profile}
       values={ticketDetails}
-      reFetchTicket={fetchTicketDetails}
       apps={apps}
       mode={ticketNumber ? "update" : "create"}
     />

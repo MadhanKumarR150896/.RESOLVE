@@ -25,7 +25,7 @@ export type FormValues = {
   lockedBy: Tickets["locked_by"];
 } & comments;
 
-type history = {
+export type history = {
   content: Comments["content"];
   createdAt: Comments["created_at"];
   createdBy: { name: Profiles["name"] };
