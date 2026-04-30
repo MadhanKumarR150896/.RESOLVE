@@ -1,9 +1,9 @@
 import { describe, expect, vi, beforeEach, test } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useSupabaseAuth } from "./supabaseAuth";
-import { supabase } from "./supabaseClient";
-import { AuthContext } from "../context/AuthContext";
-import type { AuthContextType } from "../context/AuthContext";
+import { supabase } from "../../supabase/supabaseClient";
+import { AuthContext } from "../../context/AuthContext";
+import type { AuthContextType } from "../../context/AuthContext";
 
 vi.mock("./supabaseClient");
 
@@ -43,7 +43,7 @@ describe("Supabase Signin", () => {
     await act(async () => {
       response = await result.current.supabaseSignIn(
         "user1@resolve.com",
-        "resolve@user",
+        "resolve@user"
       );
     });
 
@@ -66,7 +66,7 @@ describe("Supabase Signin", () => {
     await act(async () => {
       response = await result.current.supabaseSignIn(
         "user3@resolve.com",
-        "resolve@user",
+        "resolve@user"
       );
     });
 

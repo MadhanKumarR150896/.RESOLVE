@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from "react-router";
-import { useFetchTicket } from "../supabase/fetchTicket";
+import { useFetchTicket } from "../pages/Ticket/fetchTicket";
 import { Spinner } from "../utils/Spinner";
 import { useAuthContext } from "../context/AuthContext";
 

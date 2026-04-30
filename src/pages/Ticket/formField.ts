@@ -7,20 +7,46 @@ import type {
   SpanProps,
   TextAreaProps,
 } from "../../utils/ReusableElements";
+import type { Mode } from "./TicketPage";
+import type { FormValues } from "../../supabase/requiredTypes";
+
+export type Role = "user" | "agent";
+
+export type FieldContext = {
+  role?: Role;
+  mode: Mode;
+};
 
 export type FieldProps = {
   name: "Span" | "Button" | "Input" | "SelectGroup" | "TextArea" | "Div";
   group: "grid1" | "grid2";
   grid: string;
-  props:
+  props: {
+    id: string | keyof FormValues;
+  } & (
     | ButtonProps
     | SpanProps
     | Inputprops
     | TextAreaProps
     | SelectGroupProps
-    | DivProps;
+    | DivProps
+  );
   options?: { drop: string; props: OptionHTMLAttributes<HTMLOptionElement> }[];
   target?: "comments" | "history";
+  isRequired?: () => string;
+  notVisible?: (ctx: FieldContext) => boolean;
+};
+
+export const notVisibleFields = (field: FieldProps, ctx: FieldContext) => {
+  if (!field.notVisible) return false;
+
+  return field.notVisible(ctx);
+};
+
+export const isRequiredFields = (field: FieldProps) => {
+  if (!field.isRequired) return false;
+
+  return field.isRequired();
 };
 
 const commonFields: FieldProps[] = [
@@ -41,6 +67,7 @@ const commonFields: FieldProps[] = [
       id: "ticketId",
       type: "hidden",
     },
+    notVisible: ({ mode }) => mode === "create",
   },
   {
     name: "Span",
@@ -62,12 +89,14 @@ const commonFields: FieldProps[] = [
     group: "grid1",
     grid: "row-2 col-1",
     props: { label: "Status", id: "status", placeHolderText: "Open" },
+    notVisible: ({ mode, role }) => role === "agent" && mode === "update",
   },
   {
     name: "Span",
     group: "grid1",
     grid: "row-2 col-2",
     props: { label: "Application", id: "application" },
+    notVisible: ({ mode }) => mode === "create",
   },
   {
     name: "SelectGroup",
@@ -77,6 +106,8 @@ const commonFields: FieldProps[] = [
       label: "Application",
       id: "application",
     },
+    isRequired: () => "*required",
+    notVisible: ({ mode }) => mode === "update",
   },
   {
     name: "SelectGroup",
@@ -124,6 +155,7 @@ const commonFields: FieldProps[] = [
       label: "Severity",
       id: "severity",
     },
+    isRequired: () => "*required",
   },
   {
     name: "Input",
@@ -135,6 +167,8 @@ const commonFields: FieldProps[] = [
       type: "text",
       placeholder: "Please provide a description about the issue",
     },
+    isRequired: () => "*required",
+    notVisible: ({ mode }) => mode === "update",
   },
   {
     name: "Span",
@@ -144,6 +178,7 @@ const commonFields: FieldProps[] = [
       label: "Description",
       id: "description",
     },
+    notVisible: ({ mode }) => mode === "create",
   },
   {
     name: "Span",
@@ -153,6 +188,7 @@ const commonFields: FieldProps[] = [
       label: "Assigned to",
       id: "assignedName",
     },
+    notVisible: ({ role, mode }) => role === "agent" && mode === "update",
   },
   {
     name: "Span",
@@ -162,6 +198,7 @@ const commonFields: FieldProps[] = [
       id: "lockedName",
       className: "h-6 border-none text-sm rounded",
     },
+    notVisible: ({ mode }) => mode === "create",
   },
   {
     name: "Button",
@@ -185,6 +222,7 @@ const commonFields: FieldProps[] = [
       label: "Use me",
       className: "px-4 py-2.5",
     },
+    notVisible: ({ mode }) => mode === "update",
   },
 ];
 
@@ -230,6 +268,7 @@ export const formConfig: Record<string, FieldProps[]> = {
         label: "Status",
         id: "status",
       },
+      notVisible: ({ mode, role }) => role === "agent" && mode === "create",
     },
     {
       name: "Input",
@@ -249,6 +288,7 @@ export const formConfig: Record<string, FieldProps[]> = {
         id: "assignedName",
         type: "text",
       },
+      notVisible: ({ mode, role }) => mode === "create" && role === "agent",
     },
     {
       name: "Button",
@@ -342,6 +382,7 @@ export const formConfig: Record<string, FieldProps[]> = {
         id: "lockedBy",
         type: "hidden",
       },
+      notVisible: ({ mode, role }) => role === "agent" && mode === "create",
     },
     {
       name: "Input",
@@ -352,6 +393,7 @@ export const formConfig: Record<string, FieldProps[]> = {
         type: "checkbox",
         className: "h-5 w-5 accent-neutral-900",
       },
+      notVisible: ({ mode, role }) => role === "agent" && mode === "create",
     },
   ],
 };

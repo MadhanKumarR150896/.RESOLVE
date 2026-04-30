@@ -1,5 +1,5 @@
-import { supabase } from "./supabaseClient";
-import { useAuthContext } from "../context/AuthContext";
+import { supabase } from "../../supabase/supabaseClient";
+import { useAuthContext } from "../../context/AuthContext";
 import { useCallback } from "react";
 
 export const useSupabaseAuth = () => {

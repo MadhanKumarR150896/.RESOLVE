@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router";
-import { supabase } from "./supabaseClient";
-import type { history, TicketDetails } from "./requiredTypes";
+import { supabase } from "../../supabase/supabaseClient";
+import type { history, TicketDetails } from "../../supabase/requiredTypes";
 import { useGetProfiles } from "./getProfiles";
 
 const fetchTicket = async (ticketNumber: string) => {

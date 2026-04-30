@@ -1,7 +1,7 @@
 import { Eye, EyeOff } from "lucide-react";
 import { useState, type SyntheticEvent } from "react";
 import { ErrorMessage } from "./ErrorMessage";
-import { useSupabaseAuth } from "../../supabase/supabaseAuth";
+import { useSupabaseAuth } from "../Signin/supabaseAuth";
 import { useAuthContext } from "../../context/AuthContext";
 import { Button } from "../../utils/ReusableElements";
 

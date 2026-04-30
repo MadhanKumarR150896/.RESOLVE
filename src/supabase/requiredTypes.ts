@@ -49,3 +49,11 @@ export type TicketDetails = {
   history: history[];
   intHistory: history[];
 };
+
+export type FunctionArgs = Required["public"]["Functions"][
+  | "create_ticket_for_agent"
+  | "create_ticket_for_user"
+  | "update_ticket_for_agent"
+  | "update_ticket_for_user"]["Args"];
+
+export type ReturnType = Required["public"]["CompositeTypes"]["type_response"];

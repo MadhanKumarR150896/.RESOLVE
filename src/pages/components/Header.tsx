@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { UserRound } from "lucide-react";
-import { useSupabaseAuth } from "../../supabase/supabaseAuth";
+import { useSupabaseAuth } from "../Signin/supabaseAuth";
 
 export const Header = () => {
   const { profile } = useAuthContext();

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "./supabaseClient";
+import { supabase } from "../../supabase/supabaseClient";
 
 const getProfiles = async () => {
   const { data, error } = await supabase.from("profiles").select("id,name");

@@ -3,6 +3,7 @@ import type {
   AppType,
   FormValues,
   ProfileType,
+  ReturnType,
   TicketDetails,
 } from "../../supabase/requiredTypes";
 import {
@@ -19,24 +20,26 @@ import {
   type SelectGroupProps,
   type DivProps,
 } from "../../utils/ReusableElements";
-import { formConfig, type FieldProps } from "./formField";
+import {
+  formConfig,
+  isRequiredFields,
+  notVisibleFields,
+  type FieldContext,
+  type FieldProps,
+} from "./formField";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { generateTicketInfo } from "../../utils/ticketSamples";
 import { supabase } from "../../supabase/supabaseClient";
+import { useGetAssignees } from "./getAssignees";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-type Assignees = {
-  id: string;
-  name: string | null;
-};
-
 type FormProps = {
-  onSubmit: SubmitHandler<FormValues>;
+  onSubmit: (data: FormValues) => Promise<ReturnType>;
   profile: ProfileType | null;
   values: TicketDetails | null;
   apps: AppType[] | null;
@@ -61,14 +64,24 @@ export const TicketForm = ({
     handleSubmit,
   } = useForm<FormValues>();
   const [intComView, setIntComView] = useState(false);
-  const [intHisView, setHisComView] = useState(false);
+  const [intHisView, setIntHisView] = useState(false);
   const [assignee, setAssignee] = useState("");
   const [isAssigned, setIsAssigned] = useState(false);
-  const [assignees, setAssignees] = useState<Assignees[]>([]);
   const config = profile?.role ? formConfig[profile.role] : null;
   const gridOne = config?.filter((field) => field.group === "grid1");
   const gridTwo = config?.filter((field) => field.group === "grid2");
+  const { assignees, setAssignees } = useGetAssignees(assignee, isAssigned);
   const assigneeRef = useRef<HTMLDivElement>(null);
+
+  const ticketLocked = values?.isLocked && values?.lockedBy !== profile?.id;
+  const assigneeLocked =
+    values?.assignedTo !== null && values?.assignedTo !== profile?.id;
+  const ticketClosed = values?.status === "closed";
+
+  const ctx: FieldContext = {
+    role: profile?.role,
+    mode,
+  };
 
   useEffect(() => {
     const setValues = () => {
@@ -100,54 +113,7 @@ export const TicketForm = ({
     document.addEventListener("mousedown", handleAssigneeDrop);
 
     return () => document.removeEventListener("mousedown", handleAssigneeDrop);
-  }, []);
-
-  useEffect(() => {
-    if (isAssigned) return;
-
-    let isStale = false;
-
-    const timeout = setTimeout(async () => {
-      if (assignee.length < 3) {
-        setAssignees([]);
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("id,name")
-        .eq("is_active", true)
-        .ilike("name", `%${assignee}%`);
-
-      if (!isStale && !error && data) setAssignees(data);
-    }, 400);
-
-    return () => {
-      clearTimeout(timeout);
-      isStale = true;
-    };
-  }, [assignee, isAssigned]);
-
-  const toggleInternal = (field: FieldProps) => {
-    if (field.target === "comments") {
-      setIntComView(field.props.id === "commentsIntBt");
-    }
-    if (field.target === "history") {
-      setHisComView(field.props.id === "historyIntBt");
-    }
-  };
-
-  const display = (field: FieldProps) => {
-    if (field.name === "TextArea") {
-      if (field.props.id === "comments" && intComView) return "hidden";
-      if (field.props.id === "intComments" && !intComView) return "hidden";
-    }
-
-    if (field.name === "Div") {
-      if (field.props.id === "history" && intHisView) return "hidden";
-      if (field.props.id === "intHistory" && !intHisView) return "hidden";
-    }
-  };
+  }, [setAssignees]);
 
   const fieldValues = (field: FieldProps, values: TicketDetails | null) => {
     if (field.props.id === "createdBy" && mode === "create")
@@ -173,7 +139,12 @@ export const TicketForm = ({
         if (field.props.id === "lockedName") return `Locked by: ${value}`;
         return value;
       }
+    }
+  };
 
+  const renderHistory = (field: FieldProps, values: TicketDetails | null) => {
+    if (values) {
+      const value = values[field.props.id as keyof TicketDetails];
       if (Array.isArray(value) && value.length > 0) {
         return value.map((val, i) => (
           <div key={`${val.is_internal}-${i}`} className="text-sm my-1">
@@ -185,6 +156,27 @@ export const TicketForm = ({
           </div>
         ));
       }
+    }
+  };
+
+  const toggleInternal = (field: FieldProps) => {
+    if (field.target === "comments") {
+      setIntComView(field.props.id === "commentsIntBt");
+    }
+    if (field.target === "history") {
+      setIntHisView(field.props.id === "historyIntBt");
+    }
+  };
+
+  const intDisplay = (field: FieldProps) => {
+    if (field.name === "TextArea") {
+      if (field.props.id === "comments" && intComView) return "hidden";
+      if (field.props.id === "intComments" && !intComView) return "hidden";
+    }
+
+    if (field.name === "Div") {
+      if (field.props.id === "history" && intHisView) return "hidden";
+      if (field.props.id === "intHistory" && !intHisView) return "hidden";
     }
   };
 
@@ -200,11 +192,6 @@ export const TicketForm = ({
     setValue("comments", result.comments);
     setValue("intComments", "Internal Comments");
   };
-
-  const ticketLocked = values?.isLocked && values?.lockedBy !== profile?.id;
-  const assigneeLocked =
-    values?.assignedTo !== null && values?.assignedTo !== profile?.id;
-  const ticketClosed = values?.status === "closed";
 
   const handleIsLocked = async (checked: boolean) => {
     if (values && profile) {
@@ -226,7 +213,8 @@ export const TicketForm = ({
   const handleonSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
       const response = await onSubmit(data);
-      if (response) {
+      console.log(response);
+      if (response.success) {
         if (mode === "create") reset();
         if (mode === "update") {
           resetField("comments");
@@ -247,25 +235,9 @@ export const TicketForm = ({
       {gridOne && gridOne.length > 0 && (
         <div className="grid grid-cols-3 gap-12">
           {gridOne?.map((field, i) => {
+            if (notVisibleFields(field, ctx)) return null;
             switch (field.name) {
               case "Span": {
-                if (
-                  profile?.role === "agent" &&
-                  field.props.id === "status" &&
-                  mode === "update"
-                )
-                  return null;
-                if (
-                  profile?.role === "agent" &&
-                  field.props.id === "assignedName" &&
-                  mode === "update"
-                )
-                  return null;
-
-                if (field.props.id === "application" && mode === "create")
-                  return null;
-                if (field.props.id === "description" && mode === "create")
-                  return null;
                 return (
                   <div key={`${field.name}-${i}`} className={field.grid}>
                     <Span {...(field.props as SpanProps)}>
@@ -276,29 +248,16 @@ export const TicketForm = ({
               }
 
               case "SelectGroup": {
-                if (
-                  profile?.role === "agent" &&
-                  field.props.id === "status" &&
-                  mode === "create"
-                )
-                  return null;
-                if (field.props.id === "application" && mode === "update")
-                  return null;
                 return (
                   <div key={`${field.name}-${i}`} className={field.grid}>
                     <SelectGroup
                       {...(field.props.id
                         ? register(field.props.id as keyof FormValues, {
-                            required:
-                              field.props.id === "application" ||
-                              field.props.id === "severity"
-                                ? "*required"
-                                : false,
+                            required: isRequiredFields(field),
                             disabled: ticketLocked || ticketClosed,
                           })
                         : {})}
                       error={
-                        field.props.id &&
                         errors[field.props.id as keyof FormValues]
                           ? errors[field.props.id as keyof FormValues]?.message
                           : null
@@ -337,16 +296,6 @@ export const TicketForm = ({
               }
 
               case "Input": {
-                if (
-                  profile?.role === "agent" &&
-                  field.props.id === "assignedName" &&
-                  mode === "create"
-                )
-                  return null;
-                if (field.props.id === "description" && mode === "update")
-                  return null;
-                if (field.props.id === "ticketId" && mode === "create")
-                  return null;
                 return (
                   <div
                     key={`${field.name}-${i}`}
@@ -356,15 +305,11 @@ export const TicketForm = ({
                     <Input
                       {...(field.props.id !== "assignedName"
                         ? register(field.props.id as keyof FormValues, {
-                            required:
-                              field.props.id === "description"
-                                ? "*required"
-                                : false,
+                            required: isRequiredFields(field),
                             disabled: ticketLocked || ticketClosed,
                           })
                         : {})}
                       error={
-                        field.props.id &&
                         errors[field.props.id as keyof FormValues]
                           ? errors[field.props.id as keyof FormValues]?.message
                           : null
@@ -380,6 +325,7 @@ export const TicketForm = ({
                             },
                             disabled:
                               ticketLocked || assigneeLocked || ticketClosed,
+                            autoComplete: "off",
                           }
                         : {})}
                       {...(field.props as Inputprops)}
@@ -414,10 +360,9 @@ export const TicketForm = ({
       {gridTwo && gridTwo.length > 0 && (
         <div className="grid grid-cols-2 gap-y-3 gap-x-12">
           {gridTwo.map((field, i) => {
+            if (notVisibleFields(field, ctx)) return null;
             switch (field.name) {
               case "Button": {
-                if (field.props.id === "faker" && mode === "update")
-                  return null;
                 return (
                   <div key={`${field.name}-${i}`} className={field.grid}>
                     <Button
@@ -446,7 +391,7 @@ export const TicketForm = ({
                     className={cn(
                       field.grid,
                       profile?.role === "agent" && field.name === "TextArea"
-                        ? display(field)
+                        ? intDisplay(field)
                         : ""
                     )}
                   >
@@ -469,20 +414,18 @@ export const TicketForm = ({
                     className={cn(
                       field.grid,
                       profile?.role === "agent" && field.name === "Div"
-                        ? display(field)
+                        ? intDisplay(field)
                         : ""
                     )}
                   >
                     <Div {...(field.props as DivProps)}>
-                      {fieldValues(field, values)}
+                      {renderHistory(field, values)}
                     </Div>
                   </div>
                 );
               }
 
               case "Span": {
-                if (field.props.id === "lockedName" && mode === "create")
-                  return null;
                 return (
                   <div key={`${field.name}-${i}`} className={field.grid}>
                     <Span {...(field.props as SpanProps)}>
@@ -493,13 +436,6 @@ export const TicketForm = ({
               }
 
               case "Input": {
-                if (
-                  profile?.role === "agent" &&
-                  field.props.id === "isLocked" &&
-                  mode === "create"
-                )
-                  return null;
-
                 return (
                   <div key={`${field.name}-${i}`} className={field.grid}>
                     <Input

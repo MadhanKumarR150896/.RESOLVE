@@ -4,10 +4,9 @@ import { PublicRoute } from "./GuardRoutes/PublicRoute";
 import { SigninPage } from "./pages/Signin/SigninPage";
 import { ProtectedRoute } from "./GuardRoutes/ProtectedRoute";
 import { PageLayout } from "./pages/components/PageLayout";
-import { AgentDashboard } from "./pages/Agent/AgentDashboard";
-import { UserDashboard } from "./pages/User/UserDashboard";
-import { UserTicketForm } from "./pages/User/UserTicketForm";
-import { AgentTicketForm } from "./pages/Agent/AgentTicketForm";
+import { AgentDashboard } from "./pages/Dashboard/AgentDashboard";
+import { UserDashboard } from "./pages/Dashboard/UserDashboard";
+import { TicketPage } from "./pages/Ticket/TicketPage";
 import { Navigate } from "react-router";
 import { TicketRoute } from "./GuardRoutes/TicketRoute";
 
@@ -23,21 +22,18 @@ const App = () => {
         <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
           <Route path="/dashboard/user" element={<PageLayout />}>
             <Route index element={<UserDashboard />} />
-            <Route path="ticket" element={<UserTicketForm />} />
+            <Route path="ticket" element={<TicketPage />} />
             <Route element={<TicketRoute />}>
-              <Route path="ticket/:ticketNumber" element={<UserTicketForm />} />
+              <Route path="ticket/:ticketNumber" element={<TicketPage />} />
             </Route>
           </Route>
         </Route>
         <Route element={<ProtectedRoute allowedRoles={["agent"]} />}>
           <Route path="/dashboard/agent" element={<PageLayout />}>
             <Route index element={<AgentDashboard />} />
-            <Route path="ticket" element={<AgentTicketForm />} />
+            <Route path="ticket" element={<TicketPage />} />
             <Route element={<TicketRoute />}>
-              <Route
-                path="ticket/:ticketNumber"
-                element={<AgentTicketForm />}
-              />
+              <Route path="ticket/:ticketNumber" element={<TicketPage />} />
             </Route>
           </Route>
         </Route>

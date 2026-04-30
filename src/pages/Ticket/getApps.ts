@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import type { AppType } from "./requiredTypes";
-import { supabase } from "./supabaseClient";
+import type { AppType } from "../../supabase/requiredTypes";
+import { supabase } from "../../supabase/supabaseClient";
 
 const getApps = async () => {
   const { data, error } = await supabase
