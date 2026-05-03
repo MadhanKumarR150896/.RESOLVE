@@ -1,13 +1,13 @@
 import { supabase } from "../../supabase/supabaseClient";
-import { useAuthContext } from "../../context/AuthContext";
 import { useCallback } from "react";
+import { useToasterStore } from "../../store/toasterStore";
 
 export const useSupabaseAuth = () => {
-  const { setAuthStatus, showStatus } = useAuthContext();
+  const updateToaster = useToasterStore((state) => state.updateToaster);
 
   const supabaseSignIn = useCallback(
     async (email: string, password: string): Promise<{ success: boolean }> => {
-      setAuthStatus({
+      updateToaster({
         type: "loading",
         message: "Signing in ...",
       });
@@ -23,17 +23,17 @@ export const useSupabaseAuth = () => {
             error.status === 500 &&
             error.message.includes("error granting user")
           ) {
-            showStatus({
+            updateToaster({
               type: "error",
               message: "Unauthorized: Account is deactivated",
             });
           } else if (error.status) {
-            showStatus({
+            updateToaster({
               type: "error",
               message: error.message,
             });
           } else {
-            showStatus({
+            updateToaster({
               type: "error",
               message: "Connection error occurred: Please check your network",
             });
@@ -45,7 +45,7 @@ export const useSupabaseAuth = () => {
 
         return { success: false };
       } catch (err) {
-        showStatus({
+        updateToaster({
           type: "error",
           message:
             err instanceof Error ? err.message : "An unexpected error occurred",
@@ -53,25 +53,25 @@ export const useSupabaseAuth = () => {
         return { success: false };
       }
     },
-    [setAuthStatus, showStatus]
+    [updateToaster]
   );
 
   const supabaseSignout = useCallback(async () => {
     const { error } = await supabase.auth.signOut({ scope: "local" });
 
     if (error) {
-      showStatus({
+      updateToaster({
         type: "error",
         message: error.message,
       });
       return;
     }
 
-    showStatus({
+    updateToaster({
       type: "success",
       message: "Successfully signed out",
     });
-  }, [showStatus]);
+  }, [updateToaster]);
 
   return { supabaseSignIn, supabaseSignout };
 };

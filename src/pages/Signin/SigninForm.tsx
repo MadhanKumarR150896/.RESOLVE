@@ -2,8 +2,8 @@ import { Eye, EyeOff } from "lucide-react";
 import { useState, type SyntheticEvent } from "react";
 import { ErrorMessage } from "./ErrorMessage";
 import { useSupabaseAuth } from "../Signin/supabaseAuth";
-import { useAuthContext } from "../../context/AuthContext";
 import { Button } from "../../utils/ReusableElements";
+import { useToasterStore } from "../../store/toasterStore";
 
 export const SigninForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -12,7 +12,7 @@ export const SigninForm = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { supabaseSignIn } = useSupabaseAuth();
-  const { showStatus } = useAuthContext();
+  const updateToaster = useToasterStore((state) => state.updateToaster);
 
   const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -22,7 +22,7 @@ export const SigninForm = () => {
     const result = await supabaseSignIn(email, password);
     if (result.success) {
       setIsSubmitted(false);
-      showStatus({ type: "success", message: "Successfully signed in" });
+      updateToaster({ type: "success", message: "Successfully signed in" });
     } else {
       setIsLoading(false);
     }

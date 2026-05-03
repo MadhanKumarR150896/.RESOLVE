@@ -2,7 +2,6 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -15,38 +14,10 @@ type AuthProviderProps = {
   children: ReactNode;
 };
 
-type StatusType = "initial" | "loading" | "error" | "success";
-
-export type AuthStatus = {
-  type: StatusType;
-  message: string;
-};
-
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<ProfileType | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
-  const [authStatus, setAuthStatus] = useState<AuthStatus>({
-    type: "initial",
-    message: "",
-  });
-
-  const timeoutTracker = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const showStatus = useCallback((status: AuthStatus) => {
-    setAuthStatus(status);
-
-    if (timeoutTracker.current) {
-      clearTimeout(timeoutTracker.current);
-    }
-
-    timeoutTracker.current = setTimeout(() => {
-      setAuthStatus({
-        type: "initial",
-        message: "",
-      });
-    }, 5000);
-  }, []);
 
   const fetchProfile = useCallback(async (profileId: string) => {
     const { data, error } = await supabase
@@ -98,14 +69,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const value = useMemo(
     () => ({
-      authStatus,
-      setAuthStatus,
       session,
       profile,
       authLoading,
-      showStatus,
     }),
-    [authStatus, setAuthStatus, session, profile, authLoading, showStatus]
+    [session, profile, authLoading]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

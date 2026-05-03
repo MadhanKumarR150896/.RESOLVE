@@ -8,8 +8,8 @@ import type { AuthContextType } from "../../context/AuthContext";
 describe("Signin Form", () => {
   const user = userEvent.setup();
 
-  const mockValue: Partial<AuthContextType> = {
-    showStatus: vi.fn(),
+  const mockValue: Pick<AuthContextType, "authLoading"> = {
+    authLoading: false,
   };
 
   beforeEach(() => {
@@ -20,13 +20,13 @@ describe("Signin Form", () => {
     render(
       <AuthContext.Provider value={mockValue as AuthContextType}>
         <SigninForm />
-      </AuthContext.Provider>,
+      </AuthContext.Provider>
     );
 
     expect(screen.getByLabelText("Email")).toBeInTheDocument();
     expect(screen.getByLabelText("Password")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /sign in/i }),
+      screen.getByRole("button", { name: /sign in/i })
     ).toBeInTheDocument();
   });
 
@@ -34,7 +34,7 @@ describe("Signin Form", () => {
     render(
       <AuthContext.Provider value={mockValue as AuthContextType}>
         <SigninForm />
-      </AuthContext.Provider>,
+      </AuthContext.Provider>
     );
 
     const password = screen.getByLabelText("Password");
@@ -50,13 +50,13 @@ describe("Signin Form", () => {
     render(
       <AuthContext.Provider value={mockValue as AuthContextType}>
         <SigninForm />
-      </AuthContext.Provider>,
+      </AuthContext.Provider>
     );
 
     await user.click(screen.getByRole("button", { name: /sign in/i }));
 
     expect(
-      await screen.findByText(/password is required/i),
+      await screen.findByText(/password is required/i)
     ).toBeInTheDocument();
     expect(await screen.findByText(/email is required/i)).toBeInTheDocument();
   });

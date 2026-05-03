@@ -1,4 +1,4 @@
-import { AuthMessage } from "./pages/components/AuthMessage";
+import { ToastMessage } from "./pages/components/ToastMessage";
 import { Routes, Route } from "react-router";
 import { PublicRoute } from "./GuardRoutes/PublicRoute";
 import { SigninPage } from "./pages/Signin/SigninPage";
@@ -13,7 +13,7 @@ import { TicketRoute } from "./GuardRoutes/TicketRoute";
 const App = () => {
   return (
     <>
-      <AuthMessage />
+      <ToastMessage />
       <Routes>
         <Route path="/" element={<Navigate to="/signin" replace />} />
         <Route element={<PublicRoute />}>

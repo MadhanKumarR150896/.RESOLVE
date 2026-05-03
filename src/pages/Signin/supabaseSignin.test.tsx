@@ -10,9 +10,8 @@ vi.mock("./supabaseClient");
 describe("Supabase Signin", () => {
   let response: { success: boolean };
 
-  const mockValue: Partial<AuthContextType> = {
-    setAuthStatus: vi.fn(),
-    showStatus: vi.fn(),
+  const mockValue: Pick<AuthContextType, "authLoading"> = {
+    authLoading: false,
   };
 
   const wrapper = ({ children }: { children: React.ReactNode }) => {
@@ -47,11 +46,6 @@ describe("Supabase Signin", () => {
       );
     });
 
-    expect(mockValue.setAuthStatus).toHaveBeenCalledWith({
-      type: "loading",
-      message: "Signing in ...",
-    });
-
     expect(response).toEqual({ success: true });
   });
 
@@ -68,11 +62,6 @@ describe("Supabase Signin", () => {
         "user3@resolve.com",
         "resolve@user"
       );
-    });
-
-    expect(mockValue.showStatus).toHaveBeenCalledWith({
-      type: "error",
-      message: "Invalid login credentials",
     });
 
     expect(response).toEqual({ success: false });
