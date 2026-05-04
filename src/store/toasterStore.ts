@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { devtools } from "zustand/middleware";
 
 type StatusType = "initial" | "loading" | "error" | "success";
 
@@ -19,37 +20,39 @@ type Action = {
   removeToaster: () => void;
 };
 
-export const useToasterStore = create<State & Action>((set, get) => ({
-  toaster: {
-    type: "initial",
-    message: "",
-  },
-  timeoutId: null,
+export const useToasterStore = create<State & Action>()(
+  devtools((set, get) => ({
+    toaster: {
+      type: "initial",
+      message: "",
+    },
+    timeoutId: null,
 
-  updateToaster: (toaster) => {
-    set({ toaster: toaster });
+    updateToaster: (toaster) => {
+      set({ toaster: toaster });
 
-    const previousId = get().timeoutId;
-    if (previousId) clearTimeout(previousId);
+      const previousId = get().timeoutId;
+      if (previousId) clearTimeout(previousId);
 
-    const newId = setTimeout(() => {
+      const newId = setTimeout(() => {
+        set({
+          toaster: {
+            type: "initial",
+            message: "",
+          },
+        });
+      }, 4000);
+
+      set({ timeoutId: newId });
+    },
+
+    removeToaster: () => {
       set({
         toaster: {
           type: "initial",
           message: "",
         },
       });
-    }, 4000);
-
-    set({ timeoutId: newId });
-  },
-
-  removeToaster: () => {
-    set({
-      toaster: {
-        type: "initial",
-        message: "",
-      },
-    });
-  },
-}));
+    },
+  }))
+);

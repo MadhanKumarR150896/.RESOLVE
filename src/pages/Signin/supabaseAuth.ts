@@ -1,6 +1,7 @@
 import { supabase } from "../../supabase/supabaseClient";
 import { useCallback } from "react";
 import { useToasterStore } from "../../store/toasterStore";
+import { queryClient } from "../../main";
 
 export const useSupabaseAuth = () => {
   const updateToaster = useToasterStore((state) => state.updateToaster);
@@ -71,6 +72,8 @@ export const useSupabaseAuth = () => {
       type: "success",
       message: "Successfully signed out",
     });
+
+    queryClient.clear();
   }, [updateToaster]);
 
   return { supabaseSignIn, supabaseSignout };

@@ -2,7 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router";
 import { supabase } from "../../supabase/supabaseClient";
 import type { history, TicketDetails } from "../../supabase/requiredTypes";
-import { useGetProfiles } from "./getProfiles";
+import { useQuery } from "@tanstack/react-query";
+import { getProfiles } from "./getProfiles";
 
 const fetchTicket = async (ticketNumber: string) => {
   const { data, error } = await supabase
@@ -58,7 +59,7 @@ export const useFetchTicket = () => {
   );
   const [isLoading, setIsLoading] = useState(true);
   const { ticketNumber } = useParams();
-  const { profiles } = useGetProfiles();
+  const { data: profiles = {} } = useQuery(getProfiles());
 
   const profileRef = useRef(profiles);
 

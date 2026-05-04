@@ -1,5 +1,4 @@
 import { useAuthContext } from "../../context/AuthContext";
-import { useGetApps } from "./getApps";
 import { TicketForm } from "./TicketForm";
 import type {
   FormValues,
@@ -10,6 +9,8 @@ import { supabase } from "../../supabase/supabaseClient";
 import { useFetchTicket } from "./fetchTicket";
 import { useParams } from "react-router";
 import { Spinner } from "../../utils/Spinner";
+import { useQuery } from "@tanstack/react-query";
+import { getApps } from "./getApps";
 
 export type Mode = "update" | "create";
 
@@ -41,7 +42,7 @@ const profileConfig: Record<"user" | "agent", Config> = {
 export const TicketPage = () => {
   const { profile } = useAuthContext();
   const { ticketDetails, isLoading } = useFetchTicket();
-  const { apps } = useGetApps();
+  const { data: apps = [] } = useQuery(getApps());
   const { ticketNumber } = useParams();
 
   const role = profile?.role as "user" | "agent";

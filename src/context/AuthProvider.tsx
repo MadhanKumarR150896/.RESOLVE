@@ -1,14 +1,9 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { AuthContext } from "./AuthContext";
 import { supabase } from "../supabase/supabaseClient";
 import type { Session } from "@supabase/supabase-js";
-import type { ProfileType } from "../supabase/requiredTypes";
+import { useQuery } from "@tanstack/react-query";
+import { fetchProfile } from "./fetchProfile";
 
 type AuthProviderProps = {
   children: ReactNode;
@@ -16,36 +11,12 @@ type AuthProviderProps = {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [session, setSession] = useState<Session | null>(null);
-  const [profile, setProfile] = useState<ProfileType | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
-
-  const fetchProfile = useCallback(async (profileId: string) => {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select(`id,name,email,role`)
-      .eq("id", profileId)
-      .single();
-    if (!error && data) {
-      setProfile({
-        id: data.id,
-        name: data.name,
-        email: data.email,
-        role: data.role,
-      });
-    }
-  }, []);
 
   useEffect(() => {
     const loadSession = async () => {
       const { data } = await supabase.auth.getSession();
       setSession(data.session);
-
-      if (data.session) {
-        await fetchProfile(data.session.user.id);
-      } else {
-        setProfile(null);
-      }
-
       setAuthLoading(false);
     };
 
@@ -55,25 +26,25 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-
-      if (session) {
-        fetchProfile(session.user.id);
-      } else {
-        setProfile(null);
-      }
+      setAuthLoading(false);
     });
     return () => {
       subscription.unsubscribe();
     };
-  }, [fetchProfile]);
+  }, []);
+
+  const { data: profile, isLoading: profileLoading } = useQuery({
+    ...fetchProfile(session?.user.id),
+    enabled: !!session?.user.id,
+  });
 
   const value = useMemo(
     () => ({
       session,
-      profile,
-      authLoading,
+      profile: profile ?? null,
+      authLoading: authLoading || profileLoading,
     }),
-    [session, profile, authLoading]
+    [session, authLoading, profile, profileLoading]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
