@@ -1,39 +1,40 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../supabase/supabaseClient";
+import { queryOptions } from "@tanstack/react-query";
 
 type Assignees = {
   id: string;
   name: string | null;
 };
 
-export const useGetAssignees = (assignee: string, isAssigned: boolean) => {
-  const [assignees, setAssignees] = useState<Assignees[]>([]);
+export const useDebouncedAssignee = (assignee: string, delay: number) => {
+  const [debouncedAssignee, setDebouncedAssignee] = useState("");
 
   useEffect(() => {
-    if (isAssigned) return;
+    if (assignee.length < 3) return;
+    const timeout = setTimeout(() => setDebouncedAssignee(assignee), delay);
+    return () => clearTimeout(timeout);
+  }, [assignee, delay]);
 
-    let isStale = false;
+  return debouncedAssignee;
+};
 
-    const timeout = setTimeout(async () => {
-      if (assignee.length < 3) {
-        setAssignees([]);
-        return;
-      }
+const fetchAssignees = async (assignee: string): Promise<Assignees[]> => {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id,name")
+    .eq("is_active", true)
+    .eq("role", "agent")
+    .ilike("name", `%${assignee}%`);
+  if (error) throw error;
+  if (!data) throw new Error("Unable to fetch assignees");
 
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("id,name")
-        .eq("is_active", true)
-        .ilike("name", `%${assignee}%`);
+  return data;
+};
 
-      if (!isStale && !error && data) setAssignees(data);
-    }, 400);
-
-    return () => {
-      clearTimeout(timeout);
-      isStale = true;
-    };
-  }, [assignee, isAssigned]);
-
-  return { assignees, setAssignees };
+export const getAssignees = (assignee: string) => {
+  return queryOptions({
+    queryKey: ["assignees", assignee],
+    queryFn: () => fetchAssignees(assignee),
+  });
 };

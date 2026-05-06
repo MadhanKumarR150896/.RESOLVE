@@ -32,7 +32,9 @@ import { twMerge } from "tailwind-merge";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { generateTicketInfo } from "../../utils/ticketSamples";
 import { supabase } from "../../supabase/supabaseClient";
-import { useGetAssignees } from "./getAssignees";
+import { useDebouncedAssignee, getAssignees } from "./getAssignees";
+import { useQuery } from "@tanstack/react-query";
+import { useToasterStore } from "../../store/toasterStore";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -58,7 +60,7 @@ export const TicketForm = ({
   const {
     register,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
     setValue,
     resetField,
     handleSubmit,
@@ -67,11 +69,17 @@ export const TicketForm = ({
   const [intHisView, setIntHisView] = useState(false);
   const [assignee, setAssignee] = useState("");
   const [isAssigned, setIsAssigned] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
   const config = profile?.role ? formConfig[profile.role] : null;
   const gridOne = config?.filter((field) => field.group === "grid1");
   const gridTwo = config?.filter((field) => field.group === "grid2");
-  const { assignees, setAssignees } = useGetAssignees(assignee, isAssigned);
+  const debouncedAssignee = useDebouncedAssignee(assignee, 300);
+  const { data: assignees = [] } = useQuery({
+    ...getAssignees(debouncedAssignee),
+    enabled: !!debouncedAssignee && !isAssigned,
+  });
   const assigneeRef = useRef<HTMLDivElement>(null);
+  const updateToaster = useToasterStore((state) => state.updateToaster);
 
   const ticketLocked = values?.isLocked && values?.lockedBy !== profile?.id;
   const assigneeLocked =
@@ -86,12 +94,16 @@ export const TicketForm = ({
   useEffect(() => {
     const setValues = () => {
       if (values && mode === "update") {
-        setValue("ticketId", values.ticketId);
-        setValue("severity", values.severity);
-        setValue("status", values.status);
-        setValue("assignedTo", values.assignedTo);
-        setValue("isLocked", values.isLocked);
-        setValue("lockedBy", values.lockedBy);
+        reset({
+          ticketId: values.ticketId,
+          severity: values.severity,
+          status: values.status,
+          assignedTo: values.assignedTo,
+          isLocked: values.isLocked,
+          lockedBy: values.lockedBy,
+          comments: "",
+          intComments: "",
+        });
         if (values.assignedName) {
           setAssignee(values.assignedName);
           setIsAssigned(true);
@@ -99,7 +111,7 @@ export const TicketForm = ({
       }
     };
     setValues();
-  }, [values, mode, setValue]);
+  }, [values, mode, reset]);
 
   useEffect(() => {
     const handleAssigneeDrop = (e: MouseEvent) => {
@@ -107,13 +119,13 @@ export const TicketForm = ({
         assigneeRef.current &&
         !assigneeRef.current.contains(e.target as Node)
       )
-        setAssignees([]);
+        setShowDropdown(false);
     };
 
     document.addEventListener("mousedown", handleAssigneeDrop);
 
     return () => document.removeEventListener("mousedown", handleAssigneeDrop);
-  }, [setAssignees]);
+  }, [setShowDropdown]);
 
   const fieldValues = (field: FieldProps, values: TicketDetails | null) => {
     if (field.props.id === "createdBy" && mode === "create")
@@ -213,16 +225,34 @@ export const TicketForm = ({
   const handleonSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
       const response = await onSubmit(data);
-      console.log(response);
       if (response.success) {
+        updateToaster({
+          type: "success",
+          message:
+            response.message !== null ? response.message : "Successfully done",
+        });
         if (mode === "create") reset();
         if (mode === "update") {
           resetField("comments");
           resetField("intComments");
         }
       }
+
+      if (!response.success) {
+        updateToaster({
+          type: "error",
+          message:
+            response.message !== null ? response.message : "Please try again",
+        });
+      }
     } catch (error) {
-      console.log(error);
+      updateToaster({
+        type: "error",
+        message:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred",
+      });
     }
   };
 
@@ -318,10 +348,14 @@ export const TicketForm = ({
                         ? {
                             value: assignee,
                             onChange: (e) => {
-                              setAssignee(e.target.value);
-                              if (e.target.value === "")
-                                setValue("assignedTo", null);
+                              const val = e.target.value;
+                              setAssignee(val);
+                              if (val === "")
+                                setValue("assignedTo", null, {
+                                  shouldDirty: true,
+                                });
                               setIsAssigned(false);
+                              setShowDropdown(val.length > 2);
                             },
                             disabled:
                               ticketLocked || assigneeLocked || ticketClosed,
@@ -330,7 +364,7 @@ export const TicketForm = ({
                         : {})}
                       {...(field.props as Inputprops)}
                     />
-                    {assignees && assignees.length > 0 && (
+                    {assignees.length > 0 && showDropdown && (
                       <div className="absolute border rounded max-h-30 overflow-y-auto w-full p-1 grid gap-1 z-10 bg-neutral-200">
                         {assignees.map((val, i) => (
                           <div
@@ -338,10 +372,12 @@ export const TicketForm = ({
                             key={`${val.id}-${i}`}
                             onClick={() => {
                               if (val.name) {
-                                setValue("assignedTo", val.id);
+                                setValue("assignedTo", val.id, {
+                                  shouldDirty: true,
+                                });
                                 setAssignee(val.name);
                                 setIsAssigned(true);
-                                setAssignees([]);
+                                setShowDropdown(false);
                               }
                             }}
                           >
@@ -374,6 +410,7 @@ export const TicketForm = ({
                             : undefined
                       }
                       disabled={
+                        (field.props.id === "submit" && !isDirty) ||
                         isSubmitting ||
                         (field.props.id === "submit" && ticketLocked) ||
                         (field.props.id === "submit" && ticketClosed)

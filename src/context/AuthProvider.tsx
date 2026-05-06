@@ -3,7 +3,7 @@ import { AuthContext } from "./AuthContext";
 import { supabase } from "../supabase/supabaseClient";
 import type { Session } from "@supabase/supabase-js";
 import { useQuery } from "@tanstack/react-query";
-import { fetchProfile } from "./fetchProfile";
+import { getProfile } from "./getProfile";
 
 type AuthProviderProps = {
   children: ReactNode;
@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, []);
 
   const { data: profile, isLoading: profileLoading } = useQuery({
-    ...fetchProfile(session?.user.id),
+    ...getProfile(session?.user.id),
     enabled: !!session?.user.id,
   });
 

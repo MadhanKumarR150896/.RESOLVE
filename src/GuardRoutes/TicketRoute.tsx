@@ -1,13 +1,13 @@
 import { Navigate, Outlet } from "react-router";
-import { useFetchTicket } from "../pages/Ticket/fetchTicket";
+import { useTicketDetails } from "../pages/Ticket/ticketDetails";
 import { Spinner } from "../utils/Spinner";
 import { useAuthContext } from "../context/AuthContext";
 
 export const TicketRoute = () => {
-  const { ticketDetails, isLoading } = useFetchTicket();
+  const { ticketDetails, ticketLoading } = useTicketDetails();
   const { profile } = useAuthContext();
 
-  if (isLoading) return <Spinner />;
+  if (ticketLoading) return <Spinner />;
 
   if (!ticketDetails)
     return <Navigate to={`/dashboard/${profile?.role}`} replace />;

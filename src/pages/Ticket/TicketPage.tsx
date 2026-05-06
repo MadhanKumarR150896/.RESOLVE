@@ -6,9 +6,8 @@ import type {
   ReturnType,
 } from "../../supabase/requiredTypes";
 import { supabase } from "../../supabase/supabaseClient";
-import { useFetchTicket } from "./fetchTicket";
+import { useTicketDetails } from "./ticketDetails";
 import { useParams } from "react-router";
-import { Spinner } from "../../utils/Spinner";
 import { useQuery } from "@tanstack/react-query";
 import { getApps } from "./getApps";
 
@@ -41,9 +40,9 @@ const profileConfig: Record<"user" | "agent", Config> = {
 
 export const TicketPage = () => {
   const { profile } = useAuthContext();
-  const { ticketDetails, isLoading } = useFetchTicket();
-  const { data: apps = [] } = useQuery(getApps());
   const { ticketNumber } = useParams();
+  const { ticketDetails } = useTicketDetails();
+  const { data: apps = [] } = useQuery(getApps());
 
   const role = profile?.role as "user" | "agent";
   const mode: Mode = ticketNumber ? "update" : "create";
@@ -89,14 +88,12 @@ export const TicketPage = () => {
     return data;
   };
 
-  if (ticketNumber && isLoading) return <Spinner />;
-
   return (
     <TicketForm
       onSubmit={handleOnSubmit}
       className={config.className}
       profile={profile}
-      values={ticketDetails}
+      values={ticketDetails ?? null}
       apps={apps}
       mode={mode}
     />

@@ -2,14 +2,14 @@ import { queryOptions } from "@tanstack/react-query";
 import type { AppType } from "../../supabase/requiredTypes";
 import { supabase } from "../../supabase/supabaseClient";
 
-const apps = async (): Promise<AppType[]> => {
+const fetchApps = async (): Promise<AppType[]> => {
   const { data, error } = await supabase
     .from("apps")
     .select("id,name")
     .order("name", { ascending: true });
 
   if (error) throw error;
-  if (!data) throw new Error("Couldn't fetch apps");
+  if (!data) throw new Error("Unable to fetch apps");
 
   return data;
 };
@@ -17,7 +17,7 @@ const apps = async (): Promise<AppType[]> => {
 export const getApps = () => {
   return queryOptions({
     queryKey: ["apps"],
-    queryFn: () => apps(),
+    queryFn: () => fetchApps(),
     staleTime: Infinity,
     refetchOnWindowFocus: false,
   });
