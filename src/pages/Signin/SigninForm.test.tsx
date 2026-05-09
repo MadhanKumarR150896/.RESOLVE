@@ -1,28 +1,29 @@
 import { SigninForm } from "./SigninForm";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import userEvent from "@testing-library/user-event";
-import { render, screen } from "@testing-library/react";
-import { AuthContext } from "../../context/AuthContext";
-import type { AuthContextType } from "../../context/AuthContext";
+import { cleanup, render, screen } from "@testing-library/react";
+import { useSupabaseAuth } from "./supabaseAuth";
+
+vi.mock("./supabaseAuth");
 
 describe("Signin Form", () => {
-  const user = userEvent.setup();
-
-  const mockValue: Pick<AuthContextType, "authLoading"> = {
-    authLoading: false,
-  };
+  let user: ReturnType<typeof userEvent.setup>;
+  const mockSignin = vi.fn();
+  const mockSignout = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
+    user = userEvent.setup();
+
+    vi.mocked(useSupabaseAuth).mockReturnValue({
+      supabaseSignIn: mockSignin,
+      supabaseSignout: mockSignout,
+    });
+
+    render(<SigninForm />);
   });
 
   test("Checks if the fields exist", () => {
-    render(
-      <AuthContext.Provider value={mockValue as AuthContextType}>
-        <SigninForm />
-      </AuthContext.Provider>
-    );
-
     expect(screen.getByLabelText("Email")).toBeInTheDocument();
     expect(screen.getByLabelText("Password")).toBeInTheDocument();
     expect(
@@ -31,12 +32,6 @@ describe("Signin Form", () => {
   });
 
   test("To check password visibility", async () => {
-    render(
-      <AuthContext.Provider value={mockValue as AuthContextType}>
-        <SigninForm />
-      </AuthContext.Provider>
-    );
-
     const password = screen.getByLabelText("Password");
     const toggleButton = screen.getByRole("button", { name: /show password/i });
 
@@ -47,17 +42,33 @@ describe("Signin Form", () => {
   });
 
   test("Shows error check while submitting with empty fields", async () => {
-    render(
-      <AuthContext.Provider value={mockValue as AuthContextType}>
-        <SigninForm />
-      </AuthContext.Provider>
-    );
-
     await user.click(screen.getByRole("button", { name: /sign in/i }));
 
-    expect(
-      await screen.findByText(/password is required/i)
-    ).toBeInTheDocument();
-    expect(await screen.findByText(/email is required/i)).toBeInTheDocument();
+    expect(screen.getByText(/password is required/i)).toBeInTheDocument();
+    expect(screen.getByText(/email is required/i)).toBeInTheDocument();
+
+    expect(mockSignin).not.toHaveBeenCalled();
+  });
+
+  test("To check if signin is called when entering valid data", async () => {
+    mockSignin.mockResolvedValue({
+      success: true,
+    });
+    cleanup();
+    render(<SigninForm />);
+
+    await user.type(screen.getByLabelText(/email/i), "user1@resolve.com");
+    await user.type(screen.getByLabelText(/Password/), "resolve@user");
+    await user.click(screen.getByRole("button", { name: /sign in/i }));
+
+    expect(mockSignin).toHaveBeenCalled();
+  });
+
+  test("To check if signin is not called when entering invalid data", async () => {
+    await user.type(screen.getByLabelText(/email/i), "user1@gmail.com");
+    await user.type(screen.getByLabelText(/Password/), "resolve@user");
+    await user.click(screen.getByRole("button", { name: /sign in/i }));
+
+    expect(mockSignin).not.toHaveBeenCalled();
   });
 });

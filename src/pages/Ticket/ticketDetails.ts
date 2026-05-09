@@ -5,7 +5,7 @@ import type { history, TicketDetails } from "../../supabase/requiredTypes";
 import { useQuery } from "@tanstack/react-query";
 import { getProfiles } from "./getProfiles";
 import { getTicket } from "./getTicket";
-import { queryClient } from "../../main";
+import { queryClient } from "../../tanstack/tanstackClient";
 
 export const useTicketDetails = () => {
   const { ticketNumber } = useParams();

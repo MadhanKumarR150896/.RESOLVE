@@ -14,10 +14,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
+
     const loadSession = async () => {
       const { data } = await supabase.auth.getSession();
-      setSession(data.session);
-      setAuthLoading(false);
+      if (isMounted) {
+        setSession(data.session);
+        setAuthLoading(false);
+      }
     };
 
     loadSession();
@@ -29,20 +33,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setAuthLoading(false);
     });
     return () => {
+      isMounted = false;
       subscription.unsubscribe();
     };
   }, []);
 
   const { data: profile, isLoading: profileLoading } = useQuery({
     ...getProfile(session?.user.id),
-    enabled: !!session?.user.id,
+    enabled: !authLoading && !!session?.user.id,
   });
 
   const value = useMemo(
     () => ({
       session,
-      profile: profile ?? null,
-      authLoading: authLoading || profileLoading,
+      profile: session ? (profile ?? null) : null,
+      authLoading: authLoading || (!!session && profileLoading),
     }),
     [session, authLoading, profile, profileLoading]
   );

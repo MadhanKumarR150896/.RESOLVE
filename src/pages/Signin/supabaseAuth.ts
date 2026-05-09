@@ -1,10 +1,11 @@
 import { supabase } from "../../supabase/supabaseClient";
 import { useCallback } from "react";
 import { useToasterStore } from "../../store/toasterStore";
-import { queryClient } from "../../main";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const useSupabaseAuth = () => {
   const updateToaster = useToasterStore((state) => state.updateToaster);
+  const queryClient = useQueryClient();
 
   const supabaseSignIn = useCallback(
     async (email: string, password: string): Promise<{ success: boolean }> => {
@@ -28,7 +29,7 @@ export const useSupabaseAuth = () => {
               type: "error",
               message: "Unauthorized: Account is deactivated",
             });
-          } else if (error.status) {
+          } else if (error.status !== undefined) {
             updateToaster({
               type: "error",
               message: error.message,
@@ -74,7 +75,7 @@ export const useSupabaseAuth = () => {
     });
 
     queryClient.clear();
-  }, [updateToaster]);
+  }, [updateToaster, queryClient]);
 
   return { supabaseSignIn, supabaseSignout };
 };
