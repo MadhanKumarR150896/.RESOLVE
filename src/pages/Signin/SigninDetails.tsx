@@ -1,4 +1,4 @@
-export const LoginDetails = () => (
+export const SigninDetails = () => (
   <div className="flex gap-8 text-sm">
     <div className="border border-neutral-500 p-2 rounded bg-neutral-100">
       <p className="bg-neutral-900 text-neutral-50 text-center rounded p-1 mb-2">

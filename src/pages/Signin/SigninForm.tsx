@@ -1,25 +1,30 @@
 import { Eye, EyeOff } from "lucide-react";
 import { useState, type SyntheticEvent } from "react";
 import { ErrorMessage } from "./ErrorMessage";
-import { useSupabaseAuth } from "../../supabase/supabaseSignIn";
-import { useAuthContext } from "../../context/AuthContext";
+import { useSupabaseAuth } from "../Signin/supabaseAuth";
+import { Button } from "../../utils/ReusableElements";
+import { useToasterStore } from "../../store/toasterStore";
 
-export const LoginForm = () => {
+export const SigninForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { supabaseSignIn } = useSupabaseAuth();
-  const { showStatus } = useAuthContext();
+  const updateToaster = useToasterStore((state) => state.updateToaster);
 
   const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitted(true);
     if (!email || !password || !email.endsWith("@resolve.com")) return;
+    setIsLoading(true);
     const result = await supabaseSignIn(email, password);
     if (result.success) {
       setIsSubmitted(false);
-      showStatus({ type: "signedin", message: "Successfully signed in" });
+      updateToaster({ type: "success", message: "Successfully signed in" });
+    } else {
+      setIsLoading(false);
     }
   };
 
@@ -33,7 +38,7 @@ export const LoginForm = () => {
     <form
       noValidate
       onSubmit={handleSubmit}
-      className="h-min w-94 border rounded-sm shadow shadow-neutral-500 p-8 flex flex-col gap-6 justify-center items-center"
+      className="h-min w-94 border rounded shadow shadow-neutral-500 p-8 flex flex-col gap-6 justify-center items-center"
     >
       <fieldset className="w-full flex flex-col" name="email">
         <div className="flex mb-2 items-baseline justify-between">
@@ -43,7 +48,7 @@ export const LoginForm = () => {
         <input
           id="email"
           name="email"
-          className="border-neutral-500 text-sm border bg-neutral-200/50 rounded px-2 py-1 outline-0"
+          className="input text-sm bg-neutral-200/50"
           type="email"
           placeholder="usedemoaccount@resolve.com"
           required
@@ -55,7 +60,7 @@ export const LoginForm = () => {
         <div className="flex mb-2 items-baseline justify-between">
           <label htmlFor="password">Password</label>
           {!password && isSubmitted && (
-            <p className="text-xs text-red-600">Password is required</p>
+            <p className="error">Password is required</p>
           )}
         </div>
         <div className="flex border rounded px-2 py-1 text-sm border-neutral-500 bg-neutral-200/50">
@@ -69,17 +74,18 @@ export const LoginForm = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <button type="button" onClick={handlePasswordVisibility}>
+          <button
+            type="button"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            onClick={handlePasswordVisibility}
+          >
             <Icon strokeWidth={1} size={20} />
           </button>
         </div>
       </fieldset>
-      <button
-        type="submit"
-        className="bg-neutral-900 text-neutral-100 w-full py-2 mt-4 rounded-md hover:cursor-pointer hover:bg-neutral-800"
-      >
+      <Button type="submit" className="w-full mt-4" disabled={isLoading}>
         Sign in
-      </button>
+      </Button>
     </form>
   );
 };

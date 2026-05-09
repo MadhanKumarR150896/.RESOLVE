@@ -17,6 +17,14 @@
 
 @layer components {
   .base {
-    @apply h-dvh overflow-hidden bg-neutral-50 text-neutral-900;
+    @apply flex flex-col min-h-dvh bg-neutral-50 text-neutral-900 text-base;
+  }
+
+  .input {
+    @apply border border-neutral-500 rounded px-2 py-1 outline-0;
+  }
+
+  .error {
+    @apply text-xs text-red-600;
   }
 }

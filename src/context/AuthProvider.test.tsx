@@ -1,36 +1,48 @@
 import { describe, test, expect, vi, beforeEach } from "vitest";
-import { render, screen, act, waitFor } from "@testing-library/react";
+import { act, waitFor, renderHook } from "@testing-library/react";
 import { supabase } from "../supabase/supabaseClient";
-import { useAuthContext } from "./AuthContext";
 import { AuthProvider } from "./AuthProvider";
 import type { AuthChangeEvent } from "@supabase/supabase-js";
+import {
+  QueryClient,
+  QueryClientProvider,
+  queryOptions,
+} from "@tanstack/react-query";
+import { useAuthContext } from "./AuthContext";
+import { getProfile } from "./getProfile";
+import type { ProfileType } from "../supabase/requiredTypes";
 
 vi.mock("../supabase/supabaseClient");
+vi.mock("./getProfile");
 
-const TestComponent = () => {
-  const { profile, authLoading } = useAuthContext();
-
-  return (
-    <div>
-      <div data-testid="authLoading">{JSON.stringify(authLoading)}</div>
-      <div data-testid="profile">{JSON.stringify(profile)}</div>
-    </div>
-  );
-};
+type Callback = (
+  event: AuthChangeEvent,
+  session: { user: { id: string; email: string } } | null
+) => void;
 
 describe("Auth Provider", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
+  let queryClient: QueryClient;
 
   const mockProfile = {
     id: "1",
     email: "user1@resolve.com",
+    name: "User 1",
     role: "user",
   };
 
-  test("Renders initial value", () => {
-    supabase.auth.onAuthStateChange = vi.fn().mockReturnValue({
+  beforeEach(() => {
+    vi.clearAllMocks();
+
+    queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+          gcTime: 0,
+        },
+      },
+    });
+
+    vi.mocked(supabase).auth.onAuthStateChange = vi.fn().mockReturnValue({
       data: {
         subscription: {
           unsubscribe: vi.fn(),
@@ -38,30 +50,43 @@ describe("Auth Provider", () => {
       },
     });
 
-    supabase.auth.getSession = vi.fn().mockResolvedValue({
-      data: { session: null },
+    vi.mocked(supabase).auth.getSession = vi.fn().mockResolvedValue({
+      data: {
+        session: null,
+      },
     });
 
-    render(
-      <AuthProvider>
-        <TestComponent />
-      </AuthProvider>,
-    );
+    vi.mocked(getProfile).mockImplementation((profileId) => {
+      return queryOptions({
+        queryKey: ["profile", profileId],
+        queryFn: async () => {
+          return mockProfile as ProfileType;
+        },
+      });
+    });
+  });
 
-    expect(screen.getByTestId("authLoading")).toHaveTextContent("true");
-    expect(screen.getByTestId("profile")).toHaveTextContent("null");
+  const wrapper = ({ children }: { children: React.ReactNode }) => {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>{children}</AuthProvider>
+      </QueryClientProvider>
+    );
+  };
+
+  test("Renders initial value", () => {
+    vi.mocked(supabase).auth.getSession = vi
+      .fn()
+      .mockResolvedValue(new Promise(() => {}));
+
+    const { result } = renderHook(() => useAuthContext(), { wrapper });
+
+    expect(result.current.authLoading).toBe(true);
+    expect(result.current.session).toBe(null);
   });
 
   test("Loads existing session", async () => {
-    supabase.auth.onAuthStateChange = vi.fn().mockReturnValue({
-      data: {
-        subscription: {
-          unsubscribe: vi.fn(),
-        },
-      },
-    });
-
-    supabase.auth.getSession = vi.fn().mockResolvedValue({
+    vi.mocked(supabase).auth.getSession = vi.fn().mockResolvedValue({
       data: {
         session: {
           user: {
@@ -72,71 +97,37 @@ describe("Auth Provider", () => {
       },
     });
 
-    supabase.from = vi.fn().mockReturnValue({
-      select: () => ({
-        eq: () => ({
-          single: vi.fn().mockResolvedValue({
-            data: mockProfile,
-            error: null,
-          }),
-        }),
-      }),
-    });
-
-    render(
-      <AuthProvider>
-        <TestComponent />
-      </AuthProvider>,
-    );
+    const { result } = renderHook(() => useAuthContext(), { wrapper });
 
     await waitFor(() => {
-      expect(supabase.from).toHaveBeenCalled();
+      expect(result.current.authLoading).toBe(false);
     });
-    expect(screen.getByTestId("authLoading")).toHaveTextContent("false");
-    expect(screen.getByTestId("profile")).toHaveTextContent(
-      "user1@resolve.com",
-    );
+
+    expect(getProfile).toHaveBeenCalledWith("1");
+    expect(result.current.profile).toEqual(mockProfile);
   });
 
-  test("Loads from authStateChange", async () => {
-    let authCallback: (
-      event: AuthChangeEvent,
-      session: { user: { id: string; email: string } },
-    ) => void;
+  test("Signin through authStateChange", async () => {
+    let authCallback: Callback;
 
-    supabase.auth.getSession = vi.fn().mockResolvedValue({
-      data: {
-        session: null,
-      },
-    });
-
-    supabase.auth.onAuthStateChange = vi.fn().mockImplementation((callback) => {
-      authCallback = callback;
-      return {
-        data: {
-          subscription: {
-            unsubscribe: vi.fn(),
+    vi.mocked(supabase).auth.onAuthStateChange = vi
+      .fn()
+      .mockImplementation((callback) => {
+        authCallback = callback;
+        return {
+          data: {
+            subscription: {
+              unsubscribe: vi.fn(),
+            },
           },
-        },
-      };
-    });
+        };
+      });
 
-    supabase.from = vi.fn().mockReturnValue({
-      select: () => ({
-        eq: () => ({
-          single: vi.fn().mockResolvedValue({
-            data: mockProfile,
-            error: null,
-          }),
-        }),
-      }),
-    });
+    const { result } = renderHook(() => useAuthContext(), { wrapper });
 
-    render(
-      <AuthProvider>
-        <TestComponent />
-      </AuthProvider>,
-    );
+    await waitFor(() => {
+      expect(result.current.authLoading).toBe(false);
+    });
 
     act(() => {
       authCallback("SIGNED_IN", {
@@ -148,10 +139,40 @@ describe("Auth Provider", () => {
     });
 
     await waitFor(() => {
-      expect(supabase.from).toHaveBeenCalled();
+      expect(getProfile).toHaveBeenCalledWith("1");
+      expect(result.current.profile).toEqual(mockProfile);
     });
-    expect(screen.getByTestId("profile")).toHaveTextContent(
-      "user1@resolve.com",
-    );
+  });
+
+  test("Signout through authStateChange", async () => {
+    let authCallback: Callback;
+
+    vi.mocked(supabase).auth.onAuthStateChange = vi
+      .fn()
+      .mockImplementation((callback) => {
+        authCallback = callback;
+        return {
+          data: {
+            subscription: {
+              unsubscribe: vi.fn(),
+            },
+          },
+        };
+      });
+
+    const { result } = renderHook(() => useAuthContext(), { wrapper });
+
+    await waitFor(() => {
+      expect(result.current.authLoading).toBe(false);
+    });
+
+    act(() => {
+      authCallback("SIGNED_OUT", null);
+    });
+
+    await waitFor(() => {
+      expect(result.current.session).toEqual(null);
+      expect(result.current.profile).toEqual(null);
+    });
   });
 });
