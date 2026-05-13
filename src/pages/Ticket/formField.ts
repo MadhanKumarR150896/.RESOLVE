@@ -57,6 +57,7 @@ const commonFields: FieldProps[] = [
     props: {
       label: "Ticket Number",
       id: "ticketNumber",
+      className: "text-sm",
     },
   },
   {
@@ -66,6 +67,7 @@ const commonFields: FieldProps[] = [
     props: {
       id: "ticketId",
       type: "hidden",
+      className: "text-sm",
     },
     notVisible: ({ mode }) => mode === "create",
   },
@@ -76,26 +78,32 @@ const commonFields: FieldProps[] = [
     props: {
       label: "Date and Time",
       id: "createdAt",
+      className: "text-sm",
     },
   },
   {
     name: "Span",
     group: "grid1",
     grid: "row-1 col-3",
-    props: { label: "Created by", id: "createdBy" },
+    props: { label: "Created by", id: "createdBy", className: "text-sm" },
   },
   {
     name: "Span",
     group: "grid1",
     grid: "row-2 col-1",
-    props: { label: "Status", id: "status", placeHolderText: "Open" },
+    props: {
+      label: "Status",
+      id: "status",
+      className: "text-sm",
+      placeHolderText: "Open",
+    },
     notVisible: ({ mode, role }) => role === "agent" && mode === "update",
   },
   {
     name: "Span",
     group: "grid1",
     grid: "row-2 col-2",
-    props: { label: "Application", id: "application" },
+    props: { label: "Application", className: "text-sm", id: "application" },
     notVisible: ({ mode }) => mode === "create",
   },
   {
@@ -105,6 +113,7 @@ const commonFields: FieldProps[] = [
     props: {
       label: "Application",
       id: "application",
+      className: "text-sm",
     },
     isRequired: () => "*required",
     notVisible: ({ mode }) => mode === "update",
@@ -154,6 +163,7 @@ const commonFields: FieldProps[] = [
     props: {
       label: "Severity",
       id: "severity",
+      className: "text-sm",
     },
     isRequired: () => "*required",
   },
@@ -165,6 +175,7 @@ const commonFields: FieldProps[] = [
       label: "Description",
       id: "description",
       type: "text",
+      className: "text-sm",
       placeholder: "Please provide a description about the issue",
     },
     isRequired: () => "*required",
@@ -176,7 +187,9 @@ const commonFields: FieldProps[] = [
     grid: "row-3 col-span-2",
     props: {
       label: "Description",
+      className: "text-sm truncate",
       id: "description",
+      style: { scrollbarWidth: "none" },
     },
     notVisible: ({ mode }) => mode === "create",
   },
@@ -186,6 +199,7 @@ const commonFields: FieldProps[] = [
     grid: "row-3 col-3",
     props: {
       label: "Assigned to",
+      className: "text-sm",
       id: "assignedName",
     },
     notVisible: ({ role, mode }) => role === "agent" && mode === "update",
@@ -236,6 +250,7 @@ export const formConfig: Record<string, FieldProps[]> = {
       props: {
         label: "Comments",
         id: "comments",
+        className: "text-sm",
         placeholder: "Please provide more details here",
       },
     },
@@ -267,6 +282,7 @@ export const formConfig: Record<string, FieldProps[]> = {
       props: {
         label: "Status",
         id: "status",
+        className: "text-sm",
       },
       notVisible: ({ mode, role }) => role === "agent" && mode === "create",
     },
@@ -277,6 +293,7 @@ export const formConfig: Record<string, FieldProps[]> = {
       props: {
         id: "assignedTo",
         type: "hidden",
+        className: "text-sm",
       },
     },
     {
@@ -287,6 +304,7 @@ export const formConfig: Record<string, FieldProps[]> = {
         label: "Assigned to",
         id: "assignedName",
         type: "text",
+        className: "text-sm",
       },
       notVisible: ({ mode, role }) => mode === "create" && role === "agent",
     },
@@ -344,6 +362,7 @@ export const formConfig: Record<string, FieldProps[]> = {
       grid: "row-2 col-1",
       props: {
         id: "comments",
+        className: "text-sm",
         placeholder: "Please provide more details here",
       },
     },
@@ -354,7 +373,7 @@ export const formConfig: Record<string, FieldProps[]> = {
       props: {
         id: "intComments",
         placeholder: "Please provide internal details here",
-        className: "border-neutral-900",
+        className: "border-neutral-900 text-sm",
       },
     },
     {
@@ -381,6 +400,7 @@ export const formConfig: Record<string, FieldProps[]> = {
       props: {
         id: "lockedBy",
         type: "hidden",
+        className: "text-sm",
       },
       notVisible: ({ mode, role }) => role === "agent" && mode === "create",
     },

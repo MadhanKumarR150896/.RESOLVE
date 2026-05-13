@@ -63,7 +63,7 @@ export const Span = ({
           children ? "bg-neutral-200/50" : ""
         )}
       >
-        <span className="w-full py-1 overflow-x-clip" {...props}>
+        <span className="w-full py-1 overflow-x-auto" {...props}>
           {children ? children : placeHolderText}
         </span>
       </div>
@@ -163,30 +163,35 @@ export type SearchBoxProps = {
   buttonProps?: React.ButtonHTMLAttributes<HTMLButtonElement>;
 };
 
-export const SearchBox = ({
-  className,
-  inputProps,
-  iconSize = 18,
-  iconStrokeWidth = 1,
-  buttonProps,
-}: SearchBoxProps) => {
-  return (
-    <div
-      className={cn(
-        "flex justify-between border rounded py-1 px-2 gap-2 border-neutral-500",
-        className
-      )}
-    >
-      <input
-        {...inputProps}
-        className={cn("outline-none", inputProps?.className)}
-      />
-      <button type="button" {...buttonProps}>
-        <Search strokeWidth={iconStrokeWidth} size={iconSize} />
-      </button>
-    </div>
-  );
-};
+export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
+  (
+    { className, inputProps, iconSize = 18, iconStrokeWidth = 1, buttonProps },
+    ref
+  ) => {
+    const customId = useId();
+    const inputId = inputProps?.id || customId;
+    return (
+      <div
+        className={cn(
+          "flex justify-between border rounded py-1 px-2 gap-2 border-neutral-500",
+          className
+        )}
+      >
+        <input
+          {...inputProps}
+          id={inputId}
+          ref={ref}
+          className={cn("outline-none", inputProps?.className)}
+        />
+        <button type="button" {...buttonProps}>
+          <Search strokeWidth={iconStrokeWidth} size={iconSize} />
+        </button>
+      </div>
+    );
+  }
+);
+
+SearchBox.displayName = "SearchBox";
 
 export type TextAreaProps = {
   label?: string;

@@ -41,7 +41,7 @@ export const useToasterStore = create<State & Action>()(
             message: "",
           },
         });
-      }, 4000);
+      }, 2000);
 
       set({ timeoutId: newId });
     },

@@ -4,8 +4,7 @@ import { PublicRoute } from "./GuardRoutes/PublicRoute";
 import { SigninPage } from "./pages/Signin/SigninPage";
 import { ProtectedRoute } from "./GuardRoutes/ProtectedRoute";
 import { PageLayout } from "./pages/components/PageLayout";
-import { AgentDashboard } from "./pages/Dashboard/AgentDashboard";
-import { UserDashboard } from "./pages/Dashboard/UserDashboard";
+import { TicketsDash } from "./pages/Dashboard/TicketsDash";
 import { TicketPage } from "./pages/Ticket/TicketPage";
 import { Navigate } from "react-router";
 import { TicketRoute } from "./GuardRoutes/TicketRoute";
@@ -21,7 +20,7 @@ const App = () => {
         </Route>
         <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
           <Route path="/dashboard/user" element={<PageLayout />}>
-            <Route index element={<UserDashboard />} />
+            <Route index element={<TicketsDash />} />
             <Route path="ticket" element={<TicketPage />} />
             <Route element={<TicketRoute />}>
               <Route path="ticket/:ticketNumber" element={<TicketPage />} />
@@ -30,7 +29,7 @@ const App = () => {
         </Route>
         <Route element={<ProtectedRoute allowedRoles={["agent"]} />}>
           <Route path="/dashboard/agent" element={<PageLayout />}>
-            <Route index element={<AgentDashboard />} />
+            <Route index element={<TicketsDash />} />
             <Route path="ticket" element={<TicketPage />} />
             <Route element={<TicketRoute />}>
               <Route path="ticket/:ticketNumber" element={<TicketPage />} />
