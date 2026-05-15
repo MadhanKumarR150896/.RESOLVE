@@ -7,7 +7,7 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-type ButtonVariant = "black" | "faker";
+type ButtonVariant = "black" | "faker" | "backtotop";
 
 export type ButtonProps = {
   label?: string;
@@ -19,6 +19,8 @@ const variants: Record<ButtonVariant, string> = {
     "bg-neutral-900 text-neutral-100 rounded py-2 hover:cursor-pointer hover:bg-neutral-800 font-semibold",
   faker:
     "bg-green-800 text-neutral-50 rounded py-2 hover:cursor-pointer hover:bg-green-700 font-semibold",
+  backtotop:
+    "fixed bottom-10 right-15 z-50 bg-neutral-200 h-10 w-10 flex items-center justify-center rounded-3xl border border-neutral-500",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -63,7 +65,7 @@ export const Span = ({
           children ? "bg-neutral-200/50" : ""
         )}
       >
-        <span className="w-full py-1 overflow-x-clip" {...props}>
+        <span className="w-full py-1 overflow-x-auto" {...props}>
           {children ? children : placeHolderText}
         </span>
       </div>
@@ -163,30 +165,35 @@ export type SearchBoxProps = {
   buttonProps?: React.ButtonHTMLAttributes<HTMLButtonElement>;
 };
 
-export const SearchBox = ({
-  className,
-  inputProps,
-  iconSize = 18,
-  iconStrokeWidth = 1,
-  buttonProps,
-}: SearchBoxProps) => {
-  return (
-    <div
-      className={cn(
-        "flex justify-between border rounded py-1 px-2 gap-2 border-neutral-500",
-        className
-      )}
-    >
-      <input
-        {...inputProps}
-        className={cn("outline-none", inputProps?.className)}
-      />
-      <button type="button" {...buttonProps}>
-        <Search strokeWidth={iconStrokeWidth} size={iconSize} />
-      </button>
-    </div>
-  );
-};
+export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
+  (
+    { className, inputProps, iconSize = 18, iconStrokeWidth = 1, buttonProps },
+    ref
+  ) => {
+    const customId = useId();
+    const inputId = inputProps?.id || customId;
+    return (
+      <div
+        className={cn(
+          "flex justify-between border rounded py-1 px-2 gap-2 border-neutral-500",
+          className
+        )}
+      >
+        <input
+          {...inputProps}
+          id={inputId}
+          ref={ref}
+          className={cn("outline-none", inputProps?.className)}
+        />
+        <button type="button" {...buttonProps}>
+          <Search strokeWidth={iconStrokeWidth} size={iconSize} />
+        </button>
+      </div>
+    );
+  }
+);
+
+SearchBox.displayName = "SearchBox";
 
 export type TextAreaProps = {
   label?: string;
@@ -305,3 +312,11 @@ export const SelectGroup = forwardRef<HTMLSelectElement, SelectGroupProps>(
 );
 
 SelectGroup.displayName = "SelectGroup";
+
+export const Spinner = () => {
+  return (
+    <div className="flex items-center justify-center h-screen">
+      <div className="h-10 w-10 border-4 border-gray-300 border-t-neutral-500 rounded-full animate-spin"></div>
+    </div>
+  );
+};

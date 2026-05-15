@@ -9,6 +9,16 @@ export type ProfileType = Omit<Profiles, "created_at" | "is_active">;
 
 export type AppType = Omit<Apps, "created_at" | "is_active">;
 
+export type TicketThumbnail = Pick<
+  Tickets,
+  | "id"
+  | "created_at"
+  | "status"
+  | "ticket_number"
+  | "updated_at"
+  | "description"
+> & { app: { name: Apps["name"] } };
+
 type comments = {
   comments: string;
   intComments: string;

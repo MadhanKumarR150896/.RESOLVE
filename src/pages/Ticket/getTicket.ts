@@ -1,6 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 import type { TicketDetails } from "../../supabase/requiredTypes";
 import { supabase } from "../../supabase/supabaseClient";
+import { formatDate } from "../../utils/formatDate";
 
 const fetchTicket = async (ticketNumber: string): Promise<TicketDetails> => {
   const { data, error } = await supabase
@@ -35,7 +36,7 @@ const fetchTicket = async (ticketNumber: string): Promise<TicketDetails> => {
   return {
     ticketId: data.id,
     ticketNumber: data.ticket_number,
-    createdAt: new Date(data.created_at).toDateString(),
+    createdAt: formatDate(data.created_at),
     createdBy: data.created_by.name,
     status: data.status,
     application: data.app.name,

@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router";
 import { useAuthContext } from "../context/AuthContext";
-import { Spinner } from "../utils/Spinner";
+import { Spinner } from "../utils/ReusableElements";
 
 type RouterProps = {
   allowedRoles: ("user" | "agent")[];

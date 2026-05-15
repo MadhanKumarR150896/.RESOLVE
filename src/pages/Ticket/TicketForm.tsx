@@ -32,9 +32,11 @@ import { twMerge } from "tailwind-merge";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { generateTicketInfo } from "../../utils/ticketSamples";
 import { supabase } from "../../supabase/supabaseClient";
-import { useDebouncedAssignee, getAssignees } from "./getAssignees";
+import { getAssignees } from "./getAssignees";
 import { useQuery } from "@tanstack/react-query";
 import { useToasterStore } from "../../store/toasterStore";
+import { formatDate } from "../../utils/formatDate";
+import { useDebouncedValue } from "../../utils/useDebouncedValue";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -73,7 +75,7 @@ export const TicketForm = ({
   const config = profile?.role ? formConfig[profile.role] : null;
   const gridOne = config?.filter((field) => field.group === "grid1");
   const gridTwo = config?.filter((field) => field.group === "grid2");
-  const debouncedAssignee = useDebouncedAssignee(assignee, 300);
+  const debouncedAssignee = useDebouncedValue(assignee, 300, 3);
   const { data: assignees = [] } = useQuery({
     ...getAssignees(debouncedAssignee),
     enabled: !!debouncedAssignee && !isAssigned,
@@ -162,8 +164,8 @@ export const TicketForm = ({
           <div key={`${val.is_internal}-${i}`} className="text-sm my-1">
             <span>{val.content}</span>
             <div className="text-xs text-neutral-500 mt-0.5">
-              <span>{new Date(val.createdAt).toLocaleString()} </span>
-              <span>/ {val.createdBy?.name ?? null}</span>
+              <span>Updated by {val.createdBy?.name ?? null} </span>
+              <span>( {formatDate(val.createdAt)} )</span>
             </div>
           </div>
         ));
@@ -260,6 +262,7 @@ export const TicketForm = ({
     <form
       onSubmit={handleSubmit(handleonSubmit)}
       className={className}
+      style={{ scrollbarWidth: "none" }}
       {...props}
     >
       {gridOne && gridOne.length > 0 && (
