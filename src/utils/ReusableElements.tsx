@@ -7,7 +7,7 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-type ButtonVariant = "black" | "faker";
+type ButtonVariant = "black" | "faker" | "backtotop";
 
 export type ButtonProps = {
   label?: string;
@@ -19,6 +19,8 @@ const variants: Record<ButtonVariant, string> = {
     "bg-neutral-900 text-neutral-100 rounded py-2 hover:cursor-pointer hover:bg-neutral-800 font-semibold",
   faker:
     "bg-green-800 text-neutral-50 rounded py-2 hover:cursor-pointer hover:bg-green-700 font-semibold",
+  backtotop:
+    "fixed bottom-10 right-15 z-50 bg-neutral-200 h-10 w-10 flex items-center justify-center rounded-3xl border border-neutral-500",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -310,3 +312,11 @@ export const SelectGroup = forwardRef<HTMLSelectElement, SelectGroupProps>(
 );
 
 SelectGroup.displayName = "SelectGroup";
+
+export const Spinner = () => {
+  return (
+    <div className="flex items-center justify-center h-screen">
+      <div className="h-10 w-10 border-4 border-gray-300 border-t-neutral-500 rounded-full animate-spin"></div>
+    </div>
+  );
+};

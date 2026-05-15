@@ -1,16 +1,9 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useAuthContext } from "../../context/AuthContext";
-import { useGetTickets } from "./getTickets";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { supabase } from "../../supabase/supabaseClient";
 
-export const useTickets = () => {
-  const { profile } = useAuthContext();
+export const useTicketsChannel = () => {
   const queryClient = useQueryClient();
-  const { data: tickets = [], isLoading: ticketsLoading } = useQuery({
-    ...useGetTickets(),
-    enabled: !!profile,
-  });
 
   useEffect(() => {
     const dashChannel = supabase
@@ -26,12 +19,21 @@ export const useTickets = () => {
           queryClient.invalidateQueries({ queryKey: ["tickets"] });
         }
       )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "tickets",
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["tickets"] });
+        }
+      )
       .subscribe();
 
     return () => {
       supabase.removeChannel(dashChannel);
     };
   }, [queryClient]);
-
-  return { tickets, ticketsLoading };
 };

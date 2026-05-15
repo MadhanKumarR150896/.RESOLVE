@@ -5,11 +5,11 @@ import { useAuthContext } from "../../context/AuthContext";
 import { useRef } from "react";
 import { supabase } from "../../supabase/supabaseClient";
 import { useToasterStore } from "../../store/toasterStore";
-import { useTickets } from "./useTickets";
+import { useTicketsChannel } from "./useTicketsChannel";
 
 export const TicketsDash = () => {
+  useTicketsChannel();
   const { profile } = useAuthContext();
-  const { tickets, ticketsLoading } = useTickets();
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
   const updateToaster = useToasterStore((state) => state.updateToaster);
@@ -52,6 +52,15 @@ export const TicketsDash = () => {
 
   return (
     <>
+      {profile?.role === "agent" && (
+        <div className="text-center px-8 py-4 text-[14px]">
+          <span className="bg-neutral-200 p-2 rounded">
+            <strong>Attention :</strong> You are currently viewing the shared
+            layout. A dedicated, feature-rich Agent Dashboard is currently in
+            development!
+          </span>
+        </div>
+      )}
       <div className="py-16 flex flex-col gap-2 min-w-60 w-70 mx-auto">
         <SearchBox
           ref={inputRef}
@@ -66,11 +75,7 @@ export const TicketsDash = () => {
           }}
         />
       </div>
-      <TicketsGrid
-        tickets={tickets}
-        role={profile?.role ?? null}
-        loading={ticketsLoading}
-      />
+      <TicketsGrid role={profile?.role ?? null} />
     </>
   );
 };

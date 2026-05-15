@@ -2,13 +2,13 @@ import { useEffect, useRef } from "react";
 import { useParams } from "react-router";
 import { supabase } from "../../supabase/supabaseClient";
 import type { history, TicketDetails } from "../../supabase/requiredTypes";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getProfiles } from "./getProfiles";
 import { getTicket } from "./getTicket";
-import { queryClient } from "../../tanstack/tanstackClient";
 
 export const useTicketDetails = () => {
   const { ticketNumber } = useParams();
+  const queryClient = useQueryClient();
   const { data: ticketDetails, isLoading: ticketLoading } = useQuery({
     ...getTicket(ticketNumber),
     enabled: !!ticketNumber,
@@ -93,7 +93,7 @@ export const useTicketDetails = () => {
     return () => {
       supabase.removeChannel(ticketChannel);
     };
-  }, [ticketDetails?.ticketId, ticketNumber]);
+  }, [ticketDetails?.ticketId, ticketNumber, queryClient]);
 
   return { ticketDetails, ticketLoading };
 };

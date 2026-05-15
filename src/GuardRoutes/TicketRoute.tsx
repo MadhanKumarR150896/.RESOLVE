@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from "react-router";
 import { useTicketDetails } from "../pages/Ticket/ticketDetails";
-import { Spinner } from "../utils/Spinner";
 import { useAuthContext } from "../context/AuthContext";
+import { Spinner } from "../utils/ReusableElements";
 
 export const TicketRoute = () => {
   const { ticketDetails, ticketLoading } = useTicketDetails();
