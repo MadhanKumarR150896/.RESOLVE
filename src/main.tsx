@@ -1,5 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import { BrowserRouter } from "react-router";
 import { AuthProvider } from "./context/AuthProvider.tsx";
 import "./index.css";
@@ -10,6 +11,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
+    <SpeedInsights />
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
