@@ -95,7 +95,7 @@ const commonFields: FieldProps[] = [
       label: "Status",
       id: "status",
       className: "text-sm",
-      placeHolderText: "Open",
+      placeHolderText: "open",
     },
     notVisible: ({ mode, role }) => role === "agent" && mode === "update",
   },
