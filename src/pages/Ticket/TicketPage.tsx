@@ -6,10 +6,11 @@ import type {
   ReturnType,
 } from "../../supabase/requiredTypes";
 import { supabase } from "../../supabase/supabaseClient";
-import { useTicketDetails } from "./ticketDetails";
+import { useTicketChannel } from "./useTicketChannel";
 import { useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { getApps } from "./getApps";
+import { useGetTicket } from "./getTicket";
 
 export type Mode = "update" | "create";
 
@@ -38,10 +39,11 @@ const profileConfig: Record<"user" | "agent", Config> = {
   },
 };
 
-export const TicketPage = () => {
+const TicketPage = () => {
+  useTicketChannel();
   const { profile } = useAuthContext();
   const { ticketNumber } = useParams();
-  const { ticketDetails } = useTicketDetails();
+  const { data: ticketDetails } = useQuery(useGetTicket(ticketNumber));
   const { data: apps = [] } = useQuery(getApps());
 
   const role = profile?.role as "user" | "agent";
@@ -99,3 +101,5 @@ export const TicketPage = () => {
     />
   );
 };
+
+export default TicketPage;

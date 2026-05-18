@@ -1,20 +1,17 @@
 import { useEffect, useRef } from "react";
-import { useParams } from "react-router";
 import { supabase } from "../../supabase/supabaseClient";
 import type { history, TicketDetails } from "../../supabase/requiredTypes";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getProfiles } from "./getProfiles";
-import { getTicket } from "./getTicket";
+import { useParams } from "react-router";
+import { useGetTicket } from "./getTicket";
 
-export const useTicketDetails = () => {
+export const useTicketChannel = () => {
   const { ticketNumber } = useParams();
+  const { data: ticketDetails } = useQuery(useGetTicket(ticketNumber));
+  const ticketId = ticketDetails?.ticketId;
   const queryClient = useQueryClient();
-  const { data: ticketDetails, isLoading: ticketLoading } = useQuery({
-    ...getTicket(ticketNumber),
-    enabled: !!ticketNumber,
-  });
   const { data: profiles = {} } = useQuery(getProfiles());
-
   const profileRef = useRef(profiles);
 
   useEffect(() => {
@@ -22,10 +19,11 @@ export const useTicketDetails = () => {
   }, [profiles]);
 
   useEffect(() => {
-    const ticketId = ticketDetails?.ticketId;
+    if (!ticketId) return;
+    console.log(ticketId, ticketNumber);
 
     const ticketChannel = supabase
-      .channel(`ticket-update`)
+      .channel(`ticketId`)
       .on(
         "postgres_changes",
         {
@@ -91,9 +89,7 @@ export const useTicketDetails = () => {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(ticketChannel);
+      ticketChannel.unsubscribe();
     };
-  }, [ticketDetails?.ticketId, ticketNumber, queryClient]);
-
-  return { ticketDetails, ticketLoading };
+  }, [ticketNumber, queryClient, ticketId]);
 };

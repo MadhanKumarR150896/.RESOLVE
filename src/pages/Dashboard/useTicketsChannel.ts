@@ -33,7 +33,7 @@ export const useTicketsChannel = () => {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(dashChannel);
+      dashChannel.unsubscribe();
     };
   }, [queryClient]);
 };

@@ -413,10 +413,10 @@ export const TicketForm = ({
                             : undefined
                       }
                       disabled={
-                        (field.props.id === "submit" && !isDirty) ||
                         isSubmitting ||
-                        (field.props.id === "submit" && ticketLocked) ||
-                        (field.props.id === "submit" && ticketClosed)
+                        (field.props.id === "submit" &&
+                          mode === "update" &&
+                          (!isDirty || ticketLocked || ticketClosed))
                       }
                       {...(field.props as ButtonProps)}
                     ></Button>

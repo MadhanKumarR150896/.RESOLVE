@@ -7,7 +7,7 @@ import { supabase } from "../../supabase/supabaseClient";
 import { useToasterStore } from "../../store/toasterStore";
 import { useTicketsChannel } from "./useTicketsChannel";
 
-export const TicketsDash = () => {
+const TicketsDash = () => {
   useTicketsChannel();
   const { profile } = useAuthContext();
   const navigate = useNavigate();
@@ -79,3 +79,5 @@ export const TicketsDash = () => {
     </>
   );
 };
+
+export default TicketsDash;

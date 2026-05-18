@@ -52,12 +52,13 @@ const fetchTicket = async (ticketNumber: string): Promise<TicketDetails> => {
   };
 };
 
-export const getTicket = (ticketNumber: string | undefined) => {
+export const useGetTicket = (ticketNumber: string | undefined) => {
   return queryOptions({
     queryKey: ["ticket", ticketNumber],
     queryFn: () => {
       if (!ticketNumber) throw new Error("Invalid Ticket Number");
       return fetchTicket(ticketNumber);
     },
+    enabled: !!ticketNumber,
   });
 };
