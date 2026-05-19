@@ -20,7 +20,6 @@ export const useTicketChannel = () => {
 
   useEffect(() => {
     if (!ticketId) return;
-    console.log(ticketId, ticketNumber);
 
     const ticketChannel = supabase
       .channel(`ticketId`)

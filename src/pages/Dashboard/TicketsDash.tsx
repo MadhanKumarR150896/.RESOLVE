@@ -34,7 +34,7 @@ const TicketsDash = () => {
 
   const searchTicket = async () => {
     const ticketNumber = inputRef.current?.value?.trim();
-    if (!ticketNumber || !profile) return;
+    if (!ticketNumber || ticketNumber.length !== 7 || !profile) return;
     await checkTicket(profile?.role, ticketNumber);
   };
 
@@ -44,10 +44,41 @@ const TicketsDash = () => {
     }
   };
 
-  const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleOnKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       await searchTicket();
-    } else if (e.key === "Escape") clearInput();
+      return;
+    }
+
+    if (e.key === "Escape") {
+      clearInput();
+      return;
+    }
+
+    if (e.ctrlKey || e.metaKey) {
+      return;
+    }
+
+    const allowedKeys = [
+      "Backspace",
+      "Delete",
+      "ArrowLeft",
+      "ArrowRight",
+      "Tab",
+    ];
+    if (allowedKeys.includes(e.key)) {
+      return;
+    }
+
+    if (!/^[0-9]$/.test(e.key)) {
+      e.preventDefault();
+    }
+  };
+
+  const handleOnPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const sanitised = e.clipboardData.getData("text").replace(/\D/g, "");
+    e.currentTarget.value = sanitised;
   };
 
   return (
@@ -64,7 +95,12 @@ const TicketsDash = () => {
       <div className="py-16 flex flex-col gap-2 min-w-60 w-70 mx-auto">
         <SearchBox
           ref={inputRef}
-          inputProps={{ onKeyDown: handleKeyDown }}
+          inputProps={{
+            inputMode: "numeric",
+            onKeyDown: handleOnKeyDown,
+            onPaste: handleOnPaste,
+            maxLength: 7,
+          }}
           buttonProps={{ onClick: searchTicket }}
         />
         <Button

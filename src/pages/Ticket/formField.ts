@@ -207,10 +207,10 @@ const commonFields: FieldProps[] = [
   {
     name: "Span",
     group: "grid2",
-    grid: "row-3 col-1 w-45 mbs-auto mbe-2.5",
+    grid: "row-3 col-1 self-end mbe-2.5",
     props: {
       id: "lockedName",
-      className: "h-6 border-none text-sm rounded",
+      className: "h-6 w-max border-none text-sm rounded",
     },
     notVisible: ({ mode }) => mode === "create",
   },
@@ -407,7 +407,7 @@ export const formConfig: Record<string, FieldProps[]> = {
     {
       name: "Input",
       group: "grid2",
-      grid: "row-3 col-2 mbs-auto mbe-3 justify-self-end",
+      grid: "row-3 col-2 mbe-3 place-self-end",
       props: {
         id: "isLocked",
         type: "checkbox",

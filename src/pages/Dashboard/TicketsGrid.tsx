@@ -61,7 +61,7 @@ export const TicketsGrid = ({ role }: { role: "user" | "agent" | null }) => {
       },
       {
         root: rootContainerRef.current,
-        rootMargin: "200px 0px 200px 0px",
+        rootMargin: "200px 0px 400px 0px",
         threshold: 0,
       }
     );

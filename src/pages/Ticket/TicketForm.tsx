@@ -368,7 +368,7 @@ export const TicketForm = ({
                       {...(field.props as Inputprops)}
                     />
                     {assignees.length > 0 && showDropdown && (
-                      <div className="absolute border rounded max-h-30 overflow-y-auto w-full p-1 grid gap-1 z-10 bg-neutral-200">
+                      <div className="absolute text-sm border rounded max-h-30 overflow-y-auto w-full p-1 grid gap-1 z-10 bg-neutral-200">
                         {assignees.map((val, i) => (
                           <div
                             className="cursor-pointer border rounded px-1 py-0.5 bg-neutral-50"
