@@ -4,7 +4,8 @@ A role-based internal ticketing dashboard to create, manage, track, and resolve 
 
 **Live Demo:** [https://resolve.madkum.com/]
 
-![Logo](/src/assets/Full_logo_L_S.svg)
+https://github.com/user-attachments/assets/610d595b-2704-455a-94cb-eacfabba5ef1
+
 
 ## Tech Stack
 
