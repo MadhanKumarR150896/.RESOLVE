@@ -22,7 +22,7 @@ export const useTicketChannel = () => {
     if (!ticketId) return;
 
     const ticketChannel = supabase
-      .channel(`ticketId`)
+      .channel(`${ticketId}`)
       .on(
         "postgres_changes",
         {
