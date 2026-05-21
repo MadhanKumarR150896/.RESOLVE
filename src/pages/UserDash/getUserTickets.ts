@@ -2,7 +2,7 @@ import { infiniteQueryOptions } from "@tanstack/react-query";
 import { supabase } from "../../supabase/supabaseClient";
 import type { TicketThumbnail } from "../../supabase/requiredTypes";
 
-const fetchTickets = async ({
+const fetchUserTickets = async ({
   pageParam,
 }: {
   pageParam: string;
@@ -25,10 +25,10 @@ const fetchTickets = async ({
   return { data, cursor };
 };
 
-export const useGetTickets = () => {
+export const getUserTickets = () => {
   return infiniteQueryOptions({
     queryKey: ["tickets"],
-    queryFn: ({ pageParam }) => fetchTickets({ pageParam }),
+    queryFn: ({ pageParam }) => fetchUserTickets({ pageParam }),
     initialPageParam: Number.MAX_SAFE_INTEGER.toString(),
     getNextPageParam: (lastPage) => lastPage.cursor,
   });

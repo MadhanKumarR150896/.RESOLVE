@@ -2,7 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { supabase } from "../../supabase/supabaseClient";
 
-export const useTicketsChannel = () => {
+export const useUserDashChannel = () => {
   const queryClient = useQueryClient();
 
   useEffect(() => {

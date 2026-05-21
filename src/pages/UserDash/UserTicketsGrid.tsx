@@ -4,7 +4,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { formatDate } from "../../utils/formatDate";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useGetTickets } from "./getTickets";
+import { getUserTickets } from "./getUserTickets";
 import { useAuthContext } from "../../context/AuthContext";
 import { Button, Spinner } from "../../utils/ReusableElements";
 import { ArrowUp } from "lucide-react";
@@ -21,7 +21,11 @@ const bgStatus = {
   closed: "bg-gray-300 text-neutral-900",
 };
 
-export const TicketsGrid = ({ role }: { role: "user" | "agent" | null }) => {
+export const UserTicketsGrid = ({
+  role,
+}: {
+  role: "user" | "agent" | null;
+}) => {
   const { profile } = useAuthContext();
   const {
     data: tickets,
@@ -30,7 +34,7 @@ export const TicketsGrid = ({ role }: { role: "user" | "agent" | null }) => {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    ...useGetTickets(),
+    ...getUserTickets(),
     enabled: !!profile,
   });
   const [arrowVisible, setArrowVisible] = useState(false);
