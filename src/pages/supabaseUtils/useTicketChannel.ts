@@ -2,9 +2,9 @@ import { useEffect, useRef } from "react";
 import { supabase } from "../../supabase/supabaseClient";
 import type { history, TicketDetails } from "../../supabase/requiredTypes";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getProfiles } from "./getProfiles";
+import { getProfiles } from "../Ticket/getProfiles";
 import { useParams } from "react-router";
-import { useGetTicket } from "./getTicket";
+import { useGetTicket } from "../Ticket/getTicket";
 
 export const useTicketChannel = () => {
   const { ticketNumber } = useParams();

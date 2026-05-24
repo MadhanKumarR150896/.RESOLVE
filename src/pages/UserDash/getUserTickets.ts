@@ -2,11 +2,16 @@ import { infiniteQueryOptions } from "@tanstack/react-query";
 import { supabase } from "../../supabase/supabaseClient";
 import type { TicketThumbnail } from "../../supabase/requiredTypes";
 
+export type BulkTickets = {
+  data: TicketThumbnail[];
+  cursor: string | null;
+};
+
 const fetchUserTickets = async ({
   pageParam,
 }: {
   pageParam: string;
-}): Promise<{ data: TicketThumbnail[]; cursor: string | null }> => {
+}): Promise<BulkTickets> => {
   const { data, error } = await supabase
     .from("tickets")
     .select(

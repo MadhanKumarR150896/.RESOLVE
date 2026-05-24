@@ -175,7 +175,7 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
     return (
       <div
         className={cn(
-          "flex justify-between border rounded py-1 px-2 border-neutral-500",
+          "flex justify-between border rounded py-1 px-2 border-neutral-500 w-full h-full",
           className
         )}
       >
@@ -183,7 +183,7 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
           {...inputProps}
           id={inputId}
           ref={ref}
-          className={cn("outline-none", inputProps?.className)}
+          className={cn("outline-none w-full", inputProps?.className)}
         />
         <button type="button" {...buttonProps}>
           <Search strokeWidth={iconStrokeWidth} size={iconSize} />
@@ -313,9 +313,11 @@ export const SelectGroup = forwardRef<HTMLSelectElement, SelectGroupProps>(
 
 SelectGroup.displayName = "SelectGroup";
 
-export const Spinner = () => {
+export const Spinner = ({
+  className,
+}: React.HTMLAttributes<HTMLDivElement>) => {
   return (
-    <div className="flex items-center justify-center h-screen">
+    <div className={cn("flex items-center justify-center h-screen", className)}>
       <div className="h-10 w-10 border-4 border-gray-300 border-t-neutral-500 rounded-full animate-spin"></div>
     </div>
   );

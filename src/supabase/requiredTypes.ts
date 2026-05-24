@@ -9,15 +9,15 @@ export type ProfileType = Omit<Profiles, "created_at" | "is_active">;
 
 export type AppType = Omit<Apps, "created_at" | "is_active">;
 
-export type TicketThumbnail = Pick<
-  Tickets,
-  | "id"
-  | "created_at"
-  | "status"
-  | "ticket_number"
-  | "updated_at"
-  | "description"
-> & { app: { name: Apps["name"] } };
+export type TicketThumbnail = {
+  id: Tickets["id"];
+  ticket_number: Tickets["ticket_number"];
+  created_at: Tickets["created_at"];
+  status: Tickets["status"];
+  updated_at: Tickets["updated_at"];
+  app: { name: Apps["name"] };
+  description: Tickets["description"];
+};
 
 type comments = {
   comments: string;
@@ -67,3 +67,4 @@ export type FunctionArgs = Required["public"]["Functions"][
   | "update_ticket_for_user"]["Args"];
 
 export type ReturnType = Required["public"]["CompositeTypes"]["type_response"];
+export type Metrics = Required["public"]["CompositeTypes"]["type_metrics"];

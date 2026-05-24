@@ -37,6 +37,7 @@ export const UserTicketsGrid = ({
     ...getUserTickets(),
     enabled: !!profile,
   });
+
   const [arrowVisible, setArrowVisible] = useState(false);
   const rootContainerRef = useRef<HTMLDivElement>(null);
   const topContainerRef = useRef<HTMLDivElement>(null);
@@ -48,6 +49,10 @@ export const UserTicketsGrid = ({
       behavior: "smooth",
     });
   };
+
+  useEffect(() => {
+    console.log(tickets);
+  }, [tickets]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(

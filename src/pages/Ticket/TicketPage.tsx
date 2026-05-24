@@ -6,7 +6,7 @@ import type {
   ReturnType,
 } from "../../supabase/requiredTypes";
 import { supabase } from "../../supabase/supabaseClient";
-import { useTicketChannel } from "./useTicketChannel";
+import { useTicketChannel } from "../supabaseUtils/useTicketChannel";
 import { useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { getApps } from "./getApps";

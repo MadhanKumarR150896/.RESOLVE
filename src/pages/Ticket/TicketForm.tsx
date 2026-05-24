@@ -32,7 +32,7 @@ import { twMerge } from "tailwind-merge";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { generateTicketInfo } from "../../utils/ticketSamples";
 import { supabase } from "../../supabase/supabaseClient";
-import { getAssignees } from "./getAssignees";
+import { getAssignees } from "../supabaseUtils/getAssignees";
 import { useQuery } from "@tanstack/react-query";
 import { useToasterStore } from "../../store/toasterStore";
 import { formatDate } from "../../utils/formatDate";
