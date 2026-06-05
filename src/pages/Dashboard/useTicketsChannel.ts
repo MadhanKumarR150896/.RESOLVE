@@ -1,11 +1,15 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { supabase } from "../../supabase/supabaseClient";
+import { useAuthContext } from "../../context/AuthContext";
 
-export const useUserDashChannel = () => {
+export const useTicketsChannel = () => {
   const queryClient = useQueryClient();
+  const { profile } = useAuthContext();
+  const ProfileRole = profile?.role ?? null;
 
   useEffect(() => {
+    if (!ProfileRole) return;
     const dashChannel = supabase
       .channel("tickets-channel")
       .on(
@@ -16,7 +20,11 @@ export const useUserDashChannel = () => {
           table: "tickets",
         },
         () => {
-          queryClient.invalidateQueries({ queryKey: ["tickets"] });
+          if (ProfileRole === "user")
+            queryClient.invalidateQueries({ queryKey: ["userTickets"] });
+
+          if (ProfileRole === "agent")
+            queryClient.invalidateQueries({ queryKey: ["allTickets"] });
         }
       )
       .on(
@@ -27,7 +35,11 @@ export const useUserDashChannel = () => {
           table: "tickets",
         },
         () => {
-          queryClient.invalidateQueries({ queryKey: ["tickets"] });
+          if (ProfileRole === "user") {
+            queryClient.invalidateQueries({ queryKey: ["userTickets"] });
+          }
+          if (ProfileRole === "agent")
+            queryClient.invalidateQueries({ queryKey: ["allTickets"] });
         }
       )
       .subscribe();
@@ -35,5 +47,5 @@ export const useUserDashChannel = () => {
     return () => {
       dashChannel.unsubscribe();
     };
-  }, [queryClient]);
+  }, [queryClient, ProfileRole]);
 };

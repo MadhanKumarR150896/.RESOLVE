@@ -9,8 +9,9 @@ import { Navigate } from "react-router";
 import { Spinner } from "./utils/ReusableElements";
 
 const SigninPage = lazy(() => import("./pages/Signin/SigninPage"));
-const UserDashboard = lazy(() => import("./pages/UserDash/UserDashboard"));
-const AgentDashboard = lazy(() => import("./pages/AgentDash/AgentDashboard"));
+const TicketsDashboard = lazy(
+  () => import("./pages/Dashboard/TicketsDashboard")
+);
 const TicketPage = lazy(() => import("./pages/Ticket/TicketPage"));
 
 const App = () => {
@@ -25,7 +26,7 @@ const App = () => {
           </Route>
           <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
             <Route path="/dashboard/user" element={<PageLayout />}>
-              <Route index element={<UserDashboard />} />
+              <Route index element={<TicketsDashboard />} />
               <Route path="ticket" element={<TicketPage />} />
               <Route element={<TicketRoute />}>
                 <Route path="ticket/:ticketNumber" element={<TicketPage />} />
@@ -34,7 +35,7 @@ const App = () => {
           </Route>
           <Route element={<ProtectedRoute allowedRoles={["agent"]} />}>
             <Route path="/dashboard/agent" element={<PageLayout />}>
-              <Route index element={<AgentDashboard />} />
+              <Route index element={<TicketsDashboard />} />
               <Route path="ticket" element={<TicketPage />} />
               <Route element={<TicketRoute />}>
                 <Route path="ticket/:ticketNumber" element={<TicketPage />} />

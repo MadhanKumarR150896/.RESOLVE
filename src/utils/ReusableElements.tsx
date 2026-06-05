@@ -1,11 +1,6 @@
 import { type ReactNode, forwardRef, useId } from "react";
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
 import { Search } from "lucide-react";
-
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+import { cn } from "./classMerger";
 
 type ButtonVariant = "black" | "faker" | "backtotop";
 

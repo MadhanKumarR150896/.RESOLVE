@@ -18,6 +18,6 @@ export const getMetrics = (profile: ProfileType | null) => {
       if (!profile) throw new Error("Invalid Profile");
       return fetchMetrics();
     },
-    enabled: !!profile,
+    enabled: !!(profile?.role === "agent"),
   });
 };

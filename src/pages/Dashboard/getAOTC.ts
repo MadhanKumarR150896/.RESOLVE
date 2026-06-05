@@ -1,5 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "../../supabase/supabaseClient";
+import type { ProfileType } from "../../supabase/requiredTypes";
 
 const fetchAgentOwnedTicketsCount = async (profileId: string) => {
   const { count, error } = await supabase
@@ -14,13 +15,13 @@ const fetchAgentOwnedTicketsCount = async (profileId: string) => {
   return count;
 };
 
-export const getAOTC = (profileId: string | undefined) => {
+export const getAOTC = (profile: ProfileType | null) => {
   return queryOptions({
-    queryKey: ["AgentTicketCount", profileId],
+    queryKey: ["AgentTicketCount"],
     queryFn: () => {
-      if (!profileId) throw new Error("Invalid Profile");
-      return fetchAgentOwnedTicketsCount(profileId);
+      if (!profile) throw new Error("Invalid Profile");
+      return fetchAgentOwnedTicketsCount(profile.id);
     },
-    enabled: !!profileId,
+    enabled: !!(profile?.role === "agent"),
   });
 };

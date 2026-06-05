@@ -9,14 +9,19 @@ export type ProfileType = Omit<Profiles, "created_at" | "is_active">;
 
 export type AppType = Omit<Apps, "created_at" | "is_active">;
 
-export type TicketThumbnail = {
+export type FullTicket = {
   id: Tickets["id"];
   ticket_number: Tickets["ticket_number"];
   created_at: Tickets["created_at"];
   status: Tickets["status"];
   updated_at: Tickets["updated_at"];
-  app: { name: Apps["name"] };
+  app: Apps["name"];
   description: Tickets["description"];
+  severity: Tickets["severity"];
+  created_by: Profiles["name"];
+  updated_by: Profiles["name"];
+  assigned_to: Profiles["id"] | null;
+  assigned_name: Profiles["name"];
 };
 
 type comments = {
@@ -52,10 +57,10 @@ export type TicketDetails = {
   application: Tickets["app_id"];
   description: Tickets["description"];
   assignedTo: Profiles["id"] | null;
-  assignedName: Profiles["name"] | null;
+  assignedName: Profiles["name"];
   isLocked: Tickets["is_locked"];
   lockedBy: Profiles["id"] | null;
-  lockedName: Profiles["name"] | null;
+  lockedName: Profiles["name"];
   history: history[];
   intHistory: history[];
 };
