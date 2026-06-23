@@ -175,7 +175,7 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
     return (
       <div
         className={cn(
-          "flex justify-between border rounded py-1 px-2 gap-2 border-neutral-500",
+          "flex justify-between border rounded py-1 px-2 border-neutral-500",
           className
         )}
       >

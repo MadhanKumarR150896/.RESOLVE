@@ -96,6 +96,7 @@ const TicketsDash = () => {
         <SearchBox
           ref={inputRef}
           inputProps={{
+            placeholder: "0000001",
             inputMode: "numeric",
             onKeyDown: handleOnKeyDown,
             onPaste: handleOnPaste,
