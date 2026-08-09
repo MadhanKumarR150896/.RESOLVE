@@ -87,6 +87,7 @@ export const TicketForm = ({
   const assigneeLocked =
     values?.assignedTo !== null && values?.assignedTo !== profile?.id;
   const ticketClosed = values?.status === "closed";
+  const ticketResolved = values?.status === "resolved";
 
   const ctx: FieldContext = {
     role: profile?.role,
@@ -481,7 +482,8 @@ export const TicketForm = ({
                     <Input
                       {...(field.props.id
                         ? register(field.props.id as keyof FormValues, {
-                            disabled: ticketLocked || ticketClosed,
+                            disabled:
+                              ticketLocked || ticketClosed || ticketResolved,
                             onChange:
                               field.props.id === "isLocked"
                                 ? (e) => handleIsLocked(e.target.checked)

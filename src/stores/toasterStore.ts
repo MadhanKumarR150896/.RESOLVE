@@ -39,7 +39,7 @@ export const useToasterStore = create<State & Action>()(
           toaster: initialToaster,
           timeoutId: null,
         });
-      }, 2000);
+      }, 3000);
 
       set({ toaster: toaster, timeoutId: newId });
     },
