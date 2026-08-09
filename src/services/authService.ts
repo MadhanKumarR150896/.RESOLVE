@@ -1,6 +1,6 @@
-import { supabase } from "../../supabase/supabaseClient";
+import { supabase } from "../supabase/supabaseClient";
 import { useCallback } from "react";
-import { useToasterStore } from "../../store/toasterStore";
+import { useToasterStore } from "../stores/toasterStore";
 import { useQueryClient } from "@tanstack/react-query";
 
 export const useSupabaseAuth = () => {
@@ -20,31 +20,20 @@ export const useSupabaseAuth = () => {
           password: password,
         });
 
+        if (data.session) return { success: true };
+
         if (error) {
           if (
             error.status === 500 &&
             error.message.includes("error granting user")
           ) {
-            updateToaster({
-              type: "error",
-              message: "Unauthorized: Account is deactivated",
-            });
+            throw new Error("Unauthorized: Account is deactivated");
           } else if (error.status !== undefined) {
-            updateToaster({
-              type: "error",
-              message: error.message,
-            });
+            throw new Error(error.message);
           } else {
-            updateToaster({
-              type: "error",
-              message: "Connection error occurred: Please check your network",
-            });
+            throw new Error("Network error: Please check your connection");
           }
-
-          return { success: false };
         }
-        if (data.session) return { success: true };
-
         return { success: false };
       } catch (err) {
         updateToaster({

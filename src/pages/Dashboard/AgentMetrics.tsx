@@ -1,6 +1,6 @@
-import { Spinner } from "../../utils/ReusableElements";
+import { Spinner } from "../../utils/Reusables";
 
-export const MetricsBox = ({
+export const AgentMetrics = ({
   count,
   isLoading,
   label,

@@ -2,9 +2,9 @@ import { SigninForm } from "./SigninForm";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { cleanup, render, screen } from "@testing-library/react";
-import { useSupabaseAuth } from "./supabaseAuth";
+import { useSupabaseAuth } from "../../services/authService";
 
-vi.mock("./supabaseAuth");
+vi.mock("../../services/authService");
 
 describe("Signin Form", () => {
   let user: ReturnType<typeof userEvent.setup>;

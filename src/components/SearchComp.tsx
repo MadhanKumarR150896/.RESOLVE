@@ -1,6 +1,6 @@
-import { SearchBox } from "./ReusableElements";
+import { SearchBox } from "../utils/Reusables";
 import { supabase } from "../supabase/supabaseClient";
-import { useToasterStore } from "../store/toasterStore";
+import { useToasterStore } from "../stores/toasterStore";
 import { useNavigate } from "react-router";
 import { useState } from "react";
 
@@ -10,7 +10,7 @@ type SearchCompProps = {
   buttonProps?: React.ButtonHTMLAttributes<HTMLButtonElement>;
 } & React.HTMLAttributes<HTMLDivElement>;
 
-export const SearchComponent = ({
+export const SearchComp = ({
   className,
   profileRole,
   inputProps,

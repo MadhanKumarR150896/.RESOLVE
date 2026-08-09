@@ -1,22 +1,23 @@
 import { Link } from "react-router";
 import { TicketsContainer } from "./TicketsContainer";
-import { useAuthContext } from "../../context/AuthContext";
-import { useTicketsChannel } from "./useTicketsChannel";
-import { SearchComponent } from "../../utils/SearchComponent";
+import { useAuthContext } from "../../contexts/AuthContext";
+import { useDashboardChannel } from "../../channels/dashboardChannel";
+import { SearchComp } from "../../components/SearchComp";
 import { useQuery } from "@tanstack/react-query";
-import { getMetrics } from "./getMetrics";
-import { getAOTC } from "./getAOTC";
-import { MetricsBox } from "./MetricsBox";
+import { useFetchAOTC, useFetchMetrics } from "../../services/ticketService";
+import { AgentMetrics } from "./AgentMetrics";
 import { cn } from "../../utils/classMerger";
 
-const TicketsDashboard = () => {
-  useTicketsChannel();
+const DashboardPage = () => {
+  useDashboardChannel();
   const { profile } = useAuthContext();
   const profileRole = profile ? profile.role : null;
   const { data: metrics, isLoading: metricsLoading } = useQuery(
-    getMetrics(profile)
+    useFetchMetrics(profile)
   );
-  const { data: aotc, isLoading: aotcLoading } = useQuery(getAOTC(profile));
+  const { data: aotc, isLoading: aotcLoading } = useQuery(
+    useFetchAOTC(profile)
+  );
 
   const open = metrics?.openCount ?? null;
   const active = metrics?.activeCount ?? null;
@@ -26,13 +27,17 @@ const TicketsDashboard = () => {
       <div className="p-4 flex gap-4 items-center">
         {profileRole === "agent" && (
           <div className="flex-3 flex gap-4">
-            <MetricsBox count={open} isLoading={metricsLoading} label="Open" />
-            <MetricsBox
+            <AgentMetrics
+              count={open}
+              isLoading={metricsLoading}
+              label="Open"
+            />
+            <AgentMetrics
               count={active}
               isLoading={metricsLoading}
               label="Active"
             />
-            <MetricsBox
+            <AgentMetrics
               count={aotc ?? null}
               isLoading={aotcLoading}
               label="Owned"
@@ -45,7 +50,7 @@ const TicketsDashboard = () => {
             profileRole === "user" ? "py-12 mx-auto" : "flex-1"
           )}
         >
-          <SearchComponent profileRole={profileRole} />
+          <SearchComp profileRole={profileRole} />
           <Link to={`/dashboard/${profileRole}/ticket`}>
             <div className="bg-neutral-900 text-neutral-100 text-center rounded py-2 hover:cursor-pointer hover:bg-neutral-800 font-semibold">
               Create Ticket
@@ -58,4 +63,4 @@ const TicketsDashboard = () => {
   );
 };
 
-export default TicketsDashboard;
+export default DashboardPage;

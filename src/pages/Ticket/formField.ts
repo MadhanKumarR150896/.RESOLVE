@@ -6,7 +6,7 @@ import type {
   SelectGroupProps,
   SpanProps,
   TextAreaProps,
-} from "../../utils/ReusableElements";
+} from "../../utils/Reusables";
 import type { Mode } from "./TicketPage";
 import type { FormValues } from "../../supabase/requiredTypes";
 

@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useAuthContext } from "../../context/AuthContext";
-import { Button, Spinner } from "../../utils/ReusableElements";
+import { useAuthContext } from "../../contexts/AuthContext";
+import { Button, Spinner } from "../../utils/Reusables";
 import { ArrowUp } from "lucide-react";
-import { getAllTickets } from "./getAllTickets";
+import { useFetchAllTickets } from "../../services/ticketService";
 import { UserTicketsGrid } from "./UserTicketsGrid";
-import { AgentTicketsGrid } from "./AgentTicketsGrid";
+import { AgentTicketsTable } from "./AgentTicketsTable";
 
 export const TicketsContainer = () => {
   const { profile } = useAuthContext();
@@ -16,7 +16,7 @@ export const TicketsContainer = () => {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    ...getAllTickets(profile),
+    ...useFetchAllTickets(profile),
   });
 
   const [arrowVisible, setArrowVisible] = useState(false);
@@ -80,7 +80,7 @@ export const TicketsContainer = () => {
         className="h-px md:col-span-2 lg:col-span-3 xl:col-span-4"
       ></div>
       {isAgent ? (
-        <AgentTicketsGrid tickets={tickets} profile={profile} />
+        <AgentTicketsTable tickets={tickets} profile={profile} />
       ) : (
         <UserTicketsGrid tickets={tickets} profile={profile} />
       )}

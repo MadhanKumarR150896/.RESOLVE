@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
-import type { AppType } from "../../supabase/requiredTypes";
-import { supabase } from "../../supabase/supabaseClient";
+import type { AppType } from "../supabase/requiredTypes";
+import { supabase } from "../supabase/supabaseClient";
 
 const fetchApps = async (): Promise<AppType[]> => {
   const { data, error } = await supabase
@@ -14,7 +14,7 @@ const fetchApps = async (): Promise<AppType[]> => {
   return data;
 };
 
-export const getApps = () => {
+export const useFetchApps = () => {
   return queryOptions({
     queryKey: ["apps"],
     queryFn: () => fetchApps(),

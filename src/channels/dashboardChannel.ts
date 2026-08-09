@@ -1,9 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { supabase } from "../../supabase/supabaseClient";
-import { useAuthContext } from "../../context/AuthContext";
+import { supabase } from "../supabase/supabaseClient";
+import { useAuthContext } from "../contexts/AuthContext";
 
-export const useTicketsChannel = () => {
+export const useDashboardChannel = () => {
   const queryClient = useQueryClient();
   const { profile } = useAuthContext();
   const ProfileRole = profile?.role ?? null;

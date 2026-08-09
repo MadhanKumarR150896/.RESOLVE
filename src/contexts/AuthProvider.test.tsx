@@ -9,11 +9,13 @@ import {
   queryOptions,
 } from "@tanstack/react-query";
 import { useAuthContext } from "./AuthContext";
-import { getProfile } from "./getProfile";
+import { useFetchProfile } from "../services/profileService";
 import type { ProfileType } from "../supabase/requiredTypes";
 
 vi.mock("../supabase/supabaseClient");
-vi.mock("./getProfile");
+vi.mock("../services/profileService", () => ({
+  useFetchProfile: vi.fn(),
+}));
 
 type Callback = (
   event: AuthChangeEvent,
@@ -56,7 +58,7 @@ describe("Auth Provider", () => {
       },
     });
 
-    vi.mocked(getProfile).mockImplementation((profileId) => {
+    vi.mocked(useFetchProfile).mockImplementation((profileId) => {
       return queryOptions({
         queryKey: ["profile", profileId],
         queryFn: async () => {
@@ -103,7 +105,7 @@ describe("Auth Provider", () => {
       expect(result.current.authLoading).toBe(false);
     });
 
-    expect(getProfile).toHaveBeenCalledWith("1");
+    expect(useFetchProfile).toHaveBeenCalledWith("1");
     expect(result.current.profile).toEqual(mockProfile);
   });
 
@@ -139,7 +141,7 @@ describe("Auth Provider", () => {
     });
 
     await waitFor(() => {
-      expect(getProfile).toHaveBeenCalledWith("1");
+      expect(useFetchProfile).toHaveBeenCalledWith("1");
       expect(result.current.profile).toEqual(mockProfile);
     });
   });

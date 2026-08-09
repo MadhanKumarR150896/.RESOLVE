@@ -19,7 +19,7 @@ import {
   type TextAreaProps,
   type SelectGroupProps,
   type DivProps,
-} from "../../utils/ReusableElements";
+} from "../../utils/Reusables";
 import {
   formConfig,
   isRequiredFields,
@@ -32,11 +32,11 @@ import { twMerge } from "tailwind-merge";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { generateTicketInfo } from "../../utils/ticketSamples";
 import { supabase } from "../../supabase/supabaseClient";
-import { getAssignees } from "./getAssignees";
+import { useFetchAssignees } from "../../services/profileService";
 import { useQuery } from "@tanstack/react-query";
-import { useToasterStore } from "../../store/toasterStore";
+import { useToasterStore } from "../../stores/toasterStore";
 import { formatDate } from "../../utils/formatDate";
-import { useDebouncedValue } from "../../utils/useDebouncedValue";
+import { useDebouncedValue } from "../../utils/debounce";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -77,7 +77,7 @@ export const TicketForm = ({
   const gridTwo = config?.filter((field) => field.group === "grid2");
   const debouncedAssignee = useDebouncedValue(assignee, 300, 3);
   const { data: assignees = [] } = useQuery({
-    ...getAssignees(debouncedAssignee),
+    ...useFetchAssignees(debouncedAssignee),
     enabled: !!debouncedAssignee && !isAssigned,
   });
   const assigneeRef = useRef<HTMLDivElement>(null);

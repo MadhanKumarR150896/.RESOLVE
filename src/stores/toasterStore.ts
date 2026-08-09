@@ -20,38 +20,34 @@ type Action = {
   removeToaster: () => void;
 };
 
+export const initialToaster: Toaster = {
+  type: "initial",
+  message: "",
+};
+
 export const useToasterStore = create<State & Action>()(
   devtools((set, get) => ({
-    toaster: {
-      type: "initial",
-      message: "",
-    },
+    toaster: initialToaster,
     timeoutId: null,
 
     updateToaster: (toaster) => {
-      set({ toaster: toaster });
-
       const previousId = get().timeoutId;
       if (previousId) clearTimeout(previousId);
 
       const newId = setTimeout(() => {
         set({
-          toaster: {
-            type: "initial",
-            message: "",
-          },
+          toaster: initialToaster,
+          timeoutId: null,
         });
       }, 2000);
 
-      set({ timeoutId: newId });
+      set({ toaster: toaster, timeoutId: newId });
     },
 
     removeToaster: () => {
       set({
-        toaster: {
-          type: "initial",
-          message: "",
-        },
+        toaster: initialToaster,
+        timeoutId: null,
       });
     },
   }))

@@ -1,4 +1,4 @@
-import { useAuthContext } from "../../context/AuthContext";
+import { useAuthContext } from "../../contexts/AuthContext";
 import { TicketForm } from "./TicketForm";
 import type {
   FormValues,
@@ -6,11 +6,11 @@ import type {
   ReturnType,
 } from "../../supabase/requiredTypes";
 import { supabase } from "../../supabase/supabaseClient";
-import { useTicketChannel } from "./useTicketChannel";
+import { useTicketChannel } from "../../channels/ticketChannel";
 import { useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
-import { getApps } from "./getApps";
-import { useGetTicket } from "./getTicket";
+import { useFetchApps } from "../../services/appService";
+import { useFetchTicket } from "../../services/ticketService";
 
 export type Mode = "update" | "create";
 
@@ -43,8 +43,8 @@ const TicketPage = () => {
   useTicketChannel();
   const { profile } = useAuthContext();
   const { ticketNumber } = useParams();
-  const { data: ticketDetails } = useQuery(useGetTicket(ticketNumber));
-  const { data: apps = [] } = useQuery(getApps());
+  const { data: ticketDetails } = useQuery(useFetchTicket(ticketNumber));
+  const { data: apps = [] } = useQuery(useFetchApps());
 
   const role = profile?.role as "user" | "agent";
   const mode: Mode = ticketNumber ? "update" : "create";

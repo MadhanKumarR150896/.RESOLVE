@@ -1,17 +1,15 @@
-import { ToastMessage } from "./pages/components/ToastMessage";
+import { ToastMessage } from "./components/ToastMessage";
 import { Routes, Route } from "react-router";
 import { lazy, Suspense } from "react";
 import { PublicRoute } from "./GuardRoutes/PublicRoute";
 import { ProtectedRoute } from "./GuardRoutes/ProtectedRoute";
-import { PageLayout } from "./pages/components/PageLayout";
+import { PageLayout } from "./components/PageLayout";
 import { TicketRoute } from "./GuardRoutes/TicketRoute";
 import { Navigate } from "react-router";
-import { Spinner } from "./utils/ReusableElements";
+import { Spinner } from "./utils/Reusables";
 
 const SigninPage = lazy(() => import("./pages/Signin/SigninPage"));
-const TicketsDashboard = lazy(
-  () => import("./pages/Dashboard/TicketsDashboard")
-);
+const DashboardPage = lazy(() => import("./pages/Dashboard/DashboardPage"));
 const TicketPage = lazy(() => import("./pages/Ticket/TicketPage"));
 
 const App = () => {
@@ -26,7 +24,7 @@ const App = () => {
           </Route>
           <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
             <Route path="/dashboard/user" element={<PageLayout />}>
-              <Route index element={<TicketsDashboard />} />
+              <Route index element={<DashboardPage />} />
               <Route path="ticket" element={<TicketPage />} />
               <Route element={<TicketRoute />}>
                 <Route path="ticket/:ticketNumber" element={<TicketPage />} />
@@ -35,7 +33,7 @@ const App = () => {
           </Route>
           <Route element={<ProtectedRoute allowedRoles={["agent"]} />}>
             <Route path="/dashboard/agent" element={<PageLayout />}>
-              <Route index element={<TicketsDashboard />} />
+              <Route index element={<DashboardPage />} />
               <Route path="ticket" element={<TicketPage />} />
               <Route element={<TicketRoute />}>
                 <Route path="ticket/:ticketNumber" element={<TicketPage />} />

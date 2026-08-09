@@ -2,7 +2,7 @@ import { useState } from "react";
 import { HeaderRow } from "./HeaderRow";
 import type { TicketsContainerProps } from "./UserTicketsGrid";
 
-export const AgentTicketsGrid = ({
+export const AgentTicketsTable = ({
   tickets,
   profile,
 }: TicketsContainerProps) => {
