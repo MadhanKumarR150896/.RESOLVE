@@ -10,7 +10,6 @@ import { AgentTicketsTable } from "./AgentTicketsTable";
 export const TicketsContainer = () => {
   const { profile } = useAuthContext();
   const {
-    data,
     isLoading: ticketsLoading,
     fetchNextPage,
     hasNextPage,
@@ -67,28 +66,24 @@ export const TicketsContainer = () => {
 
   if (ticketsLoading) return <Spinner />;
 
-  const tickets = data?.pages.flatMap((page) => page.typedData) ?? [];
-
   return (
     <div
+      style={{
+        scrollbarWidth: `${profile?.role === "user" ? "none" : "thin"}`,
+      }}
       ref={rootContainerRef}
-      className="px-4 overflow-y-auto"
-      style={{ scrollbarWidth: "none" }}
+      className={`px-4 max-h-160 overflow-auto ${profile?.role === "user" ? "" : "me-2"}`}
     >
       <div
         ref={topContainerRef}
-        className="h-px md:col-span-2 lg:col-span-3 xl:col-span-4"
+        className="h-px md:col-span-2 lg:col-span-3 xl:col-span-4 center"
       ></div>
-      {isAgent ? (
-        <AgentTicketsTable tickets={tickets} profile={profile} />
-      ) : (
-        <UserTicketsGrid tickets={tickets} profile={profile} />
-      )}
+      {isAgent ? <AgentTicketsTable /> : <UserTicketsGrid />}
       <div
         ref={bottomContainerRef}
         className="h-px md:col-span-2 lg:col-span-3 xl:col-span-4"
       >
-        {hasNextPage && isFetchingNextPage && <Spinner />}
+        {hasNextPage && isFetchingNextPage && <Spinner className="h-12" />}
       </div>
       <Button
         variant="backtotop"

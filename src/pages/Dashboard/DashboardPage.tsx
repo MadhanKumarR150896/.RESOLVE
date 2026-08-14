@@ -24,7 +24,9 @@ const DashboardPage = () => {
 
   return (
     <>
-      <div className="p-4 flex gap-4 items-center">
+      <div
+        className={`${profileRole === "agent" ? "p-8" : "p-10"} flex gap-4 items-center`}
+      >
         {profileRole === "agent" && (
           <div className="flex-3 flex gap-4">
             <AgentMetrics
@@ -47,7 +49,7 @@ const DashboardPage = () => {
         <div
           className={cn(
             "flex flex-col gap-2",
-            profileRole === "user" ? "py-12 mx-auto" : "flex-1"
+            profileRole === "user" ? "h-30 justify-center mx-auto" : "flex-1"
           )}
         >
           <SearchComp profileRole={profileRole} />

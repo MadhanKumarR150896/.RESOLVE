@@ -30,12 +30,12 @@ const profileConfig: Record<"user" | "agent", Config> = {
   user: {
     create: "create_ticket_for_user",
     update: "update_ticket_for_user",
-    className: "px-24 py-20 flex flex-col gap-12 overflow-y-auto",
+    className: "px-24 py-20 flex flex-col gap-14",
   },
   agent: {
     create: "create_ticket_for_agent",
     update: "update_ticket_for_agent",
-    className: "px-24 py-20 flex flex-col gap-14 overflow-y-auto",
+    className: "px-24 py-20 flex flex-col gap-14",
   },
 };
 

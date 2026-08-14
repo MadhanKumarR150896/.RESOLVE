@@ -19,7 +19,7 @@ export const Header = () => {
 
   return (
     <>
-      <header className="flex items-center justify-between h-16 px-3 py-2 rounded border bg-neutral-100 shadow shadow-neutral-500">
+      <header className="flex items-center justify-between h-16 min-w-250 px-3 py-2 rounded border bg-neutral-100 shadow shadow-neutral-500">
         <NavLink
           className="cursor-pointer rounded outline-none select-none"
           to={`/dashboard/${profile?.role}`}

@@ -263,7 +263,6 @@ export const TicketForm = ({
     <form
       onSubmit={handleSubmit(handleonSubmit)}
       className={className}
-      style={{ scrollbarWidth: "none" }}
       {...props}
     >
       {gridOne && gridOne.length > 0 && (
