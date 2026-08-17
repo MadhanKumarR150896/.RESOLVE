@@ -1,11 +1,6 @@
 import { type ReactNode, forwardRef, useId } from "react";
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
 import { Search } from "lucide-react";
-
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+import { cn } from "./classMerger";
 
 type ButtonVariant = "black" | "faker" | "backtotop";
 
@@ -20,7 +15,7 @@ const variants: Record<ButtonVariant, string> = {
   faker:
     "bg-green-800 text-neutral-50 rounded py-2 hover:cursor-pointer hover:bg-green-700 font-semibold",
   backtotop:
-    "fixed bottom-10 right-15 z-50 bg-neutral-200 h-10 w-10 flex items-center justify-center rounded-3xl border border-neutral-500",
+    "fixed bottom-20 right-15 z-50 bg-neutral-200 h-10 w-10 flex items-center justify-center rounded-3xl border border-neutral-500",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -175,7 +170,7 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
     return (
       <div
         className={cn(
-          "flex justify-between border rounded py-1 px-2 border-neutral-500",
+          "flex justify-between border rounded py-1 px-2 border-neutral-500 w-full h-full",
           className
         )}
       >
@@ -183,7 +178,7 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
           {...inputProps}
           id={inputId}
           ref={ref}
-          className={cn("outline-none", inputProps?.className)}
+          className={cn("outline-none w-full", inputProps?.className)}
         />
         <button type="button" {...buttonProps}>
           <Search strokeWidth={iconStrokeWidth} size={iconSize} />
@@ -313,9 +308,11 @@ export const SelectGroup = forwardRef<HTMLSelectElement, SelectGroupProps>(
 
 SelectGroup.displayName = "SelectGroup";
 
-export const Spinner = () => {
+export const Spinner = ({
+  className,
+}: React.HTMLAttributes<HTMLDivElement>) => {
   return (
-    <div className="flex items-center justify-center h-screen">
+    <div className={cn("flex items-center justify-center h-screen", className)}>
       <div className="h-10 w-10 border-4 border-gray-300 border-t-neutral-500 rounded-full animate-spin"></div>
     </div>
   );

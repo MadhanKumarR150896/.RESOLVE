@@ -1,6 +1,6 @@
 import { NavLink } from "react-router";
-import { useAuthContext } from "../../context/AuthContext";
-import Logo from "../../assets/Full_logo_L_S.svg";
+import { useAuthContext } from "../contexts/AuthContext";
+import Logo from "../assets/Full_logo_L_S.svg";
 import {
   DropdownMenu,
   DropdownMenuArrow,
@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { UserRound } from "lucide-react";
-import { useSupabaseAuth } from "../Signin/supabaseAuth";
+import { useSupabaseAuth } from "../services/authService";
 
 export const Header = () => {
   const { profile } = useAuthContext();
@@ -19,7 +19,7 @@ export const Header = () => {
 
   return (
     <>
-      <header className="flex items-center justify-between h-16 px-3 py-2 rounded border bg-neutral-100 shadow shadow-neutral-500">
+      <header className="flex items-center justify-between h-16 min-w-250 px-3 py-2 rounded border bg-neutral-100 shadow shadow-neutral-500">
         <NavLink
           className="cursor-pointer rounded outline-none select-none"
           to={`/dashboard/${profile?.role}`}

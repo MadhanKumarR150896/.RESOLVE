@@ -1,17 +1,20 @@
 import { useEffect, useRef } from "react";
-import { supabase } from "../../supabase/supabaseClient";
-import type { history, TicketDetails } from "../../supabase/requiredTypes";
+import { supabase } from "../supabase/supabaseClient";
+import type { history, TicketDetails } from "../supabase/requiredTypes";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getProfiles } from "./getProfiles";
+import { useFetchProfiles } from "../services/profileService";
 import { useParams } from "react-router";
-import { useGetTicket } from "./getTicket";
+import { useFetchTicket } from "../services/ticketService";
 
 export const useTicketChannel = () => {
   const { ticketNumber } = useParams();
-  const { data: ticketDetails } = useQuery(useGetTicket(ticketNumber));
+  const { data: ticketDetails } = useQuery(useFetchTicket(ticketNumber));
   const ticketId = ticketDetails?.ticketId;
   const queryClient = useQueryClient();
-  const { data: profiles = {} } = useQuery(getProfiles());
+  const { data: profiles = {} } = useQuery({
+    ...useFetchProfiles(),
+    enabled: !!ticketNumber,
+  });
   const profileRef = useRef(profiles);
 
   useEffect(() => {

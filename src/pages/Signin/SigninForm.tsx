@@ -1,14 +1,14 @@
 import { Eye, EyeOff } from "lucide-react";
 import { useState, type SyntheticEvent } from "react";
 import { ErrorMessage } from "./ErrorMessage";
-import { useSupabaseAuth } from "../Signin/supabaseAuth";
-import { Button } from "../../utils/ReusableElements";
-import { useToasterStore } from "../../store/toasterStore";
+import { useSupabaseAuth } from "../../services/authService";
+import { Button } from "../../utils/Reusables";
+import { useToasterStore } from "../../stores/toasterStore";
 
 export const SigninForm = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("agent1@resolve.com");
+  const [password, setPassword] = useState("resolve@agent");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { supabaseSignIn } = useSupabaseAuth();

@@ -28,3 +28,7 @@
     @apply text-xs text-red-600;
   }
 }
+
+@utility dragElement {
+  @apply bg-neutral-900 text-neutral-50 p-2 border rounded w-fit text-xs;
+}

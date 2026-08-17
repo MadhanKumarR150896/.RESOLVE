@@ -6,7 +6,7 @@ import type {
   SelectGroupProps,
   SpanProps,
   TextAreaProps,
-} from "../../utils/ReusableElements";
+} from "../../utils/Reusables";
 import type { Mode } from "./TicketPage";
 import type { FormValues } from "../../supabase/requiredTypes";
 
@@ -207,10 +207,10 @@ const commonFields: FieldProps[] = [
   {
     name: "Span",
     group: "grid2",
-    grid: "row-3 col-1 self-end mbe-2.5",
+    grid: "row-3 col-1 self-end mbe-2",
     props: {
       id: "lockedName",
-      className: "h-6 w-max border-none text-sm rounded",
+      className: "h-7 w-max text-sm rounded",
     },
     notVisible: ({ mode }) => mode === "create",
   },

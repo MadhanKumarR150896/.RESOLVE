@@ -1,5 +1,5 @@
 import { Loader, CircleAlert, CircleCheck, X } from "lucide-react";
-import { useToasterStore } from "../../store/toasterStore";
+import { useToasterStore } from "../stores/toasterStore";
 
 const icons = {
   loading: Loader,

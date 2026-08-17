@@ -1,7 +1,7 @@
 import { describe, expect, vi, beforeEach, test } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import { useSupabaseAuth } from "./supabaseAuth";
-import { supabase } from "../../supabase/supabaseClient";
+import { useSupabaseAuth } from "./authService";
+import { supabase } from "../supabase/supabaseClient";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthError } from "@supabase/supabase-js";
 
