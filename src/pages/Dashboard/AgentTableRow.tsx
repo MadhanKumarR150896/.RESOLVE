@@ -8,6 +8,7 @@ import {
   type SpanP,
 } from "./agentTableData";
 import { formatDate } from "../../utils/formatDate";
+import { useState, type DragEvent } from "react";
 
 type AgentTableRowProps = {
   ticket: FullTicket;
@@ -23,19 +24,53 @@ const textColor = {
 };
 
 export const AgentTableRow = ({ ticket, profile }: AgentTableRowProps) => {
+  const [isSelected, setIsSelected] = useState(false);
+
+  const handleDragStart = (e: DragEvent<HTMLTableRowElement>) => {
+    if (!isSelected) {
+      e.dataTransfer.clearData();
+      const dragElement = document.createElement("div");
+      dragElement.innerText = ticket.ticket_number;
+      dragElement.classList.add("dragElement");
+      document.body.appendChild(dragElement);
+      e.dataTransfer.setDragImage(dragElement, 60, 25);
+      e.dataTransfer.setData(
+        "application/json",
+        JSON.stringify({
+          id: ticket.id,
+          ticket_number: ticket.ticket_number,
+          status: ticket.status,
+          assigned_to: ticket.assigned_to,
+        })
+      );
+
+      requestAnimationFrame(() => {
+        dragElement.remove();
+      });
+    }
+  };
   return (
     <tr
-      className={`bg-neutral-200 even:bg-neutral-50 h-8 ${textColor[ticket.status]} text-[15px] *:px-4`}
+      draggable={isSelected ? false : true}
+      onDragStart={(e) => handleDragStart(e)}
+      className={`bg-neutral-200 even:bg-neutral-50 hover:cursor-grab active:cursor-grabbing h-8 ${textColor[ticket.status]} text-[15px] *:px-4 drag ${!isSelected ? "select-auto" : "select-none"}`}
     >
       {tableDataConfig.map((cell) => {
         switch (cell.name) {
           case "Input": {
             return (
-              <td key={`${ticket.id}-${cell.name}`} {...cell.props}>
+              <td key={`${ticket.id}-${cell.props.id}`} {...cell.props}>
                 <div className="flex flex-col">
                   <input
                     {...(cell.innerProps as InputP)}
                     value={ticket[cell.value] ?? ""}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setIsSelected(true);
+                      } else {
+                        setIsSelected(false);
+                      }
+                    }}
                   />
                 </div>
               </td>
@@ -44,7 +79,7 @@ export const AgentTableRow = ({ ticket, profile }: AgentTableRowProps) => {
 
           case "Link": {
             return (
-              <td key={`${ticket.id}-${cell.name}`} {...cell.props}>
+              <td key={`${ticket.id}-${cell.props.id}`} {...cell.props}>
                 <div className="flex flex-col">
                   <Link
                     to={`/dashboard/${profile?.role}/ticket/${ticket[cell.value]}`}
@@ -59,7 +94,7 @@ export const AgentTableRow = ({ ticket, profile }: AgentTableRowProps) => {
 
           case "Span": {
             return (
-              <td key={`${ticket.id}-${cell.name}`} {...cell.props}>
+              <td key={`${ticket.id}-${cell.props.id}`} {...cell.props}>
                 <div className="flex flex-col">
                   <span {...(cell.innerProps as SpanP)}>
                     {cell.value === "created_at" || cell.value === "updated_at"
@@ -73,7 +108,7 @@ export const AgentTableRow = ({ ticket, profile }: AgentTableRowProps) => {
 
           case "Div": {
             return (
-              <td key={`${ticket.id}-${cell.name}`} {...cell.props}>
+              <td key={`${ticket.id}-${cell.props.id}`} {...cell.props}>
                 <div className="flex flex-col">
                   <div {...(cell.innerProps as DivP)}>{ticket[cell.value]}</div>
                 </div>

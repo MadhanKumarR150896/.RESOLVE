@@ -14,7 +14,13 @@ export const AgentTicketsTable = () => {
   const tickets = data?.pages.flatMap((page) => page.typedData) ?? [];
 
   return (
-    <table className="min-w-470 border-separate border-spacing-0 table-fixed whitespace-nowrap">
+    <table
+      onDragOver={(e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+      }}
+      className="min-w-470 border-separate border-spacing-0 table-fixed whitespace-nowrap"
+    >
       <colgroup>
         {colWidth.map((w, i) => (
           <col key={`agentTableCol-${i + 1}`} style={{ width: `${w}%` }}></col>

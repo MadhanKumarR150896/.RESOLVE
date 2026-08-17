@@ -78,7 +78,7 @@ export const TicketForm = ({
   const debouncedAssignee = useDebouncedValue(assignee, 300, 3);
   const { data: assignees = [] } = useQuery({
     ...useFetchAssignees(debouncedAssignee),
-    enabled: !!debouncedAssignee && !isAssigned,
+    enabled: !!values?.ticketId && !!debouncedAssignee && !isAssigned,
   });
   const assigneeRef = useRef<HTMLDivElement>(null);
   const updateToaster = useToasterStore((state) => state.updateToaster);
@@ -209,19 +209,33 @@ export const TicketForm = ({
   };
 
   const handleIsLocked = async (checked: boolean) => {
-    if (values && profile) {
-      const { error } = await supabase
-        .from("tickets")
-        .update({
-          is_locked: checked,
-          locked_by: checked ? profile?.id : null,
-        })
-        .eq("id", values.ticketId);
+    try {
+      if (values && profile) {
+        const { error } = await supabase
+          .from("tickets")
+          .update({
+            is_locked: checked,
+            locked_by: checked ? profile?.id : null,
+          })
+          .eq("id", values.ticketId);
 
-      if (error) {
-        setValue("isLocked", !checked);
-        setValue("lockedBy", values.lockedBy);
+        if (error) {
+          setValue("isLocked", !checked);
+          setValue("lockedBy", values.lockedBy);
+          throw new Error(error.message);
+        }
+
+        updateToaster({
+          type: "success",
+          message: `Ticket ${values.ticketNumber} is updated`,
+        });
       }
+    } catch (err) {
+      updateToaster({
+        type: "error",
+        message:
+          err instanceof Error ? err.message : "An unexpected error occurred",
+      });
     }
   };
 
@@ -242,11 +256,22 @@ export const TicketForm = ({
       }
 
       if (!response.success) {
-        updateToaster({
-          type: "error",
-          message:
-            response.message !== null ? response.message : "Please try again",
-        });
+        if (values && mode === "update") {
+          reset({
+            ticketId: values.ticketId,
+            severity: values.severity,
+            status: values.status,
+            assignedTo: values.assignedTo,
+            isLocked: values.isLocked,
+            lockedBy: values.lockedBy,
+          });
+          if (values.assignedName) {
+            setAssignee(values.assignedName);
+            setIsAssigned(true);
+          }
+        }
+
+        throw new Error(response.message ?? undefined);
       }
     } catch (error) {
       updateToaster({
@@ -468,7 +493,13 @@ export const TicketForm = ({
               case "Span": {
                 return (
                   <div key={`${field.name}-${i}`} className={field.grid}>
-                    <Span {...(field.props as SpanProps)}>
+                    <Span
+                      {...(field.props as SpanProps)}
+                      className={cn(
+                        field.props.className,
+                        values?.isLocked === false ? "border-none" : ""
+                      )}
+                    >
                       {fieldValues(field, values)}
                     </Span>
                   </div>

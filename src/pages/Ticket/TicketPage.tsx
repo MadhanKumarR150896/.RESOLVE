@@ -44,7 +44,10 @@ const TicketPage = () => {
   const { profile } = useAuthContext();
   const { ticketNumber } = useParams();
   const { data: ticketDetails } = useQuery(useFetchTicket(ticketNumber));
-  const { data: apps = [] } = useQuery(useFetchApps());
+  const { data: apps = [] } = useQuery({
+    ...useFetchApps(),
+    enabled: !ticketNumber,
+  });
 
   const role = profile?.role as "user" | "agent";
   const mode: Mode = ticketNumber ? "update" : "create";

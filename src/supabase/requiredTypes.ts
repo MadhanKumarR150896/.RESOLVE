@@ -73,3 +73,10 @@ export type FunctionArgs = Required["public"]["Functions"][
 
 export type ReturnType = Required["public"]["CompositeTypes"]["type_response"];
 export type Metrics = Required["public"]["CompositeTypes"]["type_metrics"];
+
+export type metricUpdate = {
+  id: Tickets["id"];
+  ticket_number: Tickets["ticket_number"];
+  status: Tickets["status"];
+  assigned_to: Tickets["assigned_to"];
+};

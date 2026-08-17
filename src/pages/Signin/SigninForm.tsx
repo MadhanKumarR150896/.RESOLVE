@@ -7,8 +7,8 @@ import { useToasterStore } from "../../stores/toasterStore";
 
 export const SigninForm = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("agent1@resolve.com");
+  const [password, setPassword] = useState("resolve@agent");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { supabaseSignIn } = useSupabaseAuth();

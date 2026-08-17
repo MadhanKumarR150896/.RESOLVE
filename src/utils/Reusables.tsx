@@ -15,7 +15,7 @@ const variants: Record<ButtonVariant, string> = {
   faker:
     "bg-green-800 text-neutral-50 rounded py-2 hover:cursor-pointer hover:bg-green-700 font-semibold",
   backtotop:
-    "fixed bottom-15 right-15 z-50 bg-neutral-200 h-10 w-10 flex items-center justify-center rounded-3xl border border-neutral-500",
+    "fixed bottom-20 right-15 z-50 bg-neutral-200 h-10 w-10 flex items-center justify-center rounded-3xl border border-neutral-500",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(

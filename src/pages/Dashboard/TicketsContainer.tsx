@@ -64,7 +64,7 @@ export const TicketsContainer = () => {
     return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  if (ticketsLoading) return <Spinner />;
+  if (ticketsLoading) return <Spinner className="h-full" />;
 
   return (
     <div

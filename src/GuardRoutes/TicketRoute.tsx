@@ -11,7 +11,7 @@ export const TicketRoute = () => {
   );
   const { profile } = useAuthContext();
 
-  if (ticketLoading) return <Spinner />;
+  if (ticketLoading) return <Spinner className="h-full" />;
 
   if (!ticketDetails)
     return <Navigate to={`/dashboard/${profile?.role}`} replace />;

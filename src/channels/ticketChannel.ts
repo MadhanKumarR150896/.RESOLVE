@@ -11,7 +11,10 @@ export const useTicketChannel = () => {
   const { data: ticketDetails } = useQuery(useFetchTicket(ticketNumber));
   const ticketId = ticketDetails?.ticketId;
   const queryClient = useQueryClient();
-  const { data: profiles = {} } = useQuery(useFetchProfiles());
+  const { data: profiles = {} } = useQuery({
+    ...useFetchProfiles(),
+    enabled: !!ticketNumber,
+  });
   const profileRef = useRef(profiles);
 
   useEffect(() => {
