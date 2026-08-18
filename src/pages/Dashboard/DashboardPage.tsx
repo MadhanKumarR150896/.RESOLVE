@@ -58,11 +58,13 @@ const DashboardPage = () => {
       }
       updateToaster({
         type: "success",
+        id: crypto.randomUUID(),
         message: `Ticket ${data.ticket_number} is updated`,
       });
     } catch (err) {
       updateToaster({
         type: "error",
+        id: crypto.randomUUID(),
         message:
           err instanceof Error ? err.message : "An unexpected error occurred",
       });

@@ -9,7 +9,6 @@ import { supabase } from "../../supabase/supabaseClient";
 import { useTicketChannel } from "../../channels/ticketChannel";
 import { useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useFetchApps } from "../../services/appService";
 import { useFetchTicket } from "../../services/ticketService";
 
 export type Mode = "update" | "create";
@@ -44,10 +43,6 @@ const TicketPage = () => {
   const { profile } = useAuthContext();
   const { ticketNumber } = useParams();
   const { data: ticketDetails } = useQuery(useFetchTicket(ticketNumber));
-  const { data: apps = [] } = useQuery({
-    ...useFetchApps(),
-    enabled: !ticketNumber,
-  });
 
   const role = profile?.role as "user" | "agent";
   const mode: Mode = ticketNumber ? "update" : "create";
@@ -99,7 +94,6 @@ const TicketPage = () => {
       className={config.className}
       profile={profile}
       values={ticketDetails ?? null}
-      apps={apps}
       mode={mode}
     />
   );

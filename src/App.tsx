@@ -1,4 +1,4 @@
-import { ToastMessage } from "./components/ToastMessage";
+import { ToastMessages } from "./components/ToastMessages";
 import { Routes, Route } from "react-router";
 import { lazy, Suspense } from "react";
 import { PublicRoute } from "./GuardRoutes/PublicRoute";
@@ -27,7 +27,7 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <ToastMessage />
+        <ToastMessages />
         <Suspense fallback={<Spinner />}>
           <Routes>
             <Route path="/" element={<Navigate to="/signin" replace />} />

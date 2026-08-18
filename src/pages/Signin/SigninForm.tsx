@@ -11,19 +11,37 @@ export const SigninForm = () => {
   const [password, setPassword] = useState("resolve@agent");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { updateToaster, removeToaster, clearToasters } = useToasterStore(
+    (state) => state
+  );
   const { supabaseSignIn } = useSupabaseAuth();
-  const updateToaster = useToasterStore((state) => state.updateToaster);
 
   const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitted(true);
     if (!email || !password || !email.endsWith("@resolve.com")) return;
     setIsLoading(true);
-    const result = await supabaseSignIn(email, password);
-    if (result.success) {
-      setIsSubmitted(false);
-      updateToaster({ type: "success", message: "Successfully signed in" });
-    } else {
+    const loadingId = crypto.randomUUID();
+    clearToasters(loadingId);
+    updateToaster({
+      type: "loading",
+      id: loadingId,
+      message: "Signing in...",
+    });
+    try {
+      const result = await supabaseSignIn(email, password);
+      removeToaster(loadingId);
+      if (result.success) {
+        const successId = crypto.randomUUID();
+        clearToasters(successId);
+        updateToaster({
+          type: "success",
+          id: successId,
+          message: "Successfully signed in",
+        });
+        setIsSubmitted(false);
+      }
+    } finally {
       setIsLoading(false);
     }
   };

@@ -8,7 +8,6 @@ import type {
   TextAreaProps,
 } from "../../utils/Reusables";
 import type { Mode } from "./TicketPage";
-import type { FormValues } from "../../supabase/requiredTypes";
 
 export type Role = "user" | "agent";
 
@@ -17,12 +16,37 @@ export type FieldContext = {
   mode: Mode;
 };
 
+export type FormPropsId =
+  | "assignedTo"
+  | "ticketId"
+  | "application"
+  | "severity"
+  | "description"
+  | "status"
+  | "isLocked"
+  | "lockedBy"
+  | "comments"
+  | "intComments"
+  | "history"
+  | "intHistory"
+  | "submit"
+  | "faker"
+  | "assignedName"
+  | "commentsBt"
+  | "commentsIntBt"
+  | "historyBt"
+  | "historyIntBt"
+  | "lockedName"
+  | "createdAt"
+  | "createdBy"
+  | "ticketNumber";
+
 export type FieldProps = {
   name: "Span" | "Button" | "Input" | "SelectGroup" | "TextArea" | "Div";
   group: "grid1" | "grid2";
   grid: string;
   props: {
-    id: string | keyof FormValues;
+    id: FormPropsId;
   } & (
     | ButtonProps
     | SpanProps
@@ -35,18 +59,6 @@ export type FieldProps = {
   target?: "comments" | "history";
   isRequired?: () => string;
   notVisible?: (ctx: FieldContext) => boolean;
-};
-
-export const notVisibleFields = (field: FieldProps, ctx: FieldContext) => {
-  if (!field.notVisible) return false;
-
-  return field.notVisible(ctx);
-};
-
-export const isRequiredFields = (field: FieldProps) => {
-  if (!field.isRequired) return false;
-
-  return field.isRequired();
 };
 
 const commonFields: FieldProps[] = [
