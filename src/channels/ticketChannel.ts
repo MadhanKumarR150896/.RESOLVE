@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { supabase } from "../supabase/supabaseClient";
-import type { history, TicketDetails } from "../supabase/requiredTypes";
+import type { History, TicketDetails } from "../supabase/requiredTypes";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useFetchProfiles } from "../services/profileService";
 import { useParams } from "react-router";
@@ -63,7 +63,7 @@ export const useTicketChannel = () => {
           filter: `ticket_id=eq.${ticketId}`,
         },
         (payload) => {
-          const formatted: history = {
+          const formatted: History = {
             content: payload.new.content,
             createdAt: payload.new.created_at,
             createdBy: { name: profileRef.current[payload.new.created_by] },

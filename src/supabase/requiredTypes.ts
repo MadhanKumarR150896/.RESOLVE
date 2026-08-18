@@ -24,7 +24,7 @@ export type FullTicket = {
   assigned_name: Profiles["name"];
 };
 
-type comments = {
+export type comments = {
   comments: string;
   intComments: string;
 };
@@ -40,7 +40,7 @@ export type FormValues = {
   lockedBy: Tickets["locked_by"];
 } & comments;
 
-export type history = {
+export type History = {
   content: Comments["content"];
   createdAt: Comments["created_at"];
   createdBy: { name: Profiles["name"] };
@@ -61,8 +61,8 @@ export type TicketDetails = {
   isLocked: Tickets["is_locked"];
   lockedBy: Profiles["id"] | null;
   lockedName: Profiles["name"];
-  history: history[];
-  intHistory: history[];
+  history: History[];
+  intHistory: History[];
 };
 
 export type FunctionArgs = Required["public"]["Functions"][

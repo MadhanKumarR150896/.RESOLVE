@@ -33,6 +33,7 @@ export const SearchComp = ({
     if (error || !data) {
       updateToaster({
         type: "error",
+        id: crypto.randomUUID(),
         message: "Ticket not found or invalid",
       });
       return;

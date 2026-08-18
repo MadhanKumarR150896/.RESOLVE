@@ -1,53 +1,58 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
-type StatusType = "initial" | "loading" | "error" | "success";
+type StatusType =
+  | "loading"
+  | "error"
+  | "success"
+  | "signedin"
+  | "signedout"
+  | "signinfailed"
+  | "signoutfailed";
 
 type Toaster = {
   type: StatusType;
+  id: string;
   message: string;
 };
 
-type TimeoutId = ReturnType<typeof setTimeout> | null;
-
 type State = {
-  toaster: Toaster;
-  timeoutId: TimeoutId;
+  toasters: Toaster[];
 };
 
 type Action = {
-  updateToaster: (toaster: State["toaster"]) => void;
-  removeToaster: () => void;
-};
-
-export const initialToaster: Toaster = {
-  type: "initial",
-  message: "",
+  updateToaster: (toaster: Toaster) => void;
+  clearToasters: (toasterId: string) => void;
+  removeToaster: (toasterId: string) => void;
 };
 
 export const useToasterStore = create<State & Action>()(
   devtools((set, get) => ({
-    toaster: initialToaster,
-    timeoutId: null,
+    toasters: [],
 
     updateToaster: (toaster) => {
-      const previousId = get().timeoutId;
-      if (previousId) clearTimeout(previousId);
-
-      const newId = setTimeout(() => {
+      if (toaster.type === "loading") {
+        set({ toasters: [...get().toasters, toaster] });
+        return;
+      }
+      setTimeout(() => {
         set({
-          toaster: initialToaster,
-          timeoutId: null,
+          toasters: get().toasters.filter((each) => each.id !== toaster.id),
         });
-      }, 3000);
+      }, 5000);
 
-      set({ toaster: toaster, timeoutId: newId });
+      set({ toasters: [...get().toasters, toaster] });
     },
 
-    removeToaster: () => {
+    clearToasters: (toasterId) => {
       set({
-        toaster: initialToaster,
-        timeoutId: null,
+        toasters: get().toasters.filter((each) => each.id === toasterId),
+      });
+    },
+
+    removeToaster: (toasterId) => {
+      set({
+        toasters: get().toasters.filter((each) => each.id !== toasterId),
       });
     },
   }))

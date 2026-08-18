@@ -23,7 +23,7 @@ const textColor = {
   closed: "text-gray-600",
 };
 
-export const AgentTableRow = ({ ticket, profile }: AgentTableRowProps) => {
+export const AgentTableDataRow = ({ ticket, profile }: AgentTableRowProps) => {
   const [isSelected, setIsSelected] = useState(false);
 
   const handleDragStart = (e: DragEvent<HTMLTableRowElement>) => {

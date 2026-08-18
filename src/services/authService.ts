@@ -4,16 +4,11 @@ import { useToasterStore } from "../stores/toasterStore";
 import { useQueryClient } from "@tanstack/react-query";
 
 export const useSupabaseAuth = () => {
-  const updateToaster = useToasterStore((state) => state.updateToaster);
+  const { updateToaster, clearToasters } = useToasterStore((state) => state);
   const queryClient = useQueryClient();
 
   const supabaseSignIn = useCallback(
     async (email: string, password: string): Promise<{ success: boolean }> => {
-      updateToaster({
-        type: "loading",
-        message: "Signing in ...",
-      });
-
       try {
         const { data, error } = await supabase.auth.signInWithPassword({
           email: email,
@@ -37,7 +32,8 @@ export const useSupabaseAuth = () => {
         return { success: false };
       } catch (err) {
         updateToaster({
-          type: "error",
+          type: "signinfailed",
+          id: crypto.randomUUID(),
           message:
             err instanceof Error ? err.message : "An unexpected error occurred",
         });
@@ -52,19 +48,23 @@ export const useSupabaseAuth = () => {
 
     if (error) {
       updateToaster({
-        type: "error",
+        type: "signoutfailed",
+        id: crypto.randomUUID(),
         message: error.message,
       });
       return;
     }
 
+    const failedId = crypto.randomUUID();
+    clearToasters(failedId);
     updateToaster({
-      type: "success",
+      type: "signedout",
+      id: failedId,
       message: "Successfully signed out",
     });
 
     queryClient.clear();
-  }, [updateToaster, queryClient]);
+  }, [updateToaster, clearToasters, queryClient]);
 
   return { supabaseSignIn, supabaseSignout };
 };
