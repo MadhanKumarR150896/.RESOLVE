@@ -74,15 +74,9 @@ export const TicketsContainer = () => {
       ref={rootContainerRef}
       className={`px-4 max-h-160 overflow-auto ${profile?.role === "user" ? "" : "me-2"}`}
     >
-      <div
-        ref={topContainerRef}
-        className="h-px md:col-span-2 lg:col-span-3 xl:col-span-4 center"
-      ></div>
+      <div ref={topContainerRef} className="h-px"></div>
       {isAgent ? <AgentTicketsTable /> : <UserTicketsGrid />}
-      <div
-        ref={bottomContainerRef}
-        className="h-px md:col-span-2 lg:col-span-3 xl:col-span-4"
-      >
+      <div ref={bottomContainerRef} className="h-px">
         {hasNextPage && isFetchingNextPage && <Spinner className="h-12" />}
       </div>
       <Button

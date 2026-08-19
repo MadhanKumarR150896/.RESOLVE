@@ -39,7 +39,7 @@ export const useToasterStore = create<State & Action>()(
         set({
           toasters: get().toasters.filter((each) => each.id !== toaster.id),
         });
-      }, 5000);
+      }, 3000);
 
       set({ toasters: [...get().toasters, toaster] });
     },

@@ -1,8 +1,9 @@
 import { SigninForm } from "./SigninForm";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import userEvent from "@testing-library/user-event";
-import { cleanup, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { useSupabaseAuth } from "../../services/authService";
+import { useState } from "react";
 
 vi.mock("../../services/authService");
 
@@ -10,6 +11,20 @@ describe("Signin Form", () => {
   let user: ReturnType<typeof userEvent.setup>;
   const mockSignin = vi.fn();
   const mockSignout = vi.fn();
+
+  const TestSigninForm = () => {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    return (
+      <SigninForm
+        email={email}
+        setEmail={setEmail}
+        password={password}
+        setPassword={setPassword}
+      />
+    );
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -20,7 +35,7 @@ describe("Signin Form", () => {
       supabaseSignout: mockSignout,
     });
 
-    render(<SigninForm />);
+    render(<TestSigninForm />);
   });
 
   test("Checks if the fields exist", () => {
@@ -54,14 +69,15 @@ describe("Signin Form", () => {
     mockSignin.mockResolvedValue({
       success: true,
     });
-    cleanup();
-    render(<SigninForm />);
 
     await user.type(screen.getByLabelText(/email/i), "user1@resolve.com");
     await user.type(screen.getByLabelText(/Password/), "resolve@user");
     await user.click(screen.getByRole("button", { name: /sign in/i }));
 
-    expect(mockSignin).toHaveBeenCalled();
+    expect(mockSignin).toHaveBeenCalledWith(
+      "user1@resolve.com",
+      "resolve@user"
+    );
   });
 
   test("To check if signin is not called when entering invalid data", async () => {

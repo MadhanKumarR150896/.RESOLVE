@@ -23,6 +23,7 @@ export const ToastMessages = () => {
         const MessageIcon = icons[toaster.type];
         return (
           <div
+            key={`${toaster.id}-${toaster.type}`}
             className={`flex gap-4 items-center border shadow shadow-neutral-900 bg-neutral-200 z-50 text-sm py-2 px-3 rounded`}
           >
             <MessageIcon

@@ -1,14 +1,24 @@
 import { Eye, EyeOff } from "lucide-react";
-import { useState, type SyntheticEvent } from "react";
+import React, { useState, type SyntheticEvent } from "react";
 import { ErrorMessage } from "./ErrorMessage";
 import { useSupabaseAuth } from "../../services/authService";
 import { Button } from "../../utils/Reusables";
 import { useToasterStore } from "../../stores/toasterStore";
 
-export const SigninForm = () => {
+type SigninFormProps = {
+  email: string;
+  setEmail: React.Dispatch<React.SetStateAction<string>>;
+  password: string;
+  setPassword: React.Dispatch<React.SetStateAction<string>>;
+};
+
+export const SigninForm = ({
+  email,
+  setEmail,
+  password,
+  setPassword,
+}: SigninFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("agent1@resolve.com");
-  const [password, setPassword] = useState("resolve@agent");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { updateToaster, removeToaster, clearToasters } = useToasterStore(
