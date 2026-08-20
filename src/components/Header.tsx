@@ -37,30 +37,30 @@ export const Header = () => {
               <DropdownMenuContent
                 loop
                 className="text-sm min-w-40 bg-neutral-50 p-2 rounded border border-neutral-500 cursor-pointer"
-                sideOffset={2}
+                sideOffset={4}
                 align="end"
                 alignOffset={-1}
               >
                 <DropdownMenuItem
-                  className="data-disabled:text-neutral-500 px-2 select-none data-disabled:pointer-events-none"
+                  className="outline-none py-0.5 rounded hover:bg-neutral-300 focus:bg-neutral-300 data-disabled:text-neutral-500 px-2 select-none data-disabled:pointer-events-none"
                   disabled
                 >
                   {profile?.name}
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  className="data-disabled:text-neutral-500 px-2 select-none data-disabled:pointer-events-none"
+                  className="outline-none py-0.5 rounded hover:bg-neutral-300 focus:bg-neutral-300 data-disabled:text-neutral-500 px-2 select-none data-disabled:pointer-events-none"
                   disabled
                 >
                   {profile?.email}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-neutral-300 h-px m-1"></DropdownMenuSeparator>
                 <DropdownMenuItem
-                  className="outline-none px-2 py-0.5 rounded select-none hover:bg-neutral-300 focus:bg-neutral-300"
+                  className="outline-none py-0.5 rounded hover:bg-neutral-300 focus:bg-neutral-300 data-disabled:text-neutral-500 px-2 select-none data-disabled:pointer-events-none"
                   onSelect={supabaseSignout}
                 >
                   Sign out
                 </DropdownMenuItem>
-                <DropdownMenuArrow className="fill-neutral-500" />
+                <DropdownMenuArrow className="fill-neutral-400" />
               </DropdownMenuContent>
             </DropdownMenuPortal>
           </DropdownMenu>

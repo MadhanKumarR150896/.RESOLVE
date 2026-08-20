@@ -1,3 +1,7 @@
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import type { LucideProps } from "lucide-react";
+import type { ButtonHTMLAttributes, HTMLAttributes } from "react";
+
 export type PropId =
   | "ticketId"
   | "ticketNumber"
@@ -11,6 +15,36 @@ export type PropId =
   | "updatedBy"
   | "updatedAt";
 
+export type DropProps = {
+  rootProps?: Omit<DropdownMenu.DropdownMenuProps, "open" | "onOpenChange">;
+  trigger: {
+    props?: DropdownMenu.DropdownMenuTriggerProps;
+    buttonProps?: Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick">;
+    icon: {
+      name: "sort" | "filter";
+      props?: LucideProps;
+    };
+  };
+  portal?: {
+    props?: DropdownMenu.DropdownMenuPortalProps;
+    content?: {
+      props?: DropdownMenu.DropdownMenuContentProps;
+      item?: {
+        props?: DropdownMenu.DropdownMenuItemProps;
+        divProps?: HTMLAttributes<HTMLDivElement>;
+        icon?: {
+          name?: string;
+          props?: LucideProps;
+        };
+      }[];
+      arrowProps?: DropdownMenu.DropdownMenuArrowProps;
+      separator?: {
+        props?: DropdownMenu.DropdownMenuSeparatorProps[];
+      }[];
+    };
+  };
+};
+
 type TableHeaderConfigProps = {
   name: string;
   props: {
@@ -18,6 +52,7 @@ type TableHeaderConfigProps = {
     scope: "col" | "row";
     className?: string;
   };
+  hasDrop?: DropProps;
 };
 
 export const tableHeaderConfig: TableHeaderConfigProps[] = [
@@ -35,12 +70,34 @@ export const tableHeaderConfig: TableHeaderConfigProps[] = [
       id: "ticketNumber",
       scope: "col",
     },
+    hasDrop: {
+      trigger: {
+        icon: {
+          name: "sort",
+          props: {
+            size: 14,
+            strokeWidth: 2,
+          },
+        },
+      },
+    },
   },
   {
     name: "Created At",
     props: {
       id: "createdAt",
       scope: "col",
+    },
+    hasDrop: {
+      trigger: {
+        icon: {
+          name: "sort",
+          props: {
+            size: 14,
+            strokeWidth: 2,
+          },
+        },
+      },
     },
   },
   {
@@ -56,12 +113,34 @@ export const tableHeaderConfig: TableHeaderConfigProps[] = [
       id: "status",
       scope: "col",
     },
+    hasDrop: {
+      trigger: {
+        icon: {
+          name: "filter",
+          props: {
+            size: 14,
+            strokeWidth: 2,
+          },
+        },
+      },
+    },
   },
   {
     name: "Application",
     props: {
       id: "application",
       scope: "col",
+    },
+    hasDrop: {
+      trigger: {
+        icon: {
+          name: "filter",
+          props: {
+            size: 14,
+            strokeWidth: 2,
+          },
+        },
+      },
     },
   },
   {
@@ -70,12 +149,34 @@ export const tableHeaderConfig: TableHeaderConfigProps[] = [
       id: "severity",
       scope: "col",
     },
+    hasDrop: {
+      trigger: {
+        icon: {
+          name: "filter",
+          props: {
+            size: 14,
+            strokeWidth: 2,
+          },
+        },
+      },
+    },
   },
   {
     name: "Assigned To",
     props: {
       id: "assignedTo",
       scope: "col",
+    },
+    hasDrop: {
+      trigger: {
+        icon: {
+          name: "filter",
+          props: {
+            size: 14,
+            strokeWidth: 2,
+          },
+        },
+      },
     },
   },
   {

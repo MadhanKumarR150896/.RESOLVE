@@ -23,7 +23,7 @@ import type { FieldProps } from "./formConfig";
 import { useState } from "react";
 import { useToasterStore } from "../../stores/toasterStore";
 import { supabase } from "../../supabase/supabaseClient";
-import { generateTicketInfo } from "../../utils/ticketSamples";
+import { generateTicketInfo } from "./ticketSamples";
 import { CommentsHistory } from "./CommentsHistory";
 
 export const FormGridTwo = ({
