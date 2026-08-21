@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 type TargetRef = React.RefObject<HTMLDivElement | null>;
 
 export const useHandleDrop = (targetRef: TargetRef) => {
-  const [showDrop, setShowDrop] = useState(true);
+  const [showDrop, setShowDrop] = useState(false);
 
   useEffect(() => {
     const handleDrop = (e: Event) => {

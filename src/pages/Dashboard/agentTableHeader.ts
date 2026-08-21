@@ -1,6 +1,7 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import type { LucideProps } from "lucide-react";
 import type { ButtonHTMLAttributes, HTMLAttributes } from "react";
+import type { Tickets } from "../../supabase/requiredTypes";
 
 export type PropId =
   | "ticketId"
@@ -19,27 +20,30 @@ export type DropProps = {
   rootProps?: Omit<DropdownMenu.DropdownMenuProps, "open" | "onOpenChange">;
   trigger: {
     props?: DropdownMenu.DropdownMenuTriggerProps;
-    buttonProps?: Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick">;
+    buttonProps?: Pick<ButtonHTMLAttributes<HTMLButtonElement>, "className">;
     icon: {
-      name: "sort" | "filter";
+      name: "sort" | "filter" | "header";
       props?: LucideProps;
     };
   };
   portal?: {
     props?: DropdownMenu.DropdownMenuPortalProps;
-    content?: {
+    divProps?: HTMLAttributes<HTMLDivElement>;
+    content: {
       props?: DropdownMenu.DropdownMenuContentProps;
-      item?: {
+      items: {
+        name:
+          | "Ascending"
+          | "Descending"
+          | Tickets["status"]
+          | Tickets["severity"]
+          | string;
         props?: DropdownMenu.DropdownMenuItemProps;
         divProps?: HTMLAttributes<HTMLDivElement>;
         icon?: {
-          name?: string;
+          name: "ascending" | "descending" | "severity" | "status";
           props?: LucideProps;
         };
-      }[];
-      arrowProps?: DropdownMenu.DropdownMenuArrowProps;
-      separator?: {
-        props?: DropdownMenu.DropdownMenuSeparatorProps[];
       }[];
     };
   };
@@ -80,6 +84,24 @@ export const tableHeaderConfig: TableHeaderConfigProps[] = [
           },
         },
       },
+      portal: {
+        content: {
+          items: [
+            {
+              name: "Ascending",
+              icon: {
+                name: "ascending",
+              },
+            },
+            {
+              name: "Descending",
+              icon: {
+                name: "descending",
+              },
+            },
+          ],
+        },
+      },
     },
   },
   {
@@ -96,6 +118,24 @@ export const tableHeaderConfig: TableHeaderConfigProps[] = [
             size: 14,
             strokeWidth: 2,
           },
+        },
+      },
+      portal: {
+        content: {
+          items: [
+            {
+              name: "Ascending",
+              icon: {
+                name: "ascending",
+              },
+            },
+            {
+              name: "Descending",
+              icon: {
+                name: "descending",
+              },
+            },
+          ],
         },
       },
     },
@@ -123,6 +163,42 @@ export const tableHeaderConfig: TableHeaderConfigProps[] = [
           },
         },
       },
+      portal: {
+        content: {
+          items: [
+            {
+              name: "open",
+              icon: {
+                name: "status",
+              },
+            },
+            {
+              name: "active",
+              icon: {
+                name: "status",
+              },
+            },
+            {
+              name: "deferred",
+              icon: {
+                name: "status",
+              },
+            },
+            {
+              name: "resolved",
+              icon: {
+                name: "status",
+              },
+            },
+            {
+              name: "closed",
+              icon: {
+                name: "status",
+              },
+            },
+          ],
+        },
+      },
     },
   },
   {
@@ -139,6 +215,11 @@ export const tableHeaderConfig: TableHeaderConfigProps[] = [
             size: 14,
             strokeWidth: 2,
           },
+        },
+      },
+      portal: {
+        content: {
+          items: [],
         },
       },
     },
@@ -159,6 +240,43 @@ export const tableHeaderConfig: TableHeaderConfigProps[] = [
           },
         },
       },
+      portal: {
+        content: {
+          items: [
+            {
+              name: "sev 1",
+              icon: {
+                name: "severity",
+              },
+            },
+            {
+              name: "sev 2",
+              icon: {
+                name: "severity",
+              },
+            },
+
+            {
+              name: "sev 3",
+              icon: {
+                name: "severity",
+              },
+            },
+            {
+              name: "sev 4",
+              icon: {
+                name: "severity",
+              },
+            },
+            {
+              name: "sev 5",
+              icon: {
+                name: "severity",
+              },
+            },
+          ],
+        },
+      },
     },
   },
   {
@@ -175,6 +293,11 @@ export const tableHeaderConfig: TableHeaderConfigProps[] = [
             size: 14,
             strokeWidth: 2,
           },
+        },
+      },
+      portal: {
+        content: {
+          items: [],
         },
       },
     },

@@ -1,21 +1,56 @@
 import { NavLink } from "react-router";
 import { useAuthContext } from "../contexts/AuthContext";
 import Logo from "../assets/Full_logo_L_S.svg";
-import {
-  DropdownMenu,
-  DropdownMenuArrow,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@radix-ui/react-dropdown-menu";
-import { UserRound } from "lucide-react";
 import { useSupabaseAuth } from "../services/authService";
+import type { DropProps } from "../pages/Dashboard/agentTableHeader";
+import { StaticDropdown } from "../utils/StaticDrop";
+import { useMemo } from "react";
 
 export const Header = () => {
   const { profile } = useAuthContext();
   const { supabaseSignout } = useSupabaseAuth();
+
+  const drop: DropProps = useMemo(
+    () => ({
+      trigger: {
+        buttonProps: {
+          className:
+            "inline-flex items-center justify-center size-10 rounded bg-neutral-900 p-0 text-white",
+        },
+        icon: {
+          name: "header",
+        },
+      },
+      portal: {
+        content: {
+          items: [
+            {
+              name: profile?.name ?? "Profile name",
+              props: {
+                disabled: true,
+                className: "bg-inherit py-0",
+              },
+            },
+            {
+              name: profile?.email ?? "Profile email",
+              props: {
+                disabled: true,
+                className:
+                  "bg-inherit rounded-none border-b py-0 pbe-1 border-neutral-400",
+              },
+            },
+            {
+              name: "Sign out",
+              props: {
+                onSelect: supabaseSignout,
+              },
+            },
+          ],
+        },
+      },
+    }),
+    [profile, supabaseSignout]
+  );
 
   return (
     <>
@@ -26,45 +61,7 @@ export const Header = () => {
         >
           <img className="h-10 rounded" src={Logo} alt="App_logo" />
         </NavLink>
-        <div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="inline-flex items-center select-none justify-center size-10 rounded bg-neutral-900 outline-none cursor-pointer">
-                <UserRound color="white" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuContent
-                loop
-                className="text-sm min-w-40 bg-neutral-50 p-2 rounded border border-neutral-500 cursor-pointer"
-                sideOffset={4}
-                align="end"
-                alignOffset={-1}
-              >
-                <DropdownMenuItem
-                  className="outline-none py-0.5 rounded hover:bg-neutral-300 focus:bg-neutral-300 data-disabled:text-neutral-500 px-2 select-none data-disabled:pointer-events-none"
-                  disabled
-                >
-                  {profile?.name}
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="outline-none py-0.5 rounded hover:bg-neutral-300 focus:bg-neutral-300 data-disabled:text-neutral-500 px-2 select-none data-disabled:pointer-events-none"
-                  disabled
-                >
-                  {profile?.email}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-neutral-300 h-px m-1"></DropdownMenuSeparator>
-                <DropdownMenuItem
-                  className="outline-none py-0.5 rounded hover:bg-neutral-300 focus:bg-neutral-300 data-disabled:text-neutral-500 px-2 select-none data-disabled:pointer-events-none"
-                  onSelect={supabaseSignout}
-                >
-                  Sign out
-                </DropdownMenuItem>
-                <DropdownMenuArrow className="fill-neutral-400" />
-              </DropdownMenuContent>
-            </DropdownMenuPortal>
-          </DropdownMenu>
-        </div>
+        <StaticDropdown id="header" drop={drop} />
       </header>
     </>
   );

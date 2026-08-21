@@ -1,8 +1,7 @@
 //import { ArrowUpDown, Filter } from "lucide-react";
 import { cn } from "../../utils/classMerger";
 import { tableHeaderConfig } from "./agentTableHeader";
-import { StaticDropdown } from "../../utils/StaticDrop";
-import type { DropId } from "../../contexts/DropProvider";
+import { StaticDropdown, type DropId } from "../../utils/StaticDrop";
 
 export const AgentTableHeaderRow = () => {
   return (
@@ -13,7 +12,7 @@ export const AgentTableHeaderRow = () => {
           <th
             key={head.name}
             {...head.props}
-            className={cn("h-8 px-3 border-r", head.props.className)}
+            className={cn("h-8 ps-3 pe-2 border-r", head.props.className)}
           >
             <div className="flex justify-between">
               <span>{head.name}</span>
