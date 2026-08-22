@@ -46,6 +46,27 @@ export const useFetchProfiles = () => {
   });
 };
 
+const fetchAgents = async (): Promise<Assignees[]> => {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id,name")
+    .eq("role", "agent");
+
+  if (error) throw error;
+  if (!data) throw new Error("Unable to fetch agent profiles");
+
+  return data;
+};
+
+export const useFetchAgents = () => {
+  return queryOptions({
+    queryKey: ["agents"],
+    queryFn: () => fetchAgents(),
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+  });
+};
+
 type Assignees = {
   id: string;
   name: string | null;

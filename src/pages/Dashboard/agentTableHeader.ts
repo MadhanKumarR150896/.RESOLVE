@@ -1,7 +1,4 @@
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import type { LucideProps } from "lucide-react";
-import type { ButtonHTMLAttributes, HTMLAttributes } from "react";
-import type { Tickets } from "../../supabase/requiredTypes";
+import type { DropProps } from "../../utils/StaticDrop";
 
 export type PropId =
   | "ticketId"
@@ -15,39 +12,6 @@ export type PropId =
   | "assignedTo"
   | "updatedBy"
   | "updatedAt";
-
-export type DropProps = {
-  rootProps?: Omit<DropdownMenu.DropdownMenuProps, "open" | "onOpenChange">;
-  trigger: {
-    props?: DropdownMenu.DropdownMenuTriggerProps;
-    buttonProps?: Pick<ButtonHTMLAttributes<HTMLButtonElement>, "className">;
-    icon: {
-      name: "sort" | "filter" | "header";
-      props?: LucideProps;
-    };
-  };
-  portal?: {
-    props?: DropdownMenu.DropdownMenuPortalProps;
-    divProps?: HTMLAttributes<HTMLDivElement>;
-    content: {
-      props?: DropdownMenu.DropdownMenuContentProps;
-      items: {
-        name:
-          | "Ascending"
-          | "Descending"
-          | Tickets["status"]
-          | Tickets["severity"]
-          | string;
-        props?: DropdownMenu.DropdownMenuItemProps;
-        divProps?: HTMLAttributes<HTMLDivElement>;
-        icon?: {
-          name: "ascending" | "descending" | "severity" | "status";
-          props?: LucideProps;
-        };
-      }[];
-    };
-  };
-};
 
 type TableHeaderConfigProps = {
   name: string;
@@ -85,22 +49,7 @@ export const tableHeaderConfig: TableHeaderConfigProps[] = [
         },
       },
       portal: {
-        content: {
-          items: [
-            {
-              name: "Ascending",
-              icon: {
-                name: "ascending",
-              },
-            },
-            {
-              name: "Descending",
-              icon: {
-                name: "descending",
-              },
-            },
-          ],
-        },
+        content: {},
       },
     },
   },
@@ -121,22 +70,7 @@ export const tableHeaderConfig: TableHeaderConfigProps[] = [
         },
       },
       portal: {
-        content: {
-          items: [
-            {
-              name: "Ascending",
-              icon: {
-                name: "ascending",
-              },
-            },
-            {
-              name: "Descending",
-              icon: {
-                name: "descending",
-              },
-            },
-          ],
-        },
+        content: {},
       },
     },
   },
@@ -164,40 +98,7 @@ export const tableHeaderConfig: TableHeaderConfigProps[] = [
         },
       },
       portal: {
-        content: {
-          items: [
-            {
-              name: "open",
-              icon: {
-                name: "status",
-              },
-            },
-            {
-              name: "active",
-              icon: {
-                name: "status",
-              },
-            },
-            {
-              name: "deferred",
-              icon: {
-                name: "status",
-              },
-            },
-            {
-              name: "resolved",
-              icon: {
-                name: "status",
-              },
-            },
-            {
-              name: "closed",
-              icon: {
-                name: "status",
-              },
-            },
-          ],
-        },
+        content: {},
       },
     },
   },
@@ -241,41 +142,7 @@ export const tableHeaderConfig: TableHeaderConfigProps[] = [
         },
       },
       portal: {
-        content: {
-          items: [
-            {
-              name: "sev 1",
-              icon: {
-                name: "severity",
-              },
-            },
-            {
-              name: "sev 2",
-              icon: {
-                name: "severity",
-              },
-            },
-
-            {
-              name: "sev 3",
-              icon: {
-                name: "severity",
-              },
-            },
-            {
-              name: "sev 4",
-              icon: {
-                name: "severity",
-              },
-            },
-            {
-              name: "sev 5",
-              icon: {
-                name: "severity",
-              },
-            },
-          ],
-        },
+        content: {},
       },
     },
   },
@@ -296,9 +163,7 @@ export const tableHeaderConfig: TableHeaderConfigProps[] = [
         },
       },
       portal: {
-        content: {
-          items: [],
-        },
+        content: {},
       },
     },
   },

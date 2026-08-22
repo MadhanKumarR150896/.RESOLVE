@@ -3,15 +3,18 @@ import {
   ArrowUp,
   ArrowUpDown,
   ChevronsDown,
+  ChevronsDownUp,
   ChevronsUp,
   Filter,
+  UserCog2,
   UserRound,
+  type LucideProps,
 } from "lucide-react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import type { DropProps } from "../pages/Dashboard/agentTableHeader";
 import { cn } from "./classMerger";
 import { useHandleDrop } from "../customHooks/useHandleDrop";
-import { useRef } from "react";
+import { useRef, type ButtonHTMLAttributes, type HTMLAttributes } from "react";
+import type { Tickets } from "../supabase/requiredTypes";
 
 const icons = {
   sort: ArrowUpDown,
@@ -21,6 +24,8 @@ const icons = {
   descending: ArrowDown,
   severity: ChevronsUp,
   status: ChevronsDown,
+  profile: UserCog2,
+  application: ChevronsDownUp,
 };
 
 export type DropId =
@@ -31,6 +36,50 @@ export type DropId =
   | "assignedTo"
   | "severity"
   | "header";
+
+export type DropItemProps = {
+  name:
+    | "Ascending"
+    | "Descending"
+    | Tickets["status"]
+    | Tickets["severity"]
+    | string;
+  props?: DropdownMenu.DropdownMenuItemProps;
+  divProps?: HTMLAttributes<HTMLDivElement>;
+  icon?: {
+    name:
+      | "ascending"
+      | "descending"
+      | "severity"
+      | "status"
+      | "application"
+      | "profile";
+    props?: LucideProps;
+  };
+};
+
+export type DropProps = {
+  rootProps?: Omit<DropdownMenu.DropdownMenuProps, "open" | "onOpenChange">;
+  trigger: {
+    props?: DropdownMenu.DropdownMenuTriggerProps;
+    buttonProps?: Pick<ButtonHTMLAttributes<HTMLButtonElement>, "className">;
+    icon: {
+      name: "sort" | "filter" | "header";
+      props?: LucideProps;
+    };
+  };
+  portal: {
+    props?: DropdownMenu.DropdownMenuPortalProps;
+    divProps?: HTMLAttributes<HTMLDivElement>;
+    content: {
+      props?: DropdownMenu.DropdownMenuContentProps;
+      items?: DropItemProps[];
+      arrow?: {
+        props?: DropdownMenu.DropdownMenuArrowProps;
+      };
+    };
+  };
+};
 
 type StaticDropProps = {
   id: DropId;
@@ -106,6 +155,9 @@ export const StaticDropdown = ({ id, drop }: StaticDropProps) => {
                       </DropdownMenu.Item>
                     );
                   })}
+                {portal.content.arrow && (
+                  <DropdownMenu.Arrow {...portal.content.arrow.props} />
+                )}
               </DropdownMenu.Content>
             </div>
           </DropdownMenu.Portal>

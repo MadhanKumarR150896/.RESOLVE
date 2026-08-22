@@ -2,8 +2,7 @@ import { NavLink } from "react-router";
 import { useAuthContext } from "../contexts/AuthContext";
 import Logo from "../assets/Full_logo_L_S.svg";
 import { useSupabaseAuth } from "../services/authService";
-import type { DropProps } from "../pages/Dashboard/agentTableHeader";
-import { StaticDropdown } from "../utils/StaticDrop";
+import { StaticDropdown, type DropProps } from "../utils/StaticDrop";
 import { useMemo } from "react";
 
 export const Header = () => {
@@ -46,6 +45,11 @@ export const Header = () => {
               },
             },
           ],
+          arrow: {
+            props: {
+              className: "fill-neutral-500",
+            },
+          },
         },
       },
     }),
