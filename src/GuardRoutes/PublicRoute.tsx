@@ -7,12 +7,8 @@ export const PublicRoute = () => {
 
   if (authLoading) return <Spinner />;
 
-  if (session && profile?.role === "user") {
-    return <Navigate to="/dashboard/user" replace />;
-  }
-
-  if (session && profile?.role === "agent") {
-    return <Navigate to="/dashboard/agent" replace />;
+  if (session && profile) {
+    return <Navigate to={`/dashboard/${profile.role}`} replace />;
   }
 
   return <Outlet />;

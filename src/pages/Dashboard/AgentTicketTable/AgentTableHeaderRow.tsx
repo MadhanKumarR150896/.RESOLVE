@@ -1,10 +1,10 @@
-import { cn } from "../../utils/classMerger";
+import { cn } from "../../../utils/classMerger";
 import { tableHeaderConfig } from "./agentTableHeader";
-import { StaticDropdown, type DropId } from "../../utils/StaticDrop";
-import { useGetDropItems } from "./agentTableHeaderDropItems";
+import { StaticDropdown, type DropId } from "../../../utils/StaticDrop";
+import { useGenerateDropItems } from "./useGenerateDropItems";
 
 export const AgentTableHeaderRow = () => {
-  const dropItems = useGetDropItems();
+  const dropItems = useGenerateDropItems();
   return (
     <tr className="sticky top-0 bg-neutral-900 text-neutral-100 text-left">
       {tableHeaderConfig.map((header) => {

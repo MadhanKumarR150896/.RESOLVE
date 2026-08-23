@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import type { FullTicket, ProfileType } from "../../supabase/requiredTypes";
+import type { FullTicket, ProfileType } from "../../../supabase/requiredTypes";
 import {
   tableDataConfig,
   type DivP,
@@ -7,7 +7,7 @@ import {
   type LinkP,
   type SpanP,
 } from "./agentTableData";
-import { formatDate } from "../../utils/formatDate";
+import { formatDate } from "../../../utils/formatDate";
 import { useState, type DragEvent } from "react";
 
 type AgentTableRowProps = {

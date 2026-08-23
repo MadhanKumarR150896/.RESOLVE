@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useAuthContext } from "../../contexts/AuthContext";
+import { useAuthContext } from "../../../contexts/AuthContext";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useFetchAllTickets } from "../../services/ticketService";
+import { useFetchAllTickets } from "../../../services/ticketService";
 import { AgentTableDataRow } from "./AgentTableDataRow";
 import { AgentTableHeaderRow } from "./AgentTableHeaderRow";
 

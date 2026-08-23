@@ -1,4 +1,4 @@
-import type { DropProps } from "../../utils/StaticDrop";
+import type { DropProps } from "../../../utils/StaticDrop";
 
 export type PropId =
   | "ticketId"

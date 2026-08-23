@@ -1,11 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-import type { DropId, DropItemProps } from "../../utils/StaticDrop";
-import { useFetchApps } from "../../services/appService";
-import { useFetchAgents } from "../../services/profileService";
+import type { DropId, DropItemProps } from "../../../utils/StaticDrop";
+import { useFetchApps } from "../../../services/appService";
+import { useFetchAgents } from "../../../services/profileService";
 
-export const useGetDropItems = (): Partial<Record<DropId, DropItemProps[]>> => {
+export const useGenerateDropItems = (): Partial<
+  Record<DropId, DropItemProps[]>
+> => {
   const { data: apps = [] } = useQuery(useFetchApps());
   const { data: agents = [] } = useQuery(useFetchAgents());
+
   return {
     ticketNumber: ["Ascending", "Descending"].map((item) => ({
       name: item,

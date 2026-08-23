@@ -5,7 +5,7 @@ import { useDashboardChannel } from "../../channels/dashboardChannel";
 import { SearchComp } from "../../components/SearchComp";
 import { useQuery } from "@tanstack/react-query";
 import { useFetchAOTC, useFetchMetrics } from "../../services/ticketService";
-import { AgentMetrics } from "./AgentMetrics";
+import { AgentMetrics } from "./AgentTicketTable/AgentMetrics";
 import { cn } from "../../utils/classMerger";
 import type { DragEvent } from "react";
 import type { metricUpdate } from "../../supabase/requiredTypes";

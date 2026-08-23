@@ -1,5 +1,5 @@
 import type { DragEvent } from "react";
-import { Spinner } from "../../utils/Reusables";
+import { Spinner } from "../../../utils/Reusables";
 
 export const AgentMetrics = ({
   id,

@@ -5,7 +5,7 @@ import { Button, Spinner } from "../../utils/Reusables";
 import { ArrowUp } from "lucide-react";
 import { useFetchAllTickets } from "../../services/ticketService";
 import { UserTicketsGrid } from "./UserTicketsGrid";
-import { AgentTicketsTable } from "./AgentTicketsTable";
+import { AgentTicketsTable } from "./AgentTicketTable/AgentTicketsTable";
 
 export const TicketsContainer = () => {
   const { profile } = useAuthContext();
