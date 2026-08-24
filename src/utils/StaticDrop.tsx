@@ -2,6 +2,7 @@ import {
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
+  Check,
   ChevronsDown,
   ChevronsDownUp,
   ChevronsUp,
@@ -26,6 +27,7 @@ const icons = {
   status: ChevronsDown,
   profile: UserCog2,
   application: ChevronsDownUp,
+  check: Check,
 };
 
 export type DropId =
@@ -54,6 +56,11 @@ export type DropItemProps = {
       | "status"
       | "application"
       | "profile";
+    props?: LucideProps;
+  };
+  selected?: {
+    state: boolean;
+    name: "check";
     props?: LucideProps;
   };
 };
@@ -131,6 +138,9 @@ export const StaticDropdown = ({ id, drop }: StaticDropProps) => {
                   items.length > 0 &&
                   items.map((item) => {
                     const ItemIcon = item.icon ? icons[item.icon.name] : null;
+                    const SelectedIcon = item.selected?.state
+                      ? icons[item.selected.name]
+                      : null;
                     return (
                       <DropdownMenu.Item
                         key={`${id}-drop-${item.name}`}
@@ -151,6 +161,16 @@ export const StaticDropdown = ({ id, drop }: StaticDropProps) => {
                             <ItemIcon size={14} {...item.icon.props} />
                           )}
                           {item.name}
+                          {item.selected?.state && SelectedIcon && (
+                            <SelectedIcon
+                              size={12}
+                              {...item.selected.props}
+                              className={cn(
+                                "ml-auto",
+                                item.selected?.props?.className
+                              )}
+                            />
+                          )}
                         </div>
                       </DropdownMenu.Item>
                     );

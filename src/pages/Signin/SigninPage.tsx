@@ -11,7 +11,7 @@ const SigninPage = () => {
     <div className="base items-center justify-center py-[20vh]">
       <div className="flex flex-col gap-8 items-center">
         <div className="flex gap-2 items-center text-xs font-medium px-2 py-1 rounded border shadow shadow-neutral-500 lg:hidden">
-          <View size={18} /> Best experienced on wider screen
+          <View size={18} /> <p>Best experienced on wider screen</p>
         </div>
         <div>
           <img className="w-28 rounded" src={LogoLight} alt="App_logo" />

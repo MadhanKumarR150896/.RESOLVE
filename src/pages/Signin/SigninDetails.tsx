@@ -11,7 +11,10 @@ export const SigninDetails = ({
 }: SigninDetailsProps) => (
   <div className="flex flex-col gap-4 text-sm">
     <div className="w-max self-center flex gap-2 items-center text-xs font-medium px-2 py-1 rounded border shadow shadow-neutral-500">
-      <User size={18} /> Try signing in as Agent/User
+      <User size={18} />{" "}
+      <p>
+        Try signing in as <b>"Agent"</b> or User
+      </p>
     </div>
     <div className="flex gap-8 font-semibold">
       <button
