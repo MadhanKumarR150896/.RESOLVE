@@ -189,5 +189,19 @@ export const tableHeaderConfig: TableHeaderConfigProps[] = [
       scope: "col",
       className: "border-0 rounded-tr rounded-br",
     },
+    hasDrop: {
+      trigger: {
+        icon: {
+          name: "sort",
+          props: {
+            size: 14,
+            strokeWidth: 2,
+          },
+        },
+      },
+      portal: {
+        content: {},
+      },
+    },
   },
 ];

@@ -37,6 +37,7 @@ export type DropId =
   | "application"
   | "assignedTo"
   | "severity"
+  | "updatedAt"
   | "header";
 
 export type DropItemProps = {

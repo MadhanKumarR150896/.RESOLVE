@@ -15,7 +15,7 @@ const bgStatus = {
 
 export const UserTicketsGrid = () => {
   const { profile } = useAuthContext();
-  const { data } = useInfiniteQuery({ ...useFetchAllTickets(profile) });
+  const { data } = useInfiniteQuery(useFetchAllTickets(profile));
 
   const tickets = data?.pages.flatMap((page) => page.typedData) ?? [];
   return (

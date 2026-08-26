@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { DropId, DropItemProps } from "../../../utils/StaticDrop";
 import { useFetchApps } from "../../../services/appService";
 import { useFetchAgents } from "../../../services/profileService";
-import { useConstructSearchParams } from "./useConstructSearchParams";
+import { useConstructParams } from "./useConstructParams";
 import type { Tickets } from "../../../supabase/requiredTypes";
 import { useSearchParams } from "react-router";
 
@@ -11,7 +11,7 @@ export const useGenerateDropItems = (): Partial<
 > => {
   const { data: apps = [] } = useQuery(useFetchApps());
   const { data: agents = [] } = useQuery(useFetchAgents());
-  const { setParams } = useConstructSearchParams();
+  const { updateSortParam, updateFilterParam } = useConstructParams();
   const [searchParams] = useSearchParams();
 
   return {
@@ -19,7 +19,7 @@ export const useGenerateDropItems = (): Partial<
       name: item,
       props: {
         onSelect: () =>
-          setParams({
+          updateSortParam({
             type: "sort",
             field: "ticketNumber",
             val: item === "Ascending" ? "asc" : "desc",
@@ -40,7 +40,7 @@ export const useGenerateDropItems = (): Partial<
       name: item,
       props: {
         onSelect: () =>
-          setParams({
+          updateSortParam({
             type: "sort",
             field: "createdAt",
             val: item === "Ascending" ? "asc" : "desc",
@@ -61,12 +61,14 @@ export const useGenerateDropItems = (): Partial<
       (item) => ({
         name: item,
         props: {
-          onSelect: () =>
-            setParams({
+          onSelect: (e) => {
+            e.preventDefault();
+            updateFilterParam({
               type: "filter",
               field: "status",
               val: item as Tickets["status"],
-            }),
+            });
+          },
         },
         icon: {
           name: "status",
@@ -80,12 +82,14 @@ export const useGenerateDropItems = (): Partial<
     severity: ["sev 1", "sev 2", "sev 3", "sev 4", "sev 5"].map((item) => ({
       name: item,
       props: {
-        onSelect: () =>
-          setParams({
+        onSelect: (e) => {
+          e.preventDefault();
+          updateFilterParam({
             type: "filter",
             field: "severity",
             val: item as Tickets["severity"],
-          }),
+          });
+        },
       },
       icon: {
         name: "severity",
@@ -98,12 +102,14 @@ export const useGenerateDropItems = (): Partial<
     application: apps.map((app) => ({
       name: app.name,
       props: {
-        onSelect: () =>
-          setParams({
+        onSelect: (e) => {
+          e.preventDefault();
+          updateFilterParam({
             type: "filter",
             field: "application",
             val: app.name,
-          }),
+          });
+        },
       },
       icon: {
         name: "application",
@@ -116,18 +122,41 @@ export const useGenerateDropItems = (): Partial<
     assignedTo: agents.map((agent) => ({
       name: agent.name ?? "Agent X",
       props: {
-        onSelect: () =>
-          setParams({
+        onSelect: (e) => {
+          e.preventDefault();
+          updateFilterParam({
             type: "filter",
             field: "assignedTo",
             val: agent.name ?? "Agent X",
-          }),
+          });
+        },
       },
       icon: {
         name: "profile",
       },
       selected: {
         state: searchParams.has("filter", `assignedTo:${agent.name}`),
+        name: "check",
+      },
+    })),
+    updatedAt: ["Ascending", "Descending"].map((item) => ({
+      name: item,
+      props: {
+        onSelect: () =>
+          updateSortParam({
+            type: "sort",
+            field: "updatedAt",
+            val: item === "Ascending" ? "asc" : "desc",
+          }),
+      },
+      icon: {
+        name: item === "Ascending" ? "ascending" : "descending",
+      },
+      selected: {
+        state: searchParams.has(
+          "sort",
+          `updatedAt:${item === "Ascending" ? "asc" : "desc"}`
+        ),
         name: "check",
       },
     })),

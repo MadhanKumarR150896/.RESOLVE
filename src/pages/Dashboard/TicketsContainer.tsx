@@ -14,9 +14,7 @@ export const TicketsContainer = () => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useInfiniteQuery({
-    ...useFetchAllTickets(profile),
-  });
+  } = useInfiniteQuery(useFetchAllTickets(profile));
 
   const [arrowVisible, setArrowVisible] = useState(false);
   const rootContainerRef = useRef<HTMLDivElement>(null);

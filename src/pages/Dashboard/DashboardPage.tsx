@@ -50,6 +50,7 @@ const DashboardPage = () => {
         const { error } = await supabase
           .from("tickets")
           .update({
+            status: data.status === "open" ? "active" : data.status,
             assigned_to: profile?.id,
           })
           .eq("id", data.id);

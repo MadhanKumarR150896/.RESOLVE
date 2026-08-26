@@ -190,6 +190,11 @@ export const FormGridOne = ({
                             setValue("assignedTo", val.id, {
                               shouldDirty: true,
                             });
+                            if (values?.status === "open") {
+                              setValue("status", "active", {
+                                shouldDirty: true,
+                              });
+                            }
                             setAssignee?.(val.name);
                             setIsAssigned?.(true);
                             setShowDrop(false);
