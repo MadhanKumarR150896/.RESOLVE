@@ -23,7 +23,7 @@ import type { FieldProps } from "./formConfig";
 import { useState } from "react";
 import { useToasterStore } from "../../stores/toasterStore";
 import { supabase } from "../../supabase/supabaseClient";
-import { generateTicketInfo } from "../../utils/ticketSamples";
+import { generateTicketInfo } from "./ticketSamples";
 import { CommentsHistory } from "./CommentsHistory";
 
 export const FormGridTwo = ({
@@ -74,12 +74,14 @@ export const FormGridTwo = ({
           .update({
             is_locked: checked,
             locked_by: checked ? profile?.id : null,
+            status: values.status === "open" ? "active" : values.status,
           })
           .eq("id", values.ticketId);
 
         if (error) {
           setValue("isLocked", !checked);
           setValue("lockedBy", values.lockedBy);
+          setValue("status", values.status);
           throw new Error(error.message);
         }
 

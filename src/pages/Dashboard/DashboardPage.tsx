@@ -5,7 +5,7 @@ import { useDashboardChannel } from "../../channels/dashboardChannel";
 import { SearchComp } from "../../components/SearchComp";
 import { useQuery } from "@tanstack/react-query";
 import { useFetchAOTC, useFetchMetrics } from "../../services/ticketService";
-import { AgentMetrics } from "./AgentMetrics";
+import { AgentMetrics } from "./AgentTicketTable/AgentMetrics";
 import { cn } from "../../utils/classMerger";
 import type { DragEvent } from "react";
 import type { metricUpdate } from "../../supabase/requiredTypes";
@@ -50,6 +50,7 @@ const DashboardPage = () => {
         const { error } = await supabase
           .from("tickets")
           .update({
+            status: data.status === "open" ? "active" : data.status,
             assigned_to: profile?.id,
           })
           .eq("id", data.id);
@@ -73,7 +74,7 @@ const DashboardPage = () => {
 
   return (
     <>
-      <div className="p-10 flex gap-4 items-center">
+      <div className="p-8 flex gap-4 items-center">
         {profileRole === "agent" && (
           <div className="flex-3 flex gap-4">
             <AgentMetrics
@@ -115,6 +116,14 @@ const DashboardPage = () => {
           </Link>
         </div>
       </div>
+      {profile?.role === "agent" && (
+        <p className="mx-auto mb-2 text-[15px] border border-neutral-400 rounded px-2 bg-neutral-200">
+          Each <b>"Ticket"</b> row is draggable{" "}
+          <span className="text-sm">(* not when selected)</span>, try dropping
+          them inside <b>"Active"</b> or <b>"Owned"</b>
+          container
+        </p>
+      )}
       <TicketsContainer />
     </>
   );

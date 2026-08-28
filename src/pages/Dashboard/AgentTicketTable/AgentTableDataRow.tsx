@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import type { FullTicket, ProfileType } from "../../supabase/requiredTypes";
+import type { FullTicket, ProfileType } from "../../../supabase/requiredTypes";
 import {
   tableDataConfig,
   type DivP,
@@ -7,7 +7,7 @@ import {
   type LinkP,
   type SpanP,
 } from "./agentTableData";
-import { formatDate } from "../../utils/formatDate";
+import { formatDate } from "../../../utils/formatDate";
 import { useState, type DragEvent } from "react";
 
 type AgentTableRowProps = {
@@ -53,7 +53,7 @@ export const AgentTableDataRow = ({ ticket, profile }: AgentTableRowProps) => {
     <tr
       draggable={isSelected ? false : true}
       onDragStart={(e) => handleDragStart(e)}
-      className={`bg-neutral-200 even:bg-neutral-50 hover:cursor-grab active:cursor-grabbing h-8 ${textColor[ticket.status]} text-[15px] *:px-4 drag ${!isSelected ? "select-auto" : "select-none"}`}
+      className={`bg-neutral-200 even:bg-neutral-50 hover:${isSelected ? "" : "cursor-grab"} active:${isSelected ? "" : "cursor-grabbing"} h-8 ${textColor[ticket.status]} text-[15px] *:px-4 ${isSelected ? "select-none" : "select-auto"}`}
     >
       {tableDataConfig.map((cell) => {
         switch (cell.name) {

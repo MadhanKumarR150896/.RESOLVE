@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import type { FormValues } from "../../supabase/requiredTypes";
 import {
   Input,
@@ -10,7 +10,7 @@ import {
 } from "../../utils/Reusables";
 import { useQuery } from "@tanstack/react-query";
 import { useFetchAssignees } from "../../services/profileService";
-import { useDebouncedValue } from "../../utils/debounce";
+import { useDebounce } from "../../customHooks/useDebounce";
 import { useAuthContext } from "../../contexts/AuthContext";
 import { useParams } from "react-router";
 import { useFetchTicket } from "../../services/ticketService";
@@ -18,6 +18,7 @@ import { useFetchApps } from "../../services/appService";
 import type { GridProps } from "./TicketForm";
 import { fieldValues, isRequiredFields, notVisibleFields } from "./formUtils";
 import { useFormContext } from "react-hook-form";
+import { useHandleDrop } from "../../customHooks/useHandleDrop";
 
 export const FormGridOne = ({
   gridElements,
@@ -43,9 +44,10 @@ export const FormGridOne = ({
     ...useFetchApps(),
     enabled: !ticketNumber,
   });
-  const [showDropdown, setShowDropdown] = useState(false);
+
   const assigneeRef = useRef<HTMLDivElement>(null);
-  const debouncedAssignee = useDebouncedValue(assignee ?? "", 300, 3);
+  const debouncedAssignee = useDebounce(assignee ?? "", 500, 3);
+  const { showDrop, setShowDrop } = useHandleDrop(assigneeRef);
   const { data: assignees = [] } = useQuery({
     ...useFetchAssignees(debouncedAssignee),
     enabled: !!values?.ticketId && !!debouncedAssignee && !isAssigned,
@@ -75,20 +77,6 @@ export const FormGridOne = ({
     };
     setValues();
   }, [values, mode, reset, setAssignee, setIsAssigned]);
-
-  useEffect(() => {
-    const handleAssigneeDrop = (e: MouseEvent) => {
-      if (
-        assigneeRef.current &&
-        !assigneeRef.current.contains(e.target as Node)
-      )
-        setShowDropdown(false);
-    };
-
-    document.addEventListener("mousedown", handleAssigneeDrop);
-
-    return () => document.removeEventListener("mousedown", handleAssigneeDrop);
-  }, [setShowDropdown]);
 
   return (
     <div className="grid grid-cols-3 gap-12">
@@ -155,11 +143,7 @@ export const FormGridOne = ({
 
           case "Input": {
             return (
-              <div
-                key={`${field.name}-${i}`}
-                className={field.grid}
-                ref={field.props.id === "assignedName" ? assigneeRef : null}
-              >
+              <div key={`${field.name}-${i}`} className={field.grid}>
                 <Input
                   {...(field.props.id !== "assignedName"
                     ? register(field.props.id as keyof FormValues, {
@@ -183,7 +167,7 @@ export const FormGridOne = ({
                               shouldDirty: true,
                             });
                           setIsAssigned?.(false);
-                          setShowDropdown(val.length > 2);
+                          setShowDrop(val.length > 2);
                         },
                         disabled:
                           ticketLocked || assigneeLocked || ticketClosed,
@@ -192,8 +176,11 @@ export const FormGridOne = ({
                     : {})}
                   {...(field.props as Inputprops)}
                 />
-                {assignees.length > 0 && showDropdown && (
-                  <div className="absolute text-sm border rounded max-h-30 overflow-y-auto w-full p-1 grid gap-1 z-10 bg-neutral-200">
+                {assignees.length > 0 && showDrop && (
+                  <div
+                    ref={assigneeRef}
+                    className="absolute text-sm border rounded max-h-30 overflow-y-auto w-full p-1 grid gap-1 z-10 bg-neutral-200"
+                  >
                     {assignees.map((val, i) => (
                       <div
                         className="cursor-pointer border rounded px-1 py-0.5 bg-neutral-50"
@@ -203,9 +190,14 @@ export const FormGridOne = ({
                             setValue("assignedTo", val.id, {
                               shouldDirty: true,
                             });
+                            if (values?.status === "open") {
+                              setValue("status", "active", {
+                                shouldDirty: true,
+                              });
+                            }
                             setAssignee?.(val.name);
                             setIsAssigned?.(true);
-                            setShowDropdown(false);
+                            setShowDrop(false);
                           }
                         }}
                       >

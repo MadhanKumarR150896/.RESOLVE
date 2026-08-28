@@ -28,30 +28,32 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <ToastMessages />
+
         <Suspense fallback={<Spinner />}>
           <Routes>
             <Route path="/" element={<Navigate to="/signin" replace />} />
             <Route element={<PublicRoute />}>
               <Route path="/signin" element={<SigninPage />} />
             </Route>
-            <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
-              <Route path="/dashboard/user" element={<PageLayout />}>
+
+            <Route
+              element={<ProtectedRoute allowedRoles={["user", "agent"]} />}
+            >
+              <Route path="/dashboard/:role" element={<PageLayout />}>
                 <Route index element={<DashboardPage />} />
-                <Route path="ticket" element={<TicketPage />} />
-                <Route element={<TicketRoute />}>
-                  <Route path="ticket/:ticketNumber" element={<TicketPage />} />
+                <Route
+                  path="*"
+                  element={<Navigate to="/dashboard/:role" replace />}
+                />
+                <Route path="ticket">
+                  <Route index element={<TicketPage />} />
+                  <Route element={<TicketRoute />}>
+                    <Route path=":ticketNumber" element={<TicketPage />} />
+                  </Route>
                 </Route>
               </Route>
             </Route>
-            <Route element={<ProtectedRoute allowedRoles={["agent"]} />}>
-              <Route path="/dashboard/agent" element={<PageLayout />}>
-                <Route index element={<DashboardPage />} />
-                <Route path="ticket" element={<TicketPage />} />
-                <Route element={<TicketRoute />}>
-                  <Route path="ticket/:ticketNumber" element={<TicketPage />} />
-                </Route>
-              </Route>
-            </Route>
+
             <Route path="*" element={<Navigate to="/signin" replace />} />
           </Routes>
         </Suspense>

@@ -1,4 +1,8 @@
-import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
+import {
+  infiniteQueryOptions,
+  keepPreviousData,
+  queryOptions,
+} from "@tanstack/react-query";
 import type {
   FullTicket,
   Metrics,
@@ -7,6 +11,17 @@ import type {
 } from "../supabase/requiredTypes";
 import { supabase } from "../supabase/supabaseClient";
 import { formatDate } from "../utils/formatDate";
+import type { Param } from "../pages/Dashboard/AgentTicketTable/useConstructParams";
+
+const field = {
+  ticketNumber: "ticket_number",
+  createdAt: "created_at",
+  updatedAt: "updated_at",
+  status: "status",
+  application: "app_id",
+  severity: "severity",
+  assignedTo: "assigned_to",
+} as const;
 
 const fetchTicket = async (ticketNumber: string): Promise<TicketDetails> => {
   const { data, error } = await supabase
@@ -73,25 +88,108 @@ export type BulkTickets = {
   cursor: string | null;
 };
 
+type FetchTicketsProps = {
+  pageParam: null | string;
+  sortParams: Param[];
+  filterParams: Record<string, string[]>;
+};
+
+type P = Record<"ticket_number" | "updated_at" | "created_at", string>;
+
 const fetchAllTickets = async ({
   pageParam,
-}: {
-  pageParam: string;
-}): Promise<BulkTickets> => {
-  const { data, error } = await supabase
+  sortParams,
+  filterParams,
+}: FetchTicketsProps): Promise<BulkTickets> => {
+  let query = supabase
     .from("tickets")
     .select(
       `id,ticket_number,created_at,created_by:profiles!created_by(name),status,severity,updated_at,updated_by:profiles!updated_by(name),app:apps(name),description,assigned:profiles!assigned_to(id,name)`
-    )
-    .order("created_at", { ascending: false })
-    .lt("ticket_number", pageParam)
-    .limit(20);
+    );
+
+  const queryGenerator = (q: typeof query) => {
+    for (const [key, value] of Object.entries(filterParams)) {
+      q = q.in(field[key as keyof typeof field], value);
+    }
+    for (const sp of sortParams) {
+      q = q.order(field[sp.field], {
+        ascending: sp.val !== "desc",
+      });
+    }
+    return q;
+  };
+
+  const defaultSort = (q: typeof query) => {
+    if (pageParam) {
+      const p: P = JSON.parse(pageParam);
+      q = q.or(
+        `created_at.lt.${p.created_at},and(created_at.eq.${p.created_at},ticket_number.lt.${p.ticket_number})`
+      );
+    }
+
+    q = q
+      .order("created_at", { ascending: false })
+      .order("ticket_number", { ascending: false })
+      .limit(20);
+
+    return q;
+  };
+
+  const orCondition = (p: P) =>
+    sortParams.map((param, i) => {
+      const eq = sortParams.slice(0, i).map((each) => {
+        const fName = field[each.field];
+        return `${fName}.eq.${p[fName as keyof P]}`;
+      });
+
+      const curr = field[param.field];
+      const op = param.val === "desc" ? "lt" : "gt";
+
+      const currOp = `${curr}.${op}.${p[curr as keyof P]}`;
+
+      return [...eq, currOp].length === 1
+        ? currOp
+        : `and(${[...eq, currOp].join(",")})`;
+    });
+
+  const customSort = (q: typeof query) => {
+    if (pageParam) {
+      const p: P = JSON.parse(pageParam);
+      q = q.or(orCondition(p).join(","));
+    }
+    q = q.limit(20);
+    return q;
+  };
+
+  query = queryGenerator(query);
+  if (sortParams.length) {
+    query = customSort(query);
+  } else {
+    query = defaultSort(query);
+  }
+
+  const { data, error } = await query;
 
   if (error) throw error;
   if (!data) throw new Error("Tickets not found");
 
   const lastTicket = data.length > 0 ? data[data.length - 1] : null;
-  const cursor = lastTicket ? lastTicket.ticket_number : null;
+  const cursor = lastTicket
+    ? sortParams.length
+      ? JSON.stringify(
+          sortParams.reduce<Record<string, string>>((obj, each) => {
+            const key = field[each.field] as keyof P;
+            obj[key] = lastTicket[key];
+
+            return obj;
+          }, {})
+        )
+      : JSON.stringify({
+          created_at: lastTicket.created_at,
+          ticket_number: lastTicket.ticket_number,
+        })
+    : null;
+
   const typedData = data.map((ticket) => ({
     id: ticket.id,
     ticket_number: ticket.ticket_number,
@@ -110,15 +208,24 @@ const fetchAllTickets = async ({
   return { typedData, cursor };
 };
 
-export const useFetchAllTickets = (profile: ProfileType | null) => {
+export const useFetchAllTickets = (
+  profile: ProfileType | null,
+  sortParams: Param[] = [],
+  filterParams: Record<string, string[]> = {}
+) => {
   return infiniteQueryOptions({
-    queryKey: ["allTickets"],
+    queryKey: ["allTickets", { sortParams, filterParams }],
     queryFn: ({ pageParam }) => {
       if (!profile) throw new Error("Invalid Profile");
-      return fetchAllTickets({ pageParam });
+      return fetchAllTickets({
+        pageParam,
+        sortParams,
+        filterParams,
+      });
     },
-    initialPageParam: Number.MAX_SAFE_INTEGER.toString(),
+    initialPageParam: null as null | string,
     getNextPageParam: (lastPage) => lastPage.cursor,
+    placeholderData: keepPreviousData,
   });
 };
 

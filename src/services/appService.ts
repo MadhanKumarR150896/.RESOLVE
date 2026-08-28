@@ -22,3 +22,24 @@ export const useFetchApps = () => {
     refetchOnWindowFocus: false,
   });
 };
+
+const getApps = async (): Promise<Record<string, string>> => {
+  const { data, error } = await supabase
+    .from("apps")
+    .select("id,name")
+    .order("name", { ascending: true });
+
+  if (error) throw error;
+  if (!data) throw new Error("Unable to fetch apps");
+
+  return Object.fromEntries(data.map((obj) => [obj.name, obj.id]));
+};
+
+export const useGetApps = () => {
+  return queryOptions({
+    queryKey: ["appsObj"],
+    queryFn: () => getApps(),
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+  });
+};
