@@ -53,7 +53,7 @@ export const AgentTableDataRow = ({ ticket, profile }: AgentTableRowProps) => {
     <tr
       draggable={isSelected ? false : true}
       onDragStart={(e) => handleDragStart(e)}
-      className={`bg-neutral-200 even:bg-neutral-50 hover:cursor-grab active:cursor-grabbing h-8 ${textColor[ticket.status]} text-[15px] *:px-4 drag ${!isSelected ? "select-auto" : "select-none"}`}
+      className={`bg-neutral-200 even:bg-neutral-50 hover:${isSelected ? "" : "cursor-grab"} active:${isSelected ? "" : "cursor-grabbing"} h-8 ${textColor[ticket.status]} text-[15px] *:px-4 ${isSelected ? "select-none" : "select-auto"}`}
     >
       {tableDataConfig.map((cell) => {
         switch (cell.name) {

@@ -6,15 +6,17 @@ import { ArrowUp } from "lucide-react";
 import { useFetchAllTickets } from "../../services/ticketService";
 import { UserTicketsGrid } from "./UserTicketsGrid";
 import { AgentTicketsTable } from "./AgentTicketTable/AgentTicketsTable";
+import { useConstructParams } from "./AgentTicketTable/useConstructParams";
+import { AgentTableDataRow } from "./AgentTicketTable/AgentTableDataRow";
+import { UserTicketCard } from "./UserTicketCard";
 
 export const TicketsContainer = () => {
   const { profile } = useAuthContext();
-  const {
-    isLoading: ticketsLoading,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useInfiniteQuery(useFetchAllTickets(profile));
+  const { getSortParams, getFilterParams } = useConstructParams();
+  const sortParams = getSortParams();
+  const filterParams = getFilterParams();
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery(useFetchAllTickets(profile, sortParams, filterParams));
 
   const [arrowVisible, setArrowVisible] = useState(false);
   const rootContainerRef = useRef<HTMLDivElement>(null);
@@ -22,6 +24,7 @@ export const TicketsContainer = () => {
   const bottomContainerRef = useRef<HTMLDivElement>(null);
 
   const isAgent = profile?.role === "agent";
+  const isUser = profile?.role === "user";
 
   const backToTop = () => {
     rootContainerRef.current?.scrollTo({
@@ -62,7 +65,7 @@ export const TicketsContainer = () => {
     return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  if (ticketsLoading) return <Spinner className="h-full" />;
+  const tickets = data?.pages.flatMap((page) => page.typedData) ?? [];
 
   return (
     <div
@@ -70,12 +73,29 @@ export const TicketsContainer = () => {
         scrollbarWidth: `${profile?.role === "user" ? "none" : "thin"}`,
       }}
       ref={rootContainerRef}
-      className={`px-4 max-h-160 overflow-auto ${profile?.role === "user" ? "" : "me-2"}`}
+      className={`px-4 h-160 overflow-auto ${profile?.role === "user" ? "" : "me-2"}`}
     >
       <div ref={topContainerRef} className="h-px"></div>
-      {isAgent ? <AgentTicketsTable /> : <UserTicketsGrid />}
+      {isAgent && (
+        <AgentTicketsTable>
+          {tickets.map((ticket) => (
+            <AgentTableDataRow
+              key={ticket.id}
+              ticket={ticket}
+              profile={profile}
+            />
+          ))}
+        </AgentTicketsTable>
+      )}
+      {isUser && (
+        <UserTicketsGrid>
+          {tickets.map((ticket) => (
+            <UserTicketCard key={ticket.id} ticket={ticket} profile={profile} />
+          ))}
+        </UserTicketsGrid>
+      )}
       <div ref={bottomContainerRef} className="h-px">
-        {hasNextPage && isFetchingNextPage && <Spinner className="h-12" />}
+        {isFetchingNextPage && <Spinner className="h-12" />}
       </div>
       <Button
         variant="backtotop"

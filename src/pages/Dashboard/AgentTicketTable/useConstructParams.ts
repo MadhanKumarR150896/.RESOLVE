@@ -67,24 +67,25 @@ export const useConstructParams = () => {
     return getParams().filter(({ type }) => type === "sort");
   };
 
-  const getFilterParams = (): Map<string, string[]> => {
+  const getFilterParams = (): Record<string, string[]> => {
     return getParams()
       .filter(({ type }) => type === "filter")
-      .reduce((map, each) => {
-        if (!map.has(each.field)) {
-          map.set(each.field, []);
+      .reduce<Record<string, string[]>>((obj, each) => {
+        const key = each.field;
+        if (!obj[key]) {
+          obj[key] = [];
         }
 
-        if (each.field === "application") {
-          map.get(each.field).push(apps[each.val]);
-        } else if (each.field === "assignedTo") {
-          map.get(each.field).push(agents[each.val]);
+        if (key === "application") {
+          obj[key].push(apps[each.val]);
+        } else if (key === "assignedTo") {
+          obj[key].push(agents[each.val]);
         } else {
-          map.get(each.field).push(each.val);
+          obj[key].push(each.val);
         }
 
-        return map;
-      }, new Map());
+        return obj;
+      }, {});
   };
 
   const appendParams = (arr: Param[]) => {

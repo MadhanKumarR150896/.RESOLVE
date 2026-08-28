@@ -1,4 +1,8 @@
-import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
+import {
+  infiniteQueryOptions,
+  keepPreviousData,
+  queryOptions,
+} from "@tanstack/react-query";
 import type {
   FullTicket,
   Metrics,
@@ -87,8 +91,10 @@ export type BulkTickets = {
 type FetchTicketsProps = {
   pageParam: null | string;
   sortParams: Param[];
-  filterParams: Map<string, string[]>;
+  filterParams: Record<string, string[]>;
 };
+
+type P = Record<"ticket_number" | "updated_at" | "created_at", string>;
 
 const fetchAllTickets = async ({
   pageParam,
@@ -101,29 +107,65 @@ const fetchAllTickets = async ({
       `id,ticket_number,created_at,created_by:profiles!created_by(name),status,severity,updated_at,updated_by:profiles!updated_by(name),app:apps(name),description,assigned:profiles!assigned_to(id,name)`
     );
 
-  const queryGenerator = (subQuery: typeof query) => {
+  const queryGenerator = (q: typeof query) => {
+    for (const [key, value] of Object.entries(filterParams)) {
+      q = q.in(field[key as keyof typeof field], value);
+    }
     for (const sp of sortParams) {
-      subQuery = subQuery.order(field[sp.field], {
+      q = q.order(field[sp.field], {
         ascending: sp.val !== "desc",
       });
     }
-    for (const [key, value] of filterParams) {
-      subQuery = subQuery.in(field[key as keyof typeof field], value);
-    }
-    return subQuery;
+    return q;
   };
 
-  if (!pageParam) {
-    if (sortParams.length || filterParams.size) {
-      queryGenerator(query).limit(20);
-    } else {
-      query = query.order("created_at", { ascending: false }).limit(20);
+  const defaultSort = (q: typeof query) => {
+    if (pageParam) {
+      const p: P = JSON.parse(pageParam);
+      q = q.or(
+        `created_at.lt.${p.created_at},and(created_at.eq.${p.created_at},ticket_number.lt.${p.ticket_number})`
+      );
     }
-  } else {
-    query = query
+
+    q = q
       .order("created_at", { ascending: false })
-      .lt("created_at", pageParam)
+      .order("ticket_number", { ascending: false })
       .limit(20);
+
+    return q;
+  };
+
+  const orCondition = (p: P) =>
+    sortParams.map((param, i) => {
+      const eq = sortParams.slice(0, i).map((each) => {
+        const fName = field[each.field];
+        return `${fName}.eq.${p[fName as keyof P]}`;
+      });
+
+      const curr = field[param.field];
+      const op = param.val === "desc" ? "lt" : "gt";
+
+      const currOp = `${curr}.${op}.${p[curr as keyof P]}`;
+
+      return [...eq, currOp].length === 1
+        ? currOp
+        : `and(${[...eq, currOp].join(",")})`;
+    });
+
+  const customSort = (q: typeof query) => {
+    if (pageParam) {
+      const p: P = JSON.parse(pageParam);
+      q = q.or(orCondition(p).join(","));
+    }
+    q = q.limit(20);
+    return q;
+  };
+
+  query = queryGenerator(query);
+  if (sortParams.length) {
+    query = customSort(query);
+  } else {
+    query = defaultSort(query);
   }
 
   const { data, error } = await query;
@@ -132,7 +174,22 @@ const fetchAllTickets = async ({
   if (!data) throw new Error("Tickets not found");
 
   const lastTicket = data.length > 0 ? data[data.length - 1] : null;
-  const cursor = lastTicket ? lastTicket.created_at : null;
+  const cursor = lastTicket
+    ? sortParams.length
+      ? JSON.stringify(
+          sortParams.reduce<Record<string, string>>((obj, each) => {
+            const key = field[each.field] as keyof P;
+            obj[key] = lastTicket[key];
+
+            return obj;
+          }, {})
+        )
+      : JSON.stringify({
+          created_at: lastTicket.created_at,
+          ticket_number: lastTicket.ticket_number,
+        })
+    : null;
+
   const typedData = data.map((ticket) => ({
     id: ticket.id,
     ticket_number: ticket.ticket_number,
@@ -154,13 +211,10 @@ const fetchAllTickets = async ({
 export const useFetchAllTickets = (
   profile: ProfileType | null,
   sortParams: Param[] = [],
-  filterParams: Map<string, string[]> = new Map()
+  filterParams: Record<string, string[]> = {}
 ) => {
   return infiniteQueryOptions({
-    queryKey: [
-      "allTickets",
-      { sortParams, filterParams: [...filterParams.entries()] },
-    ],
+    queryKey: ["allTickets", { sortParams, filterParams }],
     queryFn: ({ pageParam }) => {
       if (!profile) throw new Error("Invalid Profile");
       return fetchAllTickets({
@@ -171,6 +225,7 @@ export const useFetchAllTickets = (
     },
     initialPageParam: null as null | string,
     getNextPageParam: (lastPage) => lastPage.cursor,
+    placeholderData: keepPreviousData,
   });
 };
 
