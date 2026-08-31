@@ -96,7 +96,6 @@ export const TicketForm = ({
         throw new Error(response.message ?? undefined);
       }
     } catch (error) {
-      console.log(error);
       updateToaster({
         type: "error",
         id: crypto.randomUUID(),

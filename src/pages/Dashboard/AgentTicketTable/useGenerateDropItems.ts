@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import type { DropId, DropItemProps } from "../../../utils/StaticDrop";
+import type { DropId, DropItemProps } from "../../../utils/CustomDrop";
 import { useFetchApps } from "../../../services/appService";
 import { useFetchAgents } from "../../../services/profileService";
 import { useConstructParams } from "./useConstructParams";

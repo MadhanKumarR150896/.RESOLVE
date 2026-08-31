@@ -89,18 +89,18 @@ export type DropProps = {
   };
 };
 
-type StaticDropProps = {
+type CustomDropProps = {
   id: DropId;
   drop: DropProps;
 };
 
-export const StaticDropdown = ({ id, drop }: StaticDropProps) => {
+export const CustomDropdown = ({ id, drop }: CustomDropProps) => {
   const targetRef = useRef<HTMLDivElement | null>(null);
   const { showDrop, setShowDrop } = useHandleDrop(targetRef);
-  const TriggerIcon = icons[drop.trigger.icon.name];
   const trigger = drop.trigger;
+  const TriggerIcon = icons[trigger.icon.name];
   const portal = drop.portal;
-  const items = portal ? portal.content.items : null;
+  const items = portal.content.items ?? null;
 
   return (
     <div id={`${id}-dropBtn`} className="flex">
@@ -115,7 +115,7 @@ export const StaticDropdown = ({ id, drop }: StaticDropProps) => {
             {...trigger.buttonProps}
             className={cn(
               "cursor-pointer outline-none px-0.75",
-              drop.trigger.buttonProps?.className
+              trigger.buttonProps?.className
             )}
           >
             <TriggerIcon {...trigger.icon.props} />

@@ -117,10 +117,10 @@ const DashboardPage = () => {
         </div>
       </div>
       {profile?.role === "agent" && (
-        <p className="mx-auto mb-2 text-[15px] border border-neutral-400 rounded px-2 bg-neutral-200">
+        <p className="mx-auto mb-2 text-sm border border-neutral-400 rounded px-2 bg-neutral-200">
           Each <b>"Ticket"</b> row is draggable{" "}
-          <span className="text-sm">(* not when selected)</span>, try dropping
-          them inside <b>"Active"</b> or <b>"Owned"</b>
+          <span>(* not when selected)</span>, try dropping them inside{" "}
+          <b>"Active"</b> or <b>"Owned"</b>
           container
         </p>
       )}
