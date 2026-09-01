@@ -8,7 +8,7 @@ import {
   type SpanP,
 } from "./agentTableData";
 import { formatDate } from "../../../utils/formatDate";
-import { useState, type DragEvent } from "react";
+import { type DragEvent } from "react";
 import { useTicketsStore } from "../../../stores/ticketsStore";
 
 type AgentTableRowProps = {
@@ -25,8 +25,13 @@ const textColor = {
 };
 
 export const AgentTableDataRow = ({ ticket, profile }: AgentTableRowProps) => {
-  const [isSelected, setIsSelected] = useState(false);
-  const { selectTicket, unSelectTicket } = useTicketsStore((state) => state);
+  const { ticketState, selectTicket, unSelectTicket } = useTicketsStore(
+    (state) => state
+  );
+
+  const selectedTickets = ticketState.ids;
+  const isSelected =
+    selectedTickets.length > 0 ? selectedTickets.includes(ticket.id) : false;
 
   const handleDragStart = (e: DragEvent<HTMLTableRowElement>) => {
     if (!isSelected) {
@@ -66,12 +71,11 @@ export const AgentTableDataRow = ({ ticket, profile }: AgentTableRowProps) => {
                   <input
                     disabled={ticket.status === "closed"}
                     value={ticket[cell.value] ?? ""}
+                    checked={isSelected}
                     onChange={(e) => {
                       if (e.target.checked) {
-                        setIsSelected(true);
                         selectTicket(ticket.id);
                       } else {
-                        setIsSelected(false);
                         unSelectTicket(ticket.id);
                       }
                     }}

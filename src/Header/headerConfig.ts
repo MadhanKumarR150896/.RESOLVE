@@ -6,7 +6,7 @@ import type { DropProps } from "../utils/CustomDrop";
 
 export const useHeaderConfig = (profile: ProfileType | null) => {
   const { supabaseSignout } = useSupabaseAuth();
-  const { ticketsCount } = useTicketsStore((state) => state);
+  const { count: ticketsCount } = useTicketsStore((state) => state.ticketState);
 
   return {
     drop: {

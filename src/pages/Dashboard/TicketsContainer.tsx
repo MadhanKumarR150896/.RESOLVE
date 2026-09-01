@@ -66,6 +66,9 @@ export const TicketsContainer = () => {
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   const tickets = data?.pages.flatMap((page) => page.typedData) ?? [];
+  const ticketIds = tickets
+    ? tickets.filter(({ status }) => status !== "closed").map(({ id }) => id)
+    : [];
 
   return (
     <div
@@ -77,7 +80,7 @@ export const TicketsContainer = () => {
     >
       <div ref={topContainerRef} className="h-px"></div>
       {isAgent && (
-        <AgentTicketsTable>
+        <AgentTicketsTable ticketIds={ticketIds}>
           {tickets.map((ticket) => (
             <AgentTableDataRow
               key={ticket.id}

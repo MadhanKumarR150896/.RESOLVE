@@ -9,7 +9,7 @@ import { CustomDialogBox } from "../utils/CustomDialog";
 export const Header = () => {
   const { profile } = useAuthContext();
   const { drop, dialog } = useHeaderConfig(profile);
-  const { ticketsCount } = useTicketsStore((state) => state);
+  const { count: ticketsCount } = useTicketsStore((state) => state.ticketState);
 
   return (
     <>

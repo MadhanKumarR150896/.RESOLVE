@@ -2,9 +2,14 @@ import { cn } from "../../../utils/classMerger";
 import { tableHeaderConfig } from "./agentTableHeader";
 import { CustomDropdown, type DropId } from "../../../utils/CustomDrop";
 import { useGenerateDropItems } from "./useGenerateDropItems";
+import { useTicketsStore } from "../../../stores/ticketsStore";
 
-export const AgentTableHeaderRow = () => {
+export const AgentTableHeaderRow = ({ ticketIds }: { ticketIds: string[] }) => {
   const dropItems = useGenerateDropItems();
+  const { ticketState, selectAllTicket } = useTicketsStore((state) => state);
+
+  const ticketsCount = ticketState.count;
+
   return (
     <tr className="sticky top-0 bg-neutral-900 text-neutral-100 text-left">
       {tableHeaderConfig.map((header) => {
@@ -17,7 +22,16 @@ export const AgentTableHeaderRow = () => {
           >
             <div className="flex justify-between">
               {header.props.id === "ticketId" && (
-                <input type="checkbox" className="mx-auto accent-amber-50" />
+                <input
+                  type="checkbox"
+                  className="mx-auto accent-amber-50"
+                  checked={
+                    ticketIds.length > 0 && ticketIds.length === ticketsCount
+                  }
+                  onChange={(e) =>
+                    selectAllTicket(e.target.checked ? ticketIds : [])
+                  }
+                />
               )}
               <span>{header.name}</span>
               {header.hasDrop && (
