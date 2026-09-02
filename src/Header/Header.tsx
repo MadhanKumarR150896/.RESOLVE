@@ -5,6 +5,7 @@ import { CustomDropdown } from "../utils/CustomDrop";
 import { useTicketsStore } from "../stores/ticketsStore";
 import { useHeaderConfig } from "./headerConfig";
 import { CustomDialogBox } from "../utils/CustomDialog";
+import { MultipleUpdateBox } from "./MultipleUpdateBox";
 
 export const Header = () => {
   const { profile } = useAuthContext();
@@ -21,7 +22,9 @@ export const Header = () => {
           <img className="h-10 rounded" src={Logo} alt="App_logo" />
         </NavLink>
         {profile?.role === "agent" && ticketsCount >= 1 && (
-          <CustomDialogBox dialog={dialog}>hi</CustomDialogBox>
+          <CustomDialogBox dialog={dialog}>
+            <MultipleUpdateBox />
+          </CustomDialogBox>
         )}
         <CustomDropdown id="header" drop={drop} />
       </header>

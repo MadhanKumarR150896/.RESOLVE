@@ -76,7 +76,7 @@ export const TicketsContainer = () => {
         scrollbarWidth: `${profile?.role === "user" ? "none" : "thin"}`,
       }}
       ref={rootContainerRef}
-      className={`px-4 h-160 overflow-auto ${profile?.role === "user" ? "" : "me-2"}`}
+      className={`h-160 overflow-auto ${profile?.role === "user" ? "px-4" : "ms-4 me-2"}`}
     >
       <div ref={topContainerRef} className="h-px"></div>
       {isAgent && (

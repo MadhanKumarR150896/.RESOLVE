@@ -82,9 +82,31 @@ export const useHeaderConfig = (profile: ProfileType | null) => {
         },
       },
       portal: {
-        content: {},
+        overlayProps: {
+          className: "fixed inset-0 opacity-50",
+        },
+        content: {
+          props: {
+            className:
+              "fixed bg-neutral-200 rounded-md px-4 py-5 left-[50%] top-[25%] -translate-x-[50%] min-w-100 max-w-120 min-h-80 max-h-100 overflow-auto",
+          },
+          title: {
+            value: "To update multiple tickets:",
+            props: {
+              className:
+                "border border-neutral-400 font-bold bg-neutral-100 w-max px-4 py-1 rounded",
+            },
+          },
+        },
         close: {
-          icon: {},
+          props: {
+            className: "absolute right-5 top-5",
+          },
+          icon: {
+            props: {
+              size: 20,
+            },
+          },
         },
       },
     } as DialogBoxProps,

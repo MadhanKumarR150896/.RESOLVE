@@ -90,7 +90,13 @@ export const CustomDialogBox = ({ dialog, children }: CustomDialogBoxProps) => {
         </button>
       </Dialog.Trigger>
       <Dialog.Portal {...portal.props}>
-        <Dialog.Overlay {...portal.overlayProps} />
+        <Dialog.Overlay
+          {...portal.overlayProps}
+          className={cn(
+            "data-[state=open]:bg-neutral-400",
+            portal.overlayProps?.className
+          )}
+        />
         <Dialog.Content {...portal.content.props}>
           <div {...portal.content.divProps}>
             {dialogTitle && (
@@ -104,18 +110,18 @@ export const CustomDialogBox = ({ dialog, children }: CustomDialogBoxProps) => {
               </Dialog.Title>
             )}
             {children}
-            <Dialog.Close {...close.props} asChild>
-              <button
-                {...close.buttonProps}
-                className={cn(
-                  "cursor-pointer outline-none",
-                  close.buttonProps?.className
-                )}
-              >
-                <CloseIcon {...close.icon.props} />
-              </button>
-            </Dialog.Close>
           </div>
+          <Dialog.Close {...close.props} asChild>
+            <button
+              {...close.buttonProps}
+              className={cn(
+                "cursor-pointer outline-none",
+                close.buttonProps?.className
+              )}
+            >
+              <CloseIcon {...close.icon.props} />
+            </button>
+          </Dialog.Close>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
