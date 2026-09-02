@@ -63,6 +63,7 @@ export const TicketForm = ({
   const handleonSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
       const response = await onSubmit(data);
+      console.log(response);
       if (response.success) {
         updateToaster({
           type: "success",

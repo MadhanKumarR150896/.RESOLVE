@@ -170,7 +170,7 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
     return (
       <div
         className={cn(
-          "flex justify-between border rounded py-1 px-2 border-neutral-500 w-full h-full",
+          "flex justify-between border rounded py-1 px-1 border-neutral-500 w-full h-full",
           className
         )}
       >
@@ -180,8 +180,15 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
           ref={ref}
           className={cn("outline-none w-full", inputProps?.className)}
         />
-        <button type="button" {...buttonProps}>
-          <Search strokeWidth={iconStrokeWidth} size={iconSize} />
+        <button
+          type="button"
+          {...buttonProps}
+          className={cn(
+            "cursor-pointer bg-neutral-900 rounded px-2 py-1 text-neutral-100 text-sm font-semibold",
+            buttonProps?.className
+          )}
+        >
+          Search
         </button>
       </div>
     );

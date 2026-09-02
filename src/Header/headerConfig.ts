@@ -87,8 +87,9 @@ export const useHeaderConfig = (profile: ProfileType | null) => {
         },
         content: {
           props: {
+            style: { scrollbarWidth: "thin" },
             className:
-              "fixed bg-neutral-200 rounded-md px-4 py-5 left-[50%] top-[25%] -translate-x-[50%] min-w-100 max-w-120 min-h-80 max-h-100 overflow-auto",
+              "fixed border border-neutral-400 bg-neutral-200 rounded-md px-4 py-5 left-[50%] top-[25%] -translate-x-[50%] w-100 h-max",
           },
           title: {
             value: "To update multiple tickets:",
