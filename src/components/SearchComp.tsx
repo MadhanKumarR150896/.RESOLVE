@@ -94,7 +94,9 @@ export const SearchComp = ({
           onClick: searchTicket,
           ...buttonProps,
         }}
-      />
+      >
+        Search
+      </SearchBox>
     </div>
   );
 };

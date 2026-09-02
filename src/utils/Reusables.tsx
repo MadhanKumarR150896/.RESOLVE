@@ -158,11 +158,19 @@ export type SearchBoxProps = {
   iconStrokeWidth?: number;
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
   buttonProps?: React.ButtonHTMLAttributes<HTMLButtonElement>;
+  children?: ReactNode;
 };
 
 export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
   (
-    { className, inputProps, iconSize = 18, iconStrokeWidth = 1, buttonProps },
+    {
+      className,
+      inputProps,
+      iconSize = 18,
+      iconStrokeWidth = 1,
+      buttonProps,
+      children,
+    },
     ref
   ) => {
     const customId = useId();
@@ -184,11 +192,15 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
           type="button"
           {...buttonProps}
           className={cn(
-            "cursor-pointer bg-neutral-900 rounded px-2 py-1 text-neutral-100 text-sm font-semibold",
+            `cursor-pointer ${children ? "bg-neutral-900 rounded px-2 py-1 text-neutral-100 text-sm font-semibold" : ""}`,
             buttonProps?.className
           )}
         >
-          Search
+          {children ? (
+            children
+          ) : (
+            <Search strokeWidth={iconStrokeWidth} size={iconSize} />
+          )}
         </button>
       </div>
     );
