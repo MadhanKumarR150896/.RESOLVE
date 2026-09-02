@@ -66,6 +66,9 @@ export const TicketsContainer = () => {
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   const tickets = data?.pages.flatMap((page) => page.typedData) ?? [];
+  const ticketIds = tickets
+    ? tickets.filter(({ status }) => status !== "closed").map(({ id }) => id)
+    : [];
 
   return (
     <div
@@ -73,11 +76,11 @@ export const TicketsContainer = () => {
         scrollbarWidth: `${profile?.role === "user" ? "none" : "thin"}`,
       }}
       ref={rootContainerRef}
-      className={`px-4 h-160 overflow-auto ${profile?.role === "user" ? "" : "me-2"}`}
+      className={`h-160 overflow-auto ${profile?.role === "user" ? "px-4" : "ms-4 me-2"}`}
     >
       <div ref={topContainerRef} className="h-px"></div>
       {isAgent && (
-        <AgentTicketsTable>
+        <AgentTicketsTable ticketIds={ticketIds}>
           {tickets.map((ticket) => (
             <AgentTableDataRow
               key={ticket.id}

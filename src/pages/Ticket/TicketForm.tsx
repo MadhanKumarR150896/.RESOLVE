@@ -63,6 +63,7 @@ export const TicketForm = ({
   const handleonSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
       const response = await onSubmit(data);
+      console.log(response);
       if (response.success) {
         updateToaster({
           type: "success",
@@ -96,7 +97,6 @@ export const TicketForm = ({
         throw new Error(response.message ?? undefined);
       }
     } catch (error) {
-      console.log(error);
       updateToaster({
         type: "error",
         id: crypto.randomUUID(),

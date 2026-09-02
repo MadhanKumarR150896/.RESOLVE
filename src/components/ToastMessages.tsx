@@ -1,14 +1,14 @@
-import { Loader, CircleAlert, CircleCheck, X } from "lucide-react";
+import { Loader, CircleCheck, X, CircleX } from "lucide-react";
 import { useToasterStore } from "../stores/toasterStore";
 
 const icons = {
   loading: Loader,
-  error: CircleAlert,
+  error: CircleX,
   success: CircleCheck,
   signedin: CircleCheck,
   signedout: CircleCheck,
-  signinfailed: CircleAlert,
-  signoutfailed: CircleAlert,
+  signinfailed: CircleX,
+  signoutfailed: CircleX,
 };
 
 export const ToastMessages = () => {

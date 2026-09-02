@@ -8,7 +8,8 @@ import {
   type SpanP,
 } from "./agentTableData";
 import { formatDate } from "../../../utils/formatDate";
-import { useState, type DragEvent } from "react";
+import { type DragEvent } from "react";
+import { useTicketsStore } from "../../../stores/ticketsStore";
 
 type AgentTableRowProps = {
   ticket: FullTicket;
@@ -24,7 +25,13 @@ const textColor = {
 };
 
 export const AgentTableDataRow = ({ ticket, profile }: AgentTableRowProps) => {
-  const [isSelected, setIsSelected] = useState(false);
+  const { ticketState, selectTicket, unSelectTicket } = useTicketsStore(
+    (state) => state
+  );
+
+  const selectedTickets = ticketState.ids;
+  const isSelected =
+    selectedTickets.length > 0 ? selectedTickets.includes(ticket.id) : false;
 
   const handleDragStart = (e: DragEvent<HTMLTableRowElement>) => {
     if (!isSelected) {
@@ -53,7 +60,7 @@ export const AgentTableDataRow = ({ ticket, profile }: AgentTableRowProps) => {
     <tr
       draggable={isSelected ? false : true}
       onDragStart={(e) => handleDragStart(e)}
-      className={`bg-neutral-200 even:bg-neutral-50 hover:${isSelected ? "" : "cursor-grab"} active:${isSelected ? "" : "cursor-grabbing"} h-8 ${textColor[ticket.status]} text-[15px] *:px-4 ${isSelected ? "select-none" : "select-auto"}`}
+      className={`bg-neutral-200 even:bg-neutral-50 ${isSelected ? "" : "hover:cursor-default"} ${isSelected ? "" : "active:cursor-grabbing"} h-8 ${textColor[ticket.status]} text-[15px] *:px-4 ${isSelected ? "select-none" : "select-auto"}`}
     >
       {tableDataConfig.map((cell) => {
         switch (cell.name) {
@@ -62,15 +69,17 @@ export const AgentTableDataRow = ({ ticket, profile }: AgentTableRowProps) => {
               <td key={`${ticket.id}-${cell.props.id}`} {...cell.props}>
                 <div className="flex flex-col">
                   <input
-                    {...(cell.innerProps as InputP)}
+                    disabled={ticket.status === "closed"}
                     value={ticket[cell.value] ?? ""}
+                    checked={isSelected}
                     onChange={(e) => {
                       if (e.target.checked) {
-                        setIsSelected(true);
+                        selectTicket(ticket.id);
                       } else {
-                        setIsSelected(false);
+                        unSelectTicket(ticket.id);
                       }
                     }}
+                    {...(cell.innerProps as InputP)}
                   />
                 </div>
               </td>

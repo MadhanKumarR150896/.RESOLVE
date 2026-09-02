@@ -2,10 +2,11 @@ import { useState, type ReactNode } from "react";
 import { AgentTableHeaderRow } from "./AgentTableHeaderRow";
 
 type AgentTableProps = {
+  ticketIds: string[];
   children: ReactNode;
 };
 
-export const AgentTicketsTable = ({ children }: AgentTableProps) => {
+export const AgentTicketsTable = ({ children, ticketIds }: AgentTableProps) => {
   const [colWidth] = useState([3, 9, 12, 8, 7, 8, 7, 8, 18, 8, 12]);
 
   return (
@@ -22,7 +23,7 @@ export const AgentTicketsTable = ({ children }: AgentTableProps) => {
         ))}
       </colgroup>
       <thead>
-        <AgentTableHeaderRow />
+        <AgentTableHeaderRow ticketIds={ticketIds} />
       </thead>
       <tbody>{children}</tbody>
     </table>
