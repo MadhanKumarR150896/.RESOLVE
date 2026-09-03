@@ -1,4 +1,4 @@
-import { NavLink } from "react-router";
+import { NavLink, useMatch } from "react-router";
 import { useAuthContext } from "../contexts/AuthContext";
 import Logo from "../assets/Full_logo_L_S.svg";
 import { CustomDropdown } from "../utils/CustomDrop";
@@ -9,6 +9,7 @@ import { MultipleUpdateBox } from "./MultipleUpdateBox";
 
 export const Header = () => {
   const { profile } = useAuthContext();
+  const route = useMatch("/dashboard/agent");
   const { drop, dialog } = useHeaderConfig(profile);
   const { count: ticketsCount } = useTicketsStore((state) => state.ticketState);
 
@@ -21,7 +22,7 @@ export const Header = () => {
         >
           <img className="h-10 rounded" src={Logo} alt="App_logo" />
         </NavLink>
-        {profile?.role === "agent" && ticketsCount >= 1 && (
+        {profile?.role === "agent" && route && ticketsCount >= 1 && (
           <CustomDialogBox dialog={dialog}>
             <MultipleUpdateBox />
           </CustomDialogBox>

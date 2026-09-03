@@ -423,7 +423,7 @@ export const formConfig: Record<string, FieldProps[]> = {
       props: {
         id: "isLocked",
         type: "checkbox",
-        className: "h-5 w-5 accent-neutral-900",
+        className: "h-5 w-5 accent-neutral-900 opacity-0 cursor-pointer",
       },
       notVisible: ({ mode, role }) => role === "agent" && mode === "create",
     },

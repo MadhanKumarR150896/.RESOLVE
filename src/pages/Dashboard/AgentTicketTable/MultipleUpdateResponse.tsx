@@ -29,7 +29,7 @@ export const MultipleUpdateResponse = ({
   };
   return (
     <div style={{ scrollbarWidth: "thin" }} className="w-full max-h-80">
-      <div className="my-4 rounded p-4 bg-neutral-100 text-sm border border-neutral-400 max-h-60 overflow-auto">
+      <div className="my-4 rounded p-4 bg-neutral-100 text-sm border border-neutral-900 max-h-60 overflow-auto">
         {results.map((result) => {
           if (result.status === null) return null;
           const res = result.status === true ? "success" : "failed";

@@ -2,10 +2,12 @@ import { supabase } from "../supabase/supabaseClient";
 import { useCallback } from "react";
 import { useToasterStore } from "../stores/toasterStore";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTicketsStore } from "../stores/ticketsStore";
 
 export const useSupabaseAuth = () => {
   const { updateToaster, clearToasters } = useToasterStore((state) => state);
   const queryClient = useQueryClient();
+  const { selectAllTicket } = useTicketsStore((state) => state);
 
   const supabaseSignIn = useCallback(
     async (email: string, password: string): Promise<{ success: boolean }> => {
@@ -63,8 +65,9 @@ export const useSupabaseAuth = () => {
       message: "Successfully signed out",
     });
 
+    selectAllTicket([]);
     queryClient.clear();
-  }, [updateToaster, clearToasters, queryClient]);
+  }, [updateToaster, clearToasters, queryClient, selectAllTicket]);
 
   return { supabaseSignIn, supabaseSignout };
 };

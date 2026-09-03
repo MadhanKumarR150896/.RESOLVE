@@ -1,11 +1,10 @@
 # .RESOLVE | Internal Ticketing Dashboard
 
-A role-based internal ticketing dashboard to create, manage, track, and resolve user issues efficiently. Built with a modern front-end stack and Backend-as-a-Service.
+An internal ticket management application that enables ticket creation, status tracking and end-to-end lifecycle management with serverless architecture utilizing Supabase (Backend-as-a-Service), featuring Role-Based Access Control (RBAC).
 
 **Live Demo:** [https://resolve.madkum.com/]
 
 https://github.com/user-attachments/assets/610d595b-2704-455a-94cb-eacfabba5ef1
-
 
 ## Tech Stack
 
@@ -17,31 +16,31 @@ https://github.com/user-attachments/assets/610d595b-2704-455a-94cb-eacfabba5ef1
 
 ### Frontend Engineering
 
-#### **Role-Based Dashboard UI**
+#### **Role-Based UI**
 
-- **User View:** A clean minimal setup to create new tickets, track real-time resolution status and view historical ticket logs.
-- **Agent View:** An agent can create tickets, while also extending to lock or claim tickets, update status, record public and internal comments.
-- **Sorting and Filtering**: A fetaure-rich dedicated agent dashboard is currently in development where the agent can sort and filter tickets across multiple columns.
+- **User View:** A clean minimal UI to create tickets, track real-time resolution and view historical ticket logs.
+- **Agent View:** A tabular UI for agent specific dashboard with **Drag and Drop** feature, **Multiple ticket Update**,while extending to lock or claim tickets and record internal comments.
+- **Sorting and Filtering**: Column specific **Sort and Filter** through custom cursor with keyset pagination paired with **infinite scroll**.
 
 #### **Performance & State Management**
 
-- **UI State:** Managed auth state like logged in profile details via **React Context API** and **Zustand** for lightweight, toaster UI updates.
-- **Server State & Caching:** Powered by **TanStack Query** for automatic re-fetching, and zero-latency UI transitions when updating tickets.
-- **Real-time Updates:** Integrated **Realtime** by supabase for instant updates across individual ticket view and also centralized tickets queue.
+- **UI State:** Managed auth state like logged in profile details via **React Context API** and **Zustand** for multiple ticket update and toaster UI updates.
+- **Server State & Caching:** Powered by **TanStack Query** for efficient caching, re-fetching and zero-latency UI transitions.
+- **Real-time Updates:** Integrated **Realtime** by supabase for instant updates across individual ticket view and centralized tickets queue.
 
 ### Backend Engineering
 
-The entire business logic is decentralized away from the client-side and locked within the database layer.
+The business logic is decentralized away from the client-side and devised within the database layer.
 
 #### **Profile Administration & Access Control**
 
-- **Row-Level Security (RLS):** Agents can read/update all tickets in the queue, while Users are strictly limited to viewing and interacting only with the tickets they created.
-- **Administrative Guardrails:** Profile's active status can be toggled in the custom profiles table to block unauthorized or rejected accounts from signing in entirely.
+- **Row-Level Security (RLS):** Agents can read/update all tickets in the queue, while Users are limited to read/update only the tickets they created.
+- **Administrative Guardrails:** Profile's active status can be toggled in the profiles table to block unauthorized signin and setup a trigger to check the profile's status while signing in.
 
 #### **Secure Data Isolation & Workflows**
 
-- **Front-end Constraints (Supabase RPC):** Ticket creation and updates are exclusively handled via Stored Procedures (**Remote Procedure Calls**) preventing from overriding the intended data structure or manipulating parameters through client-side code.
-- **Database Triggers & Functions:** Implemented automated Postgres triggers to strictly enforce ticket lifecycle rules. For example, a trigger validates that a ticket's status flow is sequential, preventing a ticket from moving directly from "Open" to "Resolved".
+- **Front-end Constraints (Supabase RPC):** Ticket creation and updates are handled through **Remote Procedure Calls** preventing from overriding the intended data structure or parameters through client-side code.
+- **Database Triggers & Functions:** Implemented Postgres triggers to strictly enforce business logic, such as to validate if a ticket's status flow is sequential, preventing a ticket from moving directly from "Open" to "Resolved".
 
 ## Authors
 
@@ -56,15 +55,15 @@ The entire business logic is decentralized away from the client-side and locked 
 
 **The Solution:** I isolated the role-verification logic into a dedicated PostgreSQL helper function configured as a **`SECURITY DEFINER`**.
 
-- By setting the function to execute with the privileges of the user who **created** the function rather than the invoking user, I safely bypassed the RLS evaluation layer for that single check.
-- To prevent security vulnerabilities like privilege escalation, I explicitly set the function's `search_path` to public.
+- By setting the function to execute with the privileges of the user who **created** the function rather than the invoking user, I safely bypassed the RLS evaluation layer for that check.
 
 ## Screenshots
 
 ### Frontend
 
 ![Sign in View](public/assets/Resolve-Signin.PNG)
-![Tickets Dash View](public/assets/Resolve-Ticketsdash.PNG)
+![Tickets Dash View 1](public/assets/Resolve-TicketsDash1.png)
+![Tickets Dash View 2](public/assets/Resolve-TicketsDash2.png)
 ![Create Ticket View](public/assets/Resolve-Createticket.PNG)
 ![Update Ticket](public/assets/Resolve-Updateticket.PNG)
 

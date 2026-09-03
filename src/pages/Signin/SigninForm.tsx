@@ -107,7 +107,7 @@ export const SigninForm = ({
             aria-label={showPassword ? "Hide password" : "Show password"}
             onClick={handlePasswordVisibility}
           >
-            <Icon strokeWidth={1} size={20} />
+            <Icon strokeWidth={1} size={20} className="cursor-pointer" />
           </button>
         </div>
       </fieldset>

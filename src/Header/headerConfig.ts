@@ -89,13 +89,13 @@ export const useHeaderConfig = (profile: ProfileType | null) => {
           props: {
             style: { scrollbarWidth: "thin" },
             className:
-              "fixed border border-neutral-400 bg-neutral-200 rounded-md px-4 py-5 left-[50%] top-[25%] -translate-x-[50%] w-100 h-max",
+              "fixed border border-neutral-900 bg-neutral-300 rounded-md px-4 py-5 left-[50%] top-[25%] -translate-x-[50%] w-100 h-max",
           },
           title: {
-            value: "To update multiple tickets:",
+            value: "To update multiple tickets",
             props: {
               className:
-                "border border-neutral-400 font-bold bg-neutral-100 w-max px-4 py-1 rounded",
+                "text-[15px] border border-neutral-900 font-bold bg-neutral-100 w-max px-4 py-1 rounded",
             },
           },
         },

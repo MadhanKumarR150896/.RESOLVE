@@ -25,6 +25,12 @@ import { useToasterStore } from "../../stores/toasterStore";
 import { supabase } from "../../supabase/supabaseClient";
 import { generateTicketInfo } from "./ticketSamples";
 import { CommentsHistory } from "./CommentsHistory";
+import { LockIcon, UnlockIcon } from "lucide-react";
+
+const icon = {
+  lock: LockIcon,
+  unlock: UnlockIcon,
+};
 
 export const FormGridTwo = ({
   gridElements,
@@ -203,8 +209,14 @@ export const FormGridTwo = ({
           }
 
           case "Input": {
+            const hasIcon =
+              field.props.id === "isLocked" && values?.isLocked
+                ? "lock"
+                : "unlock";
+            const Icon = icon[hasIcon];
             return (
               <div key={`${field.name}-${i}`} className={field.grid}>
+                {hasIcon && <Icon size={26} className="-mbe-6" color="black" />}
                 <Input
                   {...(field.props.id
                     ? register(field.props.id as keyof FormValues, {

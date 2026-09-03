@@ -72,7 +72,7 @@ export const MultipleUpdateForm = ({ setResults }: UpdateFormProps) => {
     <form
       noValidate
       onSubmit={handleSubmit}
-      className="border border-neutral-400 grid grid-cols-2 gap-4 text-sm mbs-4 bg-neutral-100 rounded px-4 pbs-2 pbe-4"
+      className="border border-neutral-900 grid grid-cols-2 gap-4 text-sm mbs-4 bg-neutral-100 rounded px-4 pbs-2 pbe-4"
     >
       <fieldset>
         <SelectGroup
