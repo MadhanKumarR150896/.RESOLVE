@@ -4,7 +4,8 @@ An internal ticket management application that enables ticket creation, status t
 
 **Live Demo:** [https://resolve.madkum.com/]
 
-https://github.com/user-attachments/assets/610d595b-2704-455a-94cb-eacfabba5ef1
+https://github.com/user-attachments/assets/063e02a1-d750-4c09-935e-a56f61ee2f9c
+
 
 ## Tech Stack
 
