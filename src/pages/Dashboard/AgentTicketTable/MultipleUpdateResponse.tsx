@@ -39,7 +39,7 @@ export const MultipleUpdateResponse = ({
               <ResultIcon
                 size={16}
                 color={`${result.status === true ? "green" : "red"}`}
-                className="shrink-0 mt-1"
+                className="shrink-0 mt-0.75"
               />
               <span className="">{result.message}</span>
             </div>

@@ -78,7 +78,7 @@ export const MultipleUpdateForm = ({ setResults }: UpdateFormProps) => {
         <SelectGroup
           label="Severity"
           id="severity"
-          className="border-neutral-400"
+          className="border-neutral-400 h-10"
           name="severity"
           value={severity}
           onChange={(e) => setSeverity(e.target.value as Tickets["severity"])}
@@ -95,7 +95,7 @@ export const MultipleUpdateForm = ({ setResults }: UpdateFormProps) => {
           label="Status"
           id="status"
           name="status"
-          className="border-neutral-400"
+          className="border-neutral-400 h-10"
           value={status}
           onChange={(e) => setStatus(e.target.value as Tickets["status"])}
         >
